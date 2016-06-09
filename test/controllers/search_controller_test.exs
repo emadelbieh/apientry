@@ -1,6 +1,7 @@
 defmodule Apientry.SearchControllerTest do
   use Apientry.ConnCase
   require MockEbay
+  import List, only: [keyfind: 3]
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -11,14 +12,25 @@ defmodule Apientry.SearchControllerTest do
       conn = get conn(), search_path(conn, :search, keyword: "nikon")
       assert conn.status == 200
 
-      {_, content_type} = List.keyfind(conn.resp_headers, "content-type", 0)
+      {_, content_type} = keyfind(conn.resp_headers, "content-type", 0)
       assert content_type == "text/xml; charset=utf-8"
 
-      {_, allowed_origins} = List.keyfind(conn.resp_headers, "access-control-allow-origin", 0)
+      {_, allowed_origins} = keyfind(conn.resp_headers, "access-control-allow-origin", 0)
       assert allowed_origins == "*"
 
       assert conn.resp_body =~ "urn:types.partner.api.shopping.com"
     end
+  end
+
+  test "options for cors", %{conn: conn} do
+    conn = options conn(), search_path(conn, :search, keyword: "nikon")
+    assert conn.status == 204 # no content
+
+    {_, allowed_origins} = keyfind(conn.resp_headers, "access-control-allow-origin", 0)
+    assert allowed_origins == "*"
+
+    {_, allowed_methods} = keyfind(conn.resp_headers, "access-control-allow-methods", 0)
+    assert allowed_methods == "GET,POST,PUT,PATCH,DELETE,OPTIONS"
   end
 
   test "failing requests when eBay is down", %{conn: conn} do

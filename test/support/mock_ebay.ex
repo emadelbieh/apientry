@@ -21,6 +21,9 @@ defmodule MockEbay do
     end
   end
 
+  @doc """
+  Mock requests when eBay is down
+  """
   defmacro mock_fail(do: block) do
     quote do
       require Mock

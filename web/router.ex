@@ -22,6 +22,7 @@ defmodule Apientry.Router do
   scope "/", Apientry do
     pipe_through :api
     get "/publisher", SearchController, :search
+    options "/publisher", SearchController, :search # for cors
   end
 
   # Other scopes may use custom stacks.
