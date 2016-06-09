@@ -8,6 +8,10 @@ defmodule Apientry.SearchControllerTest do
   test "legit requests", %{conn: conn} do
     conn = get conn(), search_path(conn, :search, keyword: "nikon")
     assert conn.status == 200
+
+    {_, content_type} = List.keyfind(conn.resp_headers, "content-type", 0)
+    assert content_type == "text/xml; charset=utf-8"
+
     assert conn.resp_body =~ "urn:types.partner.api.shopping.com"
   end
 
