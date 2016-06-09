@@ -2,6 +2,7 @@ defmodule Apientry.SearchControllerTest do
   use Apientry.ConnCase
   require MockEbay
   import List, only: [keyfind: 3]
+  import Plug.Conn, only: [put_req_header: 3]
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -45,5 +46,17 @@ defmodule Apientry.SearchControllerTest do
     conn = get conn(), search_path(conn, :search)
     body = json_response(conn, 500)
     assert "Invalid request" == body["message"]
+  end
+
+  test "bad requests in XML", %{conn: conn} do
+    conn = conn()
+    |> put_req_header("accept", "text/xml")
+    |> get(search_path(conn, :search))
+
+    {_, content_type} = keyfind(conn.resp_headers, "content-type", 0)
+    assert content_type == "text/xml; charset=utf-8"
+
+    assert conn.status === 500
+    assert conn.resp_body == ~s[<Error message="Invalid request"></Error>]
   end
 end

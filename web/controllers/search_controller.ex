@@ -28,7 +28,7 @@ defmodule Apientry.SearchController do
       {:error, %HTTPoison.Error{reason: reason}} ->
         conn
         |> put_status(500)
-        |> render("error.json", data: %{ message: reason })
+        |> render(:error, data: %{ message: reason })
     end
   end
 
@@ -42,6 +42,6 @@ defmodule Apientry.SearchController do
   def search(conn, _) do
     conn
     |> put_status(500)
-    |> render("error.json", data: %{ message: "Invalid request" })
+    |> render(:error, data: %{ message: "Invalid request" })
   end
 end

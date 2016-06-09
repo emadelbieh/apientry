@@ -10,7 +10,7 @@ defmodule Apientry.Router do
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug :accepts, ["json", "xml"]
     plug CORSPlug
   end
 
