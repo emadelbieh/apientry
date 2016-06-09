@@ -11,12 +11,16 @@ defmodule Apientry.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug CORSPlug
   end
 
   scope "/", Apientry do
-    pipe_through :browser # Use the default browser stack
-
+    pipe_through :browser
     get "/", PageController, :index
+  end
+
+  scope "/", Apientry do
+    pipe_through :api
     get "/publisher", SearchController, :search
   end
 

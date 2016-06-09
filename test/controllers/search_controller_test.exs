@@ -12,6 +12,9 @@ defmodule Apientry.SearchControllerTest do
     {_, content_type} = List.keyfind(conn.resp_headers, "content-type", 0)
     assert content_type == "text/xml; charset=utf-8"
 
+    {_, allowed_origins} = List.keyfind(conn.resp_headers, "access-control-allow-origin", 0)
+    assert allowed_origins == "*"
+
     assert conn.resp_body =~ "urn:types.partner.api.shopping.com"
   end
 
