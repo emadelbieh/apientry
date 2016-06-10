@@ -6,10 +6,18 @@ defmodule EbaySearch do
       => "http://sandbox.api.ebay.../?keyword=nikon"
   """
 
-  @search_url "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
+  @search_base "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
 
   @doc """
   Generates Ebay Search URLs.
+  Allowed options:
+
+  - `keyword` - required
+  - `format` (:json or :xml) - defaults to :json
+  - `apiKey`
+  - `visitorUserAgent`
+  - `visitorIPAddress`
+  - `trackingId`
   """
   def search(params) do
     query_params = %{
@@ -21,6 +29,18 @@ defmodule EbaySearch do
       keyword: params[:keyword]
     }
 
-    url = @search_url <> "?" <> URI.encode_query(query_params)
+    url = search_base(params[:format]) <> "?" <> URI.encode_query(query_params)
+  end
+
+  def search_base("xml") do
+    raw_search_base "rest"
+  end
+
+  def search_base(_) do
+    raw_search_base "json"
+  end
+
+  defp raw_search_base(ebay_format) do
+    "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/#{ebay_format}/GeneralSearch"
   end
 end

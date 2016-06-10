@@ -15,7 +15,8 @@ defmodule Apientry.SearchController do
       GET /publisher?keyword=nikon
   """
   def search(conn, %{ "keyword" => keyword }) do
-    url = EbaySearch.search(keyword: keyword)
+    format = get_format(conn)
+    url = EbaySearch.search(keyword: keyword, format: format)
 
     case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
