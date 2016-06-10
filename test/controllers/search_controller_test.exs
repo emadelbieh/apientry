@@ -1,6 +1,6 @@
 defmodule Apientry.SearchControllerTest do
   use Apientry.ConnCase
-  require MockEbay
+  use MockEbay
   import List, only: [keyfind: 3]
   import Plug.Conn, only: [put_req_header: 3]
 
@@ -20,6 +20,13 @@ defmodule Apientry.SearchControllerTest do
       assert allowed_origins == "*"
 
       assert conn.resp_body =~ "urn:types.partner.api.shopping.com"
+    end
+  end
+
+  test "other params", %{conn: conn} do
+    MockEbay.mock_ok do
+      conn = get conn(), search_path(conn, :search, keyword: "nikon", xxx: "111")
+      assert conn.status == 200
     end
   end
 

@@ -20,15 +20,16 @@ defmodule EbaySearch do
   - `trackingId`
   """
   def search(format, params) do
-    query_params = Map.merge(%{
+    defaults = %{
       apiKey: "78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc",
       showOffersOnly: "true",
       visitorUserAgent: "",
       visitorIPAddress: "",
       trackingId: "7000610",
-    }, params)
+    }
+    query_params = Enum.into(params, defaults)
 
-    url = search_base(format) <> "?" <> URI.encode_query(query_params)
+    search_base(format) <> "?" <> URI.encode_query(query_params)
   end
 
   def search_base("xml") do
