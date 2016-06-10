@@ -2,7 +2,7 @@ defmodule EbaySearch do
   @moduledoc """
   Generates Ebay Search URLs.
 
-      EbaySearch.search(keyword: "nikon")
+      EbaySearch.search("html", keyword: "nikon")
       => "http://sandbox.api.ebay.../?keyword=nikon"
   """
 
@@ -19,17 +19,16 @@ defmodule EbaySearch do
   - `visitorIPAddress`
   - `trackingId`
   """
-  def search(params) do
-    query_params = %{
-      apiKey: params[:apiKey] || "78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc",
+  def search(format, params) do
+    query_params = Map.merge(%{
+      apiKey: "78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc",
       showOffersOnly: "true",
-      visitorUserAgent: params[:visitorUserAgent] || "",
-      visitorIPAddress: params[:visitorIPAddress] || "",
-      trackingId: params[:trackingId] || "7000610",
-      keyword: params[:keyword]
-    }
+      visitorUserAgent: "",
+      visitorIPAddress: "",
+      trackingId: "7000610",
+    }, params)
 
-    url = search_base(params[:format]) <> "?" <> URI.encode_query(query_params)
+    url = search_base(format) <> "?" <> URI.encode_query(query_params)
   end
 
   def search_base("xml") do
