@@ -19,7 +19,7 @@ defmodule Apientry.Mixfile do
   def application do
     [mod: {Apientry, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :httpoison]]
+                    :phoenix_ecto, :postgrex, :httpoison, :geolix]]
   end
 
   # Specifies which paths to compile per environment.
@@ -39,6 +39,7 @@ defmodule Apientry.Mixfile do
      {:cowboy, "~> 1.0"},
      {:httpoison, "~> 0.8.3"},
      {:cors_plug, "~> 1.1"},
+     {:geolix, "~> 0.10"},
      {:mock, "~> 0.1.1", only: :test}]
   end
 
