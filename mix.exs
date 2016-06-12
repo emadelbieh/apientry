@@ -40,6 +40,8 @@ defmodule Apientry.Mixfile do
      {:httpoison, "~> 0.8.3"},
      {:cors_plug, "~> 1.1"},
      {:geolix, "~> 0.10"},
+     {:phoenix_slime, "~> 0.6.0"},
+     {:credo, "~> 0.4", only: [:dev, :test]},
      {:mock, "~> 0.1.1", only: :test}]
   end
 

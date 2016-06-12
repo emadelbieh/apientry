@@ -1,19 +1,19 @@
 defmodule Apientry.SearchView do
   use Apientry.Web, :view
 
-  def render("index.xml", %{ data: xml_string }) do
+  def render("index.xml", %{data: xml_string}) do
     xml_string
   end
 
-  def render("index.json", %{ data: json_data }) do
+  def render("index.json", %{data: json_data}) do
     json_data
   end
 
-  def render("error.json", %{ data: json_data }) do
+  def render("error.json", %{data: json_data}) do
     json_data
   end
 
-  def render("error.xml", %{ data: %{ message: message } }) do
+  def render("error.xml", %{data: %{message: message}}) do
     ~s[<Error message="#{message}"></Error>]
   end
 end

@@ -32,3 +32,7 @@ config :geolix,
   databases: [
     { :country, File.cwd! <> "/vendor/mmdb/GeoLite2-Country.mmdb" }
   ]
+
+config :phoenix, :template_engines,
+  slim: PhoenixSlime.Engine,
+  slime: PhoenixSlime.Engine
