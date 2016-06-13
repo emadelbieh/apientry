@@ -70,5 +70,6 @@ defmodule Apientry.SearchController do
 
   def set_search_options(conn, _) do
     conn
+    |> assign(:valid, false)
   end
 end

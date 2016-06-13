@@ -67,7 +67,7 @@ defmodule Apientry.SearchControllerTest do
     assert conn.resp_body == ~s[<Error message="Invalid request"></Error>]
   end
 
-  test "dry runs", %{conn: conn} do
+  test "dry run of a legit request", %{conn: conn} do
     conn = get conn(), search_path(conn, :dry_search, keyword: "nikon")
     body = json_response(conn, 200)
 
@@ -75,5 +75,12 @@ defmodule Apientry.SearchControllerTest do
       "format" => "json",
       "url" => "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc&showOffersOnly=true&trackingId=7000610&visitorIPAddress=&visitorUserAgent=&keyword=nikon"
     }
+  end
+
+  test "dry run of an invalid request", %{conn: conn} do
+    conn = get conn(), search_path(conn, :dry_search)
+    body = json_response(conn, 200)
+
+    assert body == %{"valid" => false}
   end
 end
