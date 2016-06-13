@@ -72,6 +72,7 @@ defmodule Apientry.SearchControllerTest do
     body = json_response(conn, 200)
 
     assert body == %{
+      "valid" => true,
       "format" => "json",
       "url" => "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc&showOffersOnly=true&trackingId=7000610&visitorIPAddress=&visitorUserAgent=&keyword=nikon"
     }

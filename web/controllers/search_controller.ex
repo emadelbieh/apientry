@@ -64,6 +64,7 @@ defmodule Apientry.SearchController do
     url = EbaySearch.search(format, params)
 
     conn
+    |> assign(:valid, true)
     |> assign(:format, format)
     |> assign(:url, url)
   end
