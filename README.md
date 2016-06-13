@@ -12,6 +12,8 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
 
+## Database configuration
+
 To configure your database, you can do either one of two things:
 
   * Create an account with username: `postgres`, password: `postgres` and give it database creation permissions. (recommended)
