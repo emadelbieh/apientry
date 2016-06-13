@@ -18,18 +18,23 @@ RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
 RUN mix local.hex --force && \
     mix local.rebar --force
 
-ONBUILD WORKDIR /usr/src/app
-ONBUILD ENV MIX_ENV prod
+WORKDIR /usr/src/app
+ENV MIX_ENV prod
 
 # mix deps.get
-ONBUILD COPY mix.* /usr/src/app/
-ONBUILD RUN mix do deps.get --only prod
+COPY mix.* /usr/src/app/
+RUN mix do deps.get --only prod
 
 # npm install
-ONBUILD COPY package.json /usr/src/app/
-ONBUILD RUN npm install
-ONBUILD RUN mix deps.compile --only prod
+COPY package.json /usr/src/app/
+RUN npm install
+RUN mix deps.compile --only prod
 
 # mix compile
-ONBUILD COPY . /usr/src/app/
-ONBUILD RUN mix compile
+COPY . /usr/src/app/
+RUN mix compile
+
+# Run
+EXPOSE 80
+env PORT 80
+CMD ["mix", "phoenix.server"]
