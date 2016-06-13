@@ -3,7 +3,7 @@
 To start your Phoenix app:
 
   * Install dependencies with `mix deps.get`
-  * Configure your database`*`
+  * Configure your database *(see below)*
   * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
   * Install Node.js dependencies with `npm install`
   * Start Phoenix endpoint with `mix phoenix.server`
@@ -14,12 +14,12 @@ Ready to run in production? Please [check our deployment guides](http://www.phoe
 
 ## Database configuration
 
-To configure your database, you can do either one of two things:
+To configure your PostgreSQL database, you can do either one of two things:
 
-  * Create an account with username: `postgres`, password: `postgres` and give it database creation permissions. (recommended)
+  * Create an account with username: `postgres`, password: `postgres` and give it database creation permissions. *(recommended for dev and test)*
 
-    ```
-    $ psql
+    ```sh
+    $ psql foo  # where `foo` is any existing database
     psql (4.9.5)
     Type "help" for help.
     
@@ -27,7 +27,7 @@ To configure your database, you can do either one of two things:
     foo=# alter user postgres with createdb;
     ```
 
-  * Alternatively, just set `DATABASE_URL` to whatever you need:
+  * Alternatively, just set `DATABASE_URL` to whatever you need. *(recommended for production)*
 
     ```
     export DATABASE_URL="postgres://user:pass@localhost:5432/phoenix_dev"
