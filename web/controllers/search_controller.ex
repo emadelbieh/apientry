@@ -62,15 +62,28 @@ defmodule Apientry.SearchController do
   def set_search_options(%{params: %{"keyword" => _} = params} = conn, _) do
     format = get_format(conn)
     url = EbaySearch.search(format, params)
+    country = ip_lookup(params["visitorIPAddress"])
 
     conn
     |> assign(:valid, true)
     |> assign(:format, format)
+    |> assign(:country, country)
     |> assign(:url, url)
   end
 
   def set_search_options(conn, _) do
     conn
     |> assign(:valid, false)
+  end
+
+  def ip_lookup(ip) do
+    case Geolix.lookup(ip) do
+      %{country: result} -> result.country.iso_code
+      _ -> nil
+    end
+  end
+
+  def ip_lookup(nil) do
+    nil
   end
 end
