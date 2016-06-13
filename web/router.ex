@@ -22,6 +22,8 @@ defmodule Apientry.Router do
   scope "/", Apientry do
     pipe_through :api
     get "/publisher", SearchController, :search
+    get "/dryrun/publisher", SearchController, :dry_search
+
     options "/publisher", SearchController, :search # for cors
   end
 
