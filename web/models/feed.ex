@@ -1,18 +1,21 @@
-defmodule Apientry.Publisher do
+defmodule Apientry.Feed do
   use Apientry.Web, :model
 
-  schema "publishers" do
-    field :name, :string
+  schema "feeds" do
+    field :feed_type, :string
+    field :is_mobile, :boolean, default: false
+    field :is_active, :boolean, default: true
+    field :country_code, :string
     field :api_key, :string
 
     has_many :publisher_feeds, Apientry.PublisherFeed
-    has_many :feeds, through: [:publisher_feeds, :feed]
+    has_many :publishers, through: [:publisher_feeds, :publisher]
 
     timestamps
   end
 
-  @required_fields ~w(name)
-  @optional_fields ~w(api_key)
+  @required_fields ~w(feed_type is_mobile country_code api_key)
+  @optional_fields ~w(is_active)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -23,14 +26,5 @@ defmodule Apientry.Publisher do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
-    |> generate_api_key()
   end
-
-  def generate_api_key(changeset) do
-    case changeset.valid? do
-      true -> put_change(changeset, :api_key, Ecto.UUID.generate)
-      _ -> changeset
-    end
-  end
-
 end

@@ -1,0 +1,1 @@
+alias Apientry.{Publisher, Feed, PublisherFeed, Repo}
