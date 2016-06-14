@@ -3,7 +3,7 @@ defmodule Apientry.Mixfile do
 
   def project do
     [app: :apientry,
-     version: "0.0.1",
+     version: git_version,
      elixir: "~> 1.0",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -54,5 +54,14 @@ defmodule Apientry.Mixfile do
   defp aliases do
     ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
      "ecto.reset": ["ecto.drop", "ecto.setup"]]
+  end
+
+  def git_version do
+    case System.cmd("git", ["describe", "--tags"]) do
+      {result, 0} ->
+        String.slice(result, 1..-1) # "v0.0.1" -> "0.0.1"
+      _ ->
+        "0.0.0"
+    end
   end
 end
