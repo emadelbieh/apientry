@@ -5,6 +5,9 @@ defmodule Apientry.Publisher do
     field :name, :string
     field :api_key, :string
 
+    has_many :publisher_feeds, Apientry.PublisherFeed
+    has_many :feeds, through: [:publisher_feeds, :feed]
+
     timestamps
   end
 

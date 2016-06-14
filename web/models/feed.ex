@@ -8,6 +8,9 @@ defmodule Apientry.Feed do
     field :country_code, :string
     field :api_key, :string
 
+    has_many :publisher_feeds, Apientry.PublisherFeed
+    has_many :publishers, through: [:publisher_feeds, :publisher]
+
     timestamps
   end
 
