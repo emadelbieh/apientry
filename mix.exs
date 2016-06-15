@@ -18,8 +18,11 @@ defmodule Apientry.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Apientry, []},
-     applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :httpoison, :geolix]]
+     applications: [
+       :phoenix, :phoenix_html, :cowboy, :logger, :gettext,
+       :phoenix_ecto, :postgrex, :httpoison, :geolix,
+       :phoenix_slime, :cors_plug
+     ]]
   end
 
   # Specifies which paths to compile per environment.
@@ -42,7 +45,8 @@ defmodule Apientry.Mixfile do
      {:geolix, "~> 0.10"},
      {:phoenix_slime, "~> 0.6.0"},
      {:credo, "~> 0.4", only: [:dev, :test]},
-     {:mock, "~> 0.1.1", only: :test}]
+     {:mock, "~> 0.1.1", only: :test},
+     {:exrm, "~> 1.0.5"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.
@@ -59,7 +63,7 @@ defmodule Apientry.Mixfile do
   def git_version do
     case System.cmd("git", ["describe", "--tags"]) do
       {result, 0} ->
-        String.slice(result, 1..-1) # "v0.0.1" -> "0.0.1"
+        String.slice(result, 1..-2) # "v0.0.1\n" -> "0.0.1"
       _ ->
         "0.0.0"
     end
