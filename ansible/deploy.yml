@@ -1,0 +1,15 @@
+- hosts: 127.0.0.1
+  connection: local
+  roles:
+  - role: build-release
+    dir: ../
+
+# - hosts: webservers
+#   user: ubuntu
+#   tasks:
+#   - name: copy
+#     synchronize:
+#       src: ../rel
+#       dest: /home/ubuntu
+#       rsync_opts:
+#         - "-avz"

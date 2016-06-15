@@ -1,0 +1,36 @@
+- hosts: webservers
+  user: ubuntu
+  become: true
+  become_user: root
+  vars:
+    ubuntu_version: trusty
+  tasks:
+    - name: nodesource.com apt key
+      apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
+
+    - name: nodesource.com apt source (deb)
+      apt_repository: repo='deb https://deb.nodesource.com/node_6.x {{ ubuntu_version }} main' state=present
+
+    - name: nodesource.com apt source (deb-src)
+      apt_repository: repo='deb-src https://deb.nodesource.com/node_6.x {{ ubuntu_version }} main' state=present
+
+    - name: erlang solutions
+      apt: deb=https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+
+    - name: apt-get update
+      apt: update_cache=yes
+
+    - name: install esl-erlang
+      apt: pkg=esl-erlang state=latest
+
+    - name: install elixir
+      apt: pkg=elixir state=latest
+
+    - name: install nodejs
+      apt: pkg=nodejs state=latest
+
+    - name: create user
+      user: name=deployer
+
+    - name: copy .ssh/authorized_keys
+      copy: src=./files/ssh-authorized-keys dest=/home/deployer/.ssh/authorized_keys owner=deployer mode=600
