@@ -18,8 +18,11 @@ defmodule Apientry.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Apientry, []},
-     applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :httpoison, :geolix]]
+     applications: [
+       :phoenix, :phoenix_html, :cowboy, :logger, :gettext,
+       :phoenix_ecto, :postgrex, :httpoison, :geolix,
+       :phoenix_slime, :cors_plug
+     ]]
   end
 
   # Specifies which paths to compile per environment.
