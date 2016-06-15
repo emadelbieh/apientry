@@ -59,7 +59,7 @@ defmodule Apientry.Mixfile do
   def git_version do
     case System.cmd("git", ["describe", "--tags"]) do
       {result, 0} ->
-        String.slice(result, 1..-1) # "v0.0.1" -> "0.0.1"
+        String.slice(result, 1..-2) # "v0.0.1\n" -> "0.0.1"
       _ ->
         "0.0.0"
     end
