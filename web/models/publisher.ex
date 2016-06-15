@@ -26,6 +26,12 @@ defmodule Apientry.Publisher do
     |> generate_api_key()
   end
 
+  def api_key_changeset(model) do
+    model
+    |> cast(%{}, [], [])
+    |> generate_api_key()
+  end
+
   def generate_api_key(changeset) do
     case changeset.valid? do
       true -> put_change(changeset, :api_key, Ecto.UUID.generate)
