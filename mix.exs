@@ -42,7 +42,8 @@ defmodule Apientry.Mixfile do
      {:geolix, "~> 0.10"},
      {:phoenix_slime, "~> 0.6.0"},
      {:credo, "~> 0.4", only: [:dev, :test]},
-     {:mock, "~> 0.1.1", only: :test}]
+     {:mock, "~> 0.1.1", only: :test},
+     {:exrm, "~> 1.0.5"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.
