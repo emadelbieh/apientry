@@ -1,11 +1,7 @@
 defmodule Apientry.PublisherController do
   use Apientry.Web, :controller
 
-  alias Apientry.{
-    Publisher,
-    Feed,
-    PublisherFeed
-  }
+  alias Apientry.Publisher
 
   plug :scrub_params, "publisher" when action in [:create, :update]
 
