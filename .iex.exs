@@ -1,1 +1,6 @@
-alias Apientry.{Publisher, Feed, PublisherFeed, Repo}
+alias Apientry.{
+  Publisher,
+  Feed,
+  PublisherFeed,
+  TrackingId,
+  Repo}

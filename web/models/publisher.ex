@@ -5,6 +5,8 @@ defmodule Apientry.Publisher do
     field :name, :string
     field :api_key, :string
 
+    has_many :tracking_ids, Apientry.TrackingId
+
     timestamps
   end
 
