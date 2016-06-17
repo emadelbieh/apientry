@@ -1,7 +1,2 @@
-h2 Show publisher
-
-ul
-
-= link "Edit", to: publisher_path(@conn, :edit, @publisher)
-| &nbsp;
-= link "Back", to: publisher_path(@conn, :index)
+h2= @publisher.name
+p= @publisher.api_key

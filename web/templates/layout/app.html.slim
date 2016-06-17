@@ -7,5 +7,6 @@ html
     link[rel="stylesheet" href="#{static_path(@conn, "/css/app.css")}"]
   body
     main[role="main"]
-      = render @view_module, @view_template, assigns
+      .container
+        = render @view_module, @view_template, assigns
     script[src="#{static_path(@conn, "/js/app.js")}"]

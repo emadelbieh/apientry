@@ -4,6 +4,7 @@
       p Oops, something went wrong! Please check the errors below.
   .form-group
     = label f, :name
-    = text_input f, :name, class: "form-control"
+    = text_input f, :name, class: "form-control", autofocus: true
+
   .form-action
     = submit "Submit", class: "btn btn-primary"

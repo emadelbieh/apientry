@@ -1,7 +1,11 @@
 defmodule Apientry.PublisherController do
   use Apientry.Web, :controller
 
-  alias Apientry.Publisher
+  alias Apientry.{
+    Publisher,
+    Feed,
+    PublisherFeed
+  }
 
   plug :scrub_params, "publisher" when action in [:create, :update]
 
@@ -39,6 +43,7 @@ defmodule Apientry.PublisherController do
   def edit(conn, %{"id" => id}) do
     publisher = Repo.get!(Publisher, id)
     changeset = Publisher.changeset(publisher)
+
     render(conn, "edit.html", publisher: publisher, changeset: changeset)
   end
 
@@ -47,7 +52,7 @@ defmodule Apientry.PublisherController do
     changeset = Publisher.changeset(publisher, publisher_params)
 
     case Repo.update(changeset) do
-      {:ok, publisher} ->
+      {:ok, _publisher} ->
         conn
         |> put_flash(:info, "Publisher updated successfully.")
         |> redirect(to: publisher_path(conn, :index))
@@ -75,7 +80,7 @@ defmodule Apientry.PublisherController do
         conn
         |> put_flash(:info, "New API Key generated for #{publisher.name}")
         |> redirect(to: publisher_path(conn, :index))
-      {:error, changeset} ->
+      {:error, _changeset} ->
         conn
         |> put_flash(:error, "Unable to generate API Key for #{publisher.name}")
         |> redirect(to: publisher_path(conn, :index))

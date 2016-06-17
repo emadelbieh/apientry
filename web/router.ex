@@ -19,6 +19,7 @@ defmodule Apientry.Router do
     get "/", PageController, :index
     put "/publishers/:id/regenerate_key", PublisherController, :regenerate
     resources "/publishers", PublisherController
+    resources "/feeds", FeedController
   end
 
   scope "/", Apientry do

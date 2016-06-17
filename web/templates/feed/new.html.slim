@@ -1,0 +1,5 @@
+h2 New feed
+
+= render "form.html", changeset: @changeset, action: feed_path(@conn, :create)
+
+= link "Back", to: feed_path(@conn, :index)
