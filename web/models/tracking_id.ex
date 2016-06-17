@@ -8,7 +8,7 @@ defmodule Apientry.TrackingId do
     timestamps
   end
 
-  @required_fields ~w(code)
+  @required_fields ~w(code publisher_id)
   @optional_fields ~w()
 
   @doc """

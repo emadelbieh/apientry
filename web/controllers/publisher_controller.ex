@@ -7,7 +7,9 @@ defmodule Apientry.PublisherController do
 
   def index(conn, _params) do
     publishers =
-      from(p in Publisher, order_by: p.inserted_at)
+      from(p in Publisher,
+        order_by: p.inserted_at,
+        preload: :tracking_ids)
       |> Repo.all
 
     render(conn, "index.html", publishers: publishers)
@@ -16,11 +18,6 @@ defmodule Apientry.PublisherController do
   def new(conn, _params) do
     changeset = Publisher.changeset(%Publisher{})
     render(conn, "new.html", changeset: changeset)
-  end
-
-  def show(conn, %{"id" => id}) do
-    publisher = Repo.get!(Publisher, id)
-    render(conn, "show.html", publisher: publisher)
   end
 
   def create(conn, %{"publisher" => publisher_params}) do
@@ -37,14 +34,14 @@ defmodule Apientry.PublisherController do
   end
 
   def edit(conn, %{"id" => id}) do
-    publisher = Repo.get!(Publisher, id)
+    publisher = Repo.get!(Publisher, id) |> Repo.preload(:tracking_ids)
     changeset = Publisher.changeset(publisher)
 
-    render(conn, "edit.html", publisher: publisher, changeset: changeset)
+    render(conn, "edit.html", publisher: publisher, changeset: changeset, tracking_ids: publisher.tracking_ids)
   end
 
   def update(conn, %{"id" => id, "publisher" => publisher_params}) do
-    publisher = Repo.get!(Publisher, id)
+    publisher = Repo.get!(Publisher, id) |> Repo.preload(:tracking_ids)
     changeset = Publisher.changeset(publisher, publisher_params)
 
     case Repo.update(changeset) do
@@ -53,7 +50,7 @@ defmodule Apientry.PublisherController do
         |> put_flash(:info, "Publisher updated successfully.")
         |> redirect(to: publisher_path(conn, :index))
       {:error, changeset} ->
-        render(conn, "edit.html", publisher: publisher, changeset: changeset)
+        render(conn, "edit.html", publisher: publisher, changeset: changeset, tracking_ids: publisher.tracking_ids)
     end
   end
 

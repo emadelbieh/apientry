@@ -1,0 +1,5 @@
+h2 New tracking id
+
+= render "form.html", changeset: @changeset, action: publisher_tracking_id_path(@conn, :create, @publisher)
+
+= link "Back", to: publisher_path(@conn, :edit, @publisher)

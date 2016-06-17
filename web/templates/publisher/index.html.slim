@@ -5,12 +5,14 @@ table.table.table-hover
     tr
       th Name
       th API Key
+      th Tracking IDs
       th
   tbody
     = for publisher <- @publishers do
       tr
         td= link publisher.name, to: publisher_path(@conn, :edit, publisher)
         td= publisher.api_key
+        td= length publisher.tracking_ids
         td.text-right
           = link "Generate new API Key", to: publisher_path(@conn, :regenerate, publisher), method: :put, data: [confirm: "Are you sure?"], class: "btn btn-default"
           .pull-right
