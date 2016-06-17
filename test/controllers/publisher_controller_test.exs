@@ -28,7 +28,7 @@ defmodule Apientry.PublisherControllerTest do
 
   test "renders page not found when id is nonexistent", %{conn: conn} do
     assert_error_sent 404, fn ->
-      get conn, publisher_path(conn, :show, -1)
+      get conn, publisher_path(conn, :edit, -1)
     end
   end
 
