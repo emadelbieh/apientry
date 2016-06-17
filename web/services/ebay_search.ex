@@ -4,9 +4,21 @@ defmodule EbaySearch do
 
       EbaySearch.search("html", keyword: "nikon")
       => "http://sandbox.api.ebay.../?keyword=nikon"
+
+      iex> EbaySearch.search("html", keyword: "nikon")
+      "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&keyword=nikon&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent="
   """
 
   @search_base "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
+
+  @defaults %{
+    # apiKey: "78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc",
+    apiKey: "aa13ff97-9515-4db5-9a62-e8981b615d36",
+    showOffersOnly: "true",
+    visitorUserAgent: "",
+    visitorIPAddress: "",
+    trackingId: "8095719",
+  }
 
   @doc """
   Generates Ebay Search URLs.
@@ -20,14 +32,9 @@ defmodule EbaySearch do
   - `trackingId`
   """
   def search(format, params) do
-    defaults = %{
-      apiKey: "78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc",
-      showOffersOnly: "true",
-      visitorUserAgent: "",
-      visitorIPAddress: "",
-      trackingId: "7000610",
-    }
-    query_params = Enum.into(params, defaults)
+    params = Enum.into(params, %{})
+    params = Map.delete(params, :apiKey) # can't override this!
+    query_params = Map.merge(@defaults, params)
 
     search_base(format) <> "?" <> URI.encode_query(query_params)
   end
