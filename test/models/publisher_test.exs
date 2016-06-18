@@ -3,7 +3,7 @@ defmodule Apientry.PublisherTest do
 
   alias Apientry.Publisher
 
-  @valid_attrs %{name: "some content"}
+  @valid_attrs %{name: "Test Publisher"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

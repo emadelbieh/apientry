@@ -1,0 +1,5 @@
+h2 New publisher
+
+= render "form.html", changeset: @changeset, action: publisher_path(@conn, :create)
+
+= link "Back", to: publisher_path(@conn, :index)

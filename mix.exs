@@ -43,7 +43,7 @@ defmodule Apientry.Mixfile do
      {:httpoison, "~> 0.8.3"},
      {:cors_plug, "~> 1.1"},
      {:geolix, "~> 0.10"},
-     {:phoenix_slime, "~> 0.6.0"},
+     {:phoenix_slime, github: "slime-lang/phoenix_slime"},
      {:credo, "~> 0.4", only: [:dev, :test]},
      {:mock, "~> 0.1.1", only: :test},
      {:exrm, "~> 1.0.5"}]

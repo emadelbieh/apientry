@@ -17,6 +17,13 @@ defmodule Apientry.Router do
   scope "/", Apientry do
     pipe_through :browser
     get "/", PageController, :index
+
+    resources "/feeds", FeedController
+
+    put "/publishers/:id/regenerate_key", PublisherController, :regenerate
+    resources "/publishers", PublisherController do
+      resources "/tracking_ids", TrackingIdController, except: [:index, :show]
+    end
   end
 
   scope "/", Apientry do

@@ -1,0 +1,16 @@
+h2= "#{@feed.feed_type} - #{@feed.country_code}"
+
+ul
+  li
+    strong Mobile:
+    = @feed.is_mobile
+  li
+    strong Active:
+    = @feed.is_active
+  li
+    strong Api key:
+    = @feed.api_key
+
+= link "Edit", to: feed_path(@conn, :edit, @feed)
+| &nbsp;
+= link "Back", to: feed_path(@conn, :index)

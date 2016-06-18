@@ -14,8 +14,8 @@ defmodule Apientry.Feed do
     timestamps
   end
 
-  @required_fields ~w(feed_type is_mobile country_code api_key)
-  @optional_fields ~w(is_active)
+  @required_fields ~w(is_active is_mobile country_code api_key)
+  @optional_fields ~w(feed_type)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
