@@ -33,6 +33,34 @@ To configure your PostgreSQL database, you can do either one of two things:
     export DATABASE_URL="postgres://user:pass@localhost:5432/phoenix_dev"
     ```
 
+## Sample commands
+
+`/publisher` - basic keyword search. `-v` *(verbose)* shows the HTTP response headers.
+
+```sh
+curl -v "https://sandbox.apientry.com/publisher?keyword=nikon"
+```
+
+The output is compressed. You can use [jsonpp](https://jmhodges.github.io/jsonpp/) to format your text.
+
+```sh
+curl "https://sandbox.apientry.com/publisher?keyword=nikon" | jsonpp
+```
+
+`-H "Accept: text/xml"` returns XML responses.
+
+```sh
+curl -v "https://sandbox.apientry.com/publisher?keyword=nikon" -H "Accept: text/xml"
+```
+
+`/dryrun/publisher` - lets you inspect what goes on in a request.
+
+```sh
+curl -v "https://sandbox.apientry.com/dryrun/publisher?keyword=nikon&visitorIPAddress=8.8.8.8&trackingId=800537"
+```
+
+I also recommend using [httpie](http://httpie.org/) instead of curl. It supports auto-formatting of JSON/XML responses, colors, and many other features.
+
 ## Learn more
 
   * Official website: http://www.phoenixframework.org/
