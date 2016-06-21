@@ -75,7 +75,7 @@ defmodule Apientry.SearchControllerTest do
       "valid" => true,
       "country" => nil,
       "format" => "json",
-      "url" => "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent=&keyword=nikon"
+      "url" => "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent=&keyword=nikon"
     }
   end
 

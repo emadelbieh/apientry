@@ -22,7 +22,7 @@ To configure your PostgreSQL database, you can do either one of two things:
     $ psql foo  # where `foo` is any existing database
     psql (4.9.5)
     Type "help" for help.
-    
+
     foo=# create user postgres with password "postgres";
     foo=# alter user postgres with createdb;
     ```
@@ -31,6 +31,12 @@ To configure your PostgreSQL database, you can do either one of two things:
 
     ```
     export DATABASE_URL="postgres://user:pass@localhost:5432/phoenix_dev"
+    ```
+
+  * Create your database
+
+    ```
+    mix ecto.create
     ```
 
 ## Sample commands

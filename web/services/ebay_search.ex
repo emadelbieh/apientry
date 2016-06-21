@@ -6,10 +6,8 @@ defmodule EbaySearch do
       => "http://sandbox.api.ebay.../?keyword=nikon"
 
       iex> EbaySearch.search("html", keyword: "nikon")
-      "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&keyword=nikon&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent="
+      "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&keyword=nikon&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent="
   """
-
-  @search_base "http://api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
 
   @defaults %{
     # apiKey: "78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc",
@@ -48,6 +46,6 @@ defmodule EbaySearch do
   end
 
   defp raw_search_base(ebay_format) do
-    "http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/#{ebay_format}/GeneralSearch"
+    "http://api.ebaycommercenetwork.com/publisher/3.0/#{ebay_format}/GeneralSearch"
   end
 end
