@@ -39,12 +39,12 @@ defmodule MockEbay do
   end
 
   @doc "Mock HTTPoison.get"
-  def http_get("http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent=&keyword=nikon") do
+  def http_get("http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent=&keyword=nikon") do
     http_get_ok
   end
 
   @doc "Mock with extra parameter"
-  def http_get("http://sandbox.api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent=&keyword=nikon&xxx=111") do
+  def http_get("http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent=&keyword=nikon&xxx=111") do
     http_get_ok
   end
 
