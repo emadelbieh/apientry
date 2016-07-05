@@ -1,0 +1,26 @@
+.top-nav
+  .container
+    a[href="#{feed_path(@conn, :index)}"] Feeds
+    a[href="#{publisher_path(@conn, :index)}"] Publishers
+
+.crumbs-section
+  .container
+    ul.crumbs-list
+      li.crumb.-home
+        a[href="/"] Home
+
+      = if assigns[:feeds] || assigns[:feed] do
+        li.crumb.-feeds
+          a[href="#{feed_path(@conn, :index)}"] Feeds
+
+      = if assigns[:feed] do
+        li.crumb.-feed
+          a[href="#{feed_path(@conn, :edit, @feed)}"]= @feed.feed_type
+
+      = if assigns[:publishers] || assigns[:publisher] do
+        li.crumb.-publishers
+          a[href="#{publisher_path(@conn, :index)}"] Publishers
+
+      = if assigns[:publisher] do
+        li.crumb.-publisher
+          a[href="#{publisher_path(@conn, :edit, @publisher)}"]= @publisher.name

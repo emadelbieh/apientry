@@ -1,23 +1,26 @@
-h2 Feeds
+= render Apientry.SharedView, "nav.html", conn: @conn, feeds: true
 
-table.table.table-hover
-  thead
-    tr
-      th Feed type
-      th Country code
-      th Api key
-      th Mobile
-      th Active
-      th
-  tbody
-    = for feed <- @feeds do
+.container
+  h2 Feeds
+
+  table.table.table-hover
+    thead
       tr
-        td= link feed.feed_type, to: feed_path(@conn, :edit, feed)
-        td= feed.country_code
-        td= feed.api_key
-        td= feed.is_mobile
-        td= feed.is_active
-        td.text-right
-            = link "Delete", to: feed_path(@conn, :delete, feed), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger"
+        th Feed type
+        th Country code
+        th Api key
+        th Mobile
+        th Active
+        th
+    tbody
+      = for feed <- @feeds do
+        tr
+          td= link feed.feed_type, to: feed_path(@conn, :edit, feed)
+          td= feed.country_code
+          td= feed.api_key
+          td= feed.is_mobile
+          td= feed.is_active
+          td.text-right
+              = link "Delete", to: feed_path(@conn, :delete, feed), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger"
 
-= link "New feed", to: feed_path(@conn, :new), class: "btn btn-primary"
+  = link "New feed", to: feed_path(@conn, :new), class: "btn btn-primary"

@@ -6,7 +6,5 @@ html
     title API
     link[rel="stylesheet" href="#{static_path(@conn, "/css/app.css")}"]
   body
-    main[role="main"]
-      .container
-        = render @view_module, @view_template, assigns
+    = render @view_module, @view_template, assigns
     script[src="#{static_path(@conn, "/js/app.js")}"]
