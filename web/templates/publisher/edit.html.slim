@@ -1,8 +1,6 @@
 = render Apientry.SharedView, "nav.html", conn: @conn, publisher: @publisher
 
 .container
-  h2 Edit publisher
-
   = render "form.html", changeset: @changeset, action: publisher_path(@conn, :update, @publisher)
 
   h3 Tracking Ids

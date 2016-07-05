@@ -1,26 +1,23 @@
-= render Apientry.SharedView, "nav.html", conn: @conn, feeds: true
+= render Apientry.SharedView, "nav.html", conn: @conn, feeds: true, action: {feed_path(@conn, :new), "New feed"}
 
 .container
-  h2 Feeds
-
-  table.table.table-hover
-    thead
-      tr
-        th Feed type
-        th Country code
-        th Api key
-        th Mobile
-        th Active
-        th
+  table.crud-table
     tbody
       = for feed <- @feeds do
         tr
-          td= link feed.feed_type, to: feed_path(@conn, :edit, feed)
-          td= feed.country_code
-          td= feed.api_key
-          td= feed.is_mobile
-          td= feed.is_active
+          td.primary
+            = link feed.feed_type, to: feed_path(@conn, :edit, feed)
+          td.info
+            = feed.country_code
+            = ", Mobile: "
+            = feed.is_mobile
           td.text-right
-              = link "Delete", to: feed_path(@conn, :delete, feed), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger"
+            = link "Edit", to: feed_path(@conn, :edit, feed), class: "btn btn-sm btn-default"
+            .dropdown.more-actions
+              button.toggle(data-toggle="dropdown" title="More actions...")
+              ul.dropdown-menu
+                li= link "Show", to: feed_path(@conn, :show, feed)
+                li= link "Edit", to: feed_path(@conn, :edit, feed)
+                li= link "Delete", to: feed_path(@conn, :delete, feed), method: :delete, data: [confirm: "Are you sure?"]
 
   = link "New feed", to: feed_path(@conn, :new), class: "btn btn-primary"

@@ -1,22 +1,21 @@
-= render Apientry.SharedView, "nav.html", conn: @conn, publishers: true
+= render Apientry.SharedView, "nav.html", conn: @conn, publishers: true, action: {publisher_path(@conn, :new), "New publisher"}
 
 .container
-  table.table.table-hover
-    thead
-      tr
-        th Name
-        th API Key
-        th Tracking IDs
-        th
+  table.crud-table
     tbody
       = for publisher <- @publishers do
         tr
-          td= link publisher.name, to: publisher_path(@conn, :edit, publisher)
-          td= publisher.api_key
-          td= length publisher.tracking_ids
+          td.primary
+            = link publisher.name, to: publisher_path(@conn, :edit, publisher)
+          td.info
+            = publisher.api_key
+            = ", "
+            = length publisher.tracking_ids
           td.text-right
-            = link "Generate new API Key", to: publisher_path(@conn, :regenerate, publisher), method: :put, data: [confirm: "Are you sure?"], class: "btn btn-default"
-            .pull-right
-              = link "Delete", to: publisher_path(@conn, :delete, publisher), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger"
-
-  = link "New publisher", to: publisher_path(@conn, :new), class: "btn btn-primary"
+            = link "Edit", to: publisher_path(@conn, :edit, publisher), class: "btn btn-sm btn-default"
+            .dropdown.more-actions
+              button.toggle(data-toggle="dropdown" title="More actions...")
+              ul.dropdown-menu
+                li= link "Show", to: publisher_path(@conn, :show, publisher)
+                li= link "Edit", to: publisher_path(@conn, :edit, publisher)
+                li= link "Delete", to: publisher_path(@conn, :delete, publisher), method: :delete, data: [confirm: "Are you sure?"]

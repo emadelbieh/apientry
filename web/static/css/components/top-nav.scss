@@ -1,0 +1,40 @@
+@import '../common';
+
+.top-nav {
+  background: darken($primary, 5%);
+}
+
+.top-nav-links {
+  &,
+  > li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  & {
+    text-align: center;
+  }
+
+  > li {
+    display: inline-block;
+  }
+
+  > li > a {
+    display: inline-block;
+    margin: 0 12px 0 0;
+    color: lighten($primary, 30%);
+
+    height: 40px;
+    line-height: 40px;
+
+    @include caps-type;
+    font-size: .9em;
+  }
+
+  > li > a:hover,
+  > li > a:focus {
+    text-decoration: none;
+    color: white;
+  }
+}

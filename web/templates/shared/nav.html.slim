@@ -1,26 +1,44 @@
 .top-nav
   .container
-    a[href="#{feed_path(@conn, :index)}"] Feeds
-    a[href="#{publisher_path(@conn, :index)}"] Publishers
+    ul.top-nav-links
+      li
+        a[href="#{feed_path(@conn, :index)}"]
+          = gettext "Feeds"
+      li
+        a[href="#{publisher_path(@conn, :index)}"]
+          = gettext "Publishers"
 
 .crumbs-section
   .container
     ul.crumbs-list
       li.crumb.-home
-        a[href="/"] Home
+        a[href="/"]
 
       = if assigns[:feeds] || assigns[:feed] do
         li.crumb.-feeds
-          a[href="#{feed_path(@conn, :index)}"] Feeds
+          a[href="#{feed_path(@conn, :index)}"]
+            = gettext "Feeds"
 
       = if assigns[:feed] do
         li.crumb.-feed
-          a[href="#{feed_path(@conn, :edit, @feed)}"]= @feed.feed_type
+          a[href="#{feed_path(@conn, :edit, @feed)}"]
+            = @feed.feed_type
 
       = if assigns[:publishers] || assigns[:publisher] do
         li.crumb.-publishers
-          a[href="#{publisher_path(@conn, :index)}"] Publishers
+          a[href="#{publisher_path(@conn, :index)}"]
+            = gettext "Publishers"
 
       = if assigns[:publisher] do
         li.crumb.-publisher
-          a[href="#{publisher_path(@conn, :edit, @publisher)}"]= @publisher.name
+          a[href="#{publisher_path(@conn, :edit, @publisher)}"]
+            = @publisher.name
+
+      = if assigns[:title] do
+        li.crumb.-title
+          a[href="#"]= @title
+
+    = if assigns[:action] do
+      - {path, title} = assigns[:action]
+      .crumbs-action
+        a.btn.btn-crumbs.btn-sm[href="#{path}"]= title
