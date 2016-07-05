@@ -1,0 +1,17 @@
+@import '../common';
+
+.btn-default {
+  border-color: rgba($primary, 0.5);
+  color: $primary;
+
+  &:hover,
+  &:focus {
+    color: white;
+    background: $primary;
+    border-color: transparent;
+  }
+
+  &:active {
+    background: $dark-primary;
+  }
+}

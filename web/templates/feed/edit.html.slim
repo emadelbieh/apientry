@@ -1,5 +1,4 @@
-h2 Edit feed
+= render Apientry.SharedView, "nav.html", conn: @conn, feed: @feed
 
-= render "form.html", changeset: @changeset, action: feed_path(@conn, :update, @feed)
-
-= link "Back", to: feed_path(@conn, :index)
+.container
+  = render "form.html", changeset: @changeset, action: feed_path(@conn, :update, @feed)

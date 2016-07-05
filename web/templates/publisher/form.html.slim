@@ -2,9 +2,18 @@
   = if @changeset.action do
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
-  .form-group
-    = label f, :name
-    = text_input f, :name, class: "form-control", autofocus: true
+  .form-fieldset
+    .info
+      = if assigns[:mode] == :create do
+        h2 New publisher
+      - else
+        h2 Edit publisher
 
-  .form-action
-    = submit "Submit", class: "btn btn-primary"
+    .form
+      .form-group
+        = label f, :name
+        = text_input f, :name, class: "form-control", autofocus: true
+
+  .form-fieldset
+    .form
+      = submit "Submit", class: "btn btn-primary"

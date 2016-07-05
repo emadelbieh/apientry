@@ -1,0 +1,101 @@
+@import '../common';
+
+$crumb-height: 72px;
+
+.crumbs-section {
+  background: $inset-bg;
+  border-bottom: solid 1px darken($inset-bg, 4%);
+}
+
+%crumb-icon {
+  display: inline-block;
+  background: lighten($primary, 25%);
+  color: white;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 3px;
+  margin-right: 8px;
+
+  position: relative;
+  top: -2px;
+}
+
+.crumbs-section {
+  margin-bottom: 32px;
+}
+
+.crumbs-list {
+  & {
+    float: left;
+  }
+
+  &,
+  > li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  > li,
+  > li > a {
+    display: inline-block;
+  }
+
+  // Arrow
+  > li:not(:last-child)::after {
+    @include ion-icon('ios-arrow-right', 16px);
+    color: $gray-lighter;
+    display: inline-block;
+    margin: 0 16px;
+    position: relative;
+    top: -1px;
+  }
+
+  > li:last-child > a {
+    color: $text-color;
+  }
+
+  > li > a {
+    height: $crumb-height;
+    line-height: $crumb-height;
+    white-space: nowrap;
+    @include font-size(1);
+    color: $gray-lighter;
+  }
+
+  > li > a:focus,
+  > li > a:hover {
+    text-decoration: none;
+  }
+
+  > .-home > a::before {
+    @include ion-icon('ios-home', 20px);
+    color: $gray-lighter;
+
+    position: relative;
+    top: -2px;
+  }
+
+  > .-feed > a::before {
+    @extend %crumb-icon;
+    @include ion-icon('ios-paper', 16px);
+  }
+
+  > .-publisher > a::before {
+    @extend %crumb-icon;
+    @include ion-icon('person', 16px);
+  }
+}
+
+.crumbs-action {
+  float: right;
+  line-height: $crumb-height - 4px;
+}
+
+.btn-crumbs {
+  color: darken($secondary, 25%);
+  background: white;
+  padding: 4px 20px;
+}

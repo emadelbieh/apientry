@@ -1,23 +1,21 @@
-h2 Feeds
+= render Apientry.SharedView, "nav.html", conn: @conn, feeds: true, action: {feed_path(@conn, :new), "New feed"}
 
-table.table.table-hover
-  thead
-    tr
-      th Feed type
-      th Country code
-      th Api key
-      th Mobile
-      th Active
-      th
-  tbody
-    = for feed <- @feeds do
-      tr
-        td= link feed.feed_type, to: feed_path(@conn, :edit, feed)
-        td= feed.country_code
-        td= feed.api_key
-        td= feed.is_mobile
-        td= feed.is_active
-        td.text-right
-            = link "Delete", to: feed_path(@conn, :delete, feed), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger"
-
-= link "New feed", to: feed_path(@conn, :new), class: "btn btn-primary"
+.container
+  table.crud-table
+    tbody
+      = for feed <- @feeds do
+        tr
+          td.primary
+            = link feed.feed_type, to: feed_path(@conn, :edit, feed)
+          td.info
+            = feed.country_code
+            = ", Mobile: "
+            = feed.is_mobile
+          td.text-right
+            = link "Edit", to: feed_path(@conn, :edit, feed), class: "btn btn-sm btn-default"
+            .dropdown.more-actions
+              button.toggle(data-toggle="dropdown" title="More actions...")
+              ul.dropdown-menu
+                li= link "Show", to: feed_path(@conn, :show, feed)
+                li= link "Edit", to: feed_path(@conn, :edit, feed)
+                li= link "Delete", to: feed_path(@conn, :delete, feed), method: :delete, data: [confirm: "Are you sure?"]
