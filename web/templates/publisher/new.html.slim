@@ -1,6 +1,6 @@
 = render Apientry.SharedView, "nav.html", conn: @conn, publishers: true, title: "New publisher"
 
 .container
-  = render "form.html", changeset: @changeset, action: publisher_path(@conn, :create)
+  = render "form.html", changeset: @changeset, action: publisher_path(@conn, :create), mode: :create
 
   = link "Back", to: publisher_path(@conn, :index)
