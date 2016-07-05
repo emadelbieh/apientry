@@ -35,7 +35,8 @@ $accent-2: #536DFE;
 $gray-darker: #111;     // extra-dark text
 $gray-dark: #30404a;    // $text-color
 $gray-light: #708090;   // grey text
-$gray-lighter: mix($primary, white, 10%); // lines
+$gray-lighter: lighten($gray-light, 25%);
+$panel-border: mix($primary, white, 8%);
 
 $brand-primary: $primary;
 
@@ -48,7 +49,4 @@ $ms-ratio: 1.2;
 $ms-fluid: false;
 $ms-range:
   1.1   20em,
-  1.125 30em,
-  1.15  40em,
-  1.175 50em,
-  1.2   60em;
+  1.15  60em;

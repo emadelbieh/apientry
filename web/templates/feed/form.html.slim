@@ -2,26 +2,51 @@
   = if @changeset.action do
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
-  .form-group
-    = label f, :feed_type, class: "control-label"
-    = hidden_input f, :feed_type, value: "ebay"
-    = text_input f, :feed_type, class: "form-control", value: "ebay", disabled: true
-    = error_tag f, :feed_type
-  .form-group
-    = label f, :is_mobile, class: "control-label"
-    = checkbox f, :is_mobile, class: "form-control"
-    = error_tag f, :is_mobile
-  .form-group
-    = label f, :is_active, class: "control-label"
-    = checkbox f, :is_active, class: "form-control"
-    = error_tag f, :is_active
-  .form-group
-    = label f, :country_code, class: "control-label"
-    = select f, :country_code, country_codes_for_select, class: "form-control"
-    = error_tag f, :country_code
-  .form-group
-    = label f, :api_key, class: "control-label"
-    = text_input f, :api_key, class: "form-control"
-    = error_tag f, :api_key
-  .form-group
-    = submit "Submit", class: "btn btn-primary"
+
+  .form-fieldset
+    .info
+      = if assigns[:mode] == :create do
+        h2 New Feed
+      - else
+        h2 Edit Feed
+
+    .form
+      .form-group.-horiz
+        = label f, :feed_type, class: "control-label"
+        = hidden_input f, :feed_type, value: "ebay"
+        = text_input f, :feed_type, class: "form-control", value: "ebay", disabled: true
+        = error_tag f, :feed_type
+      .form-group.-horiz
+        .checkbox
+          = label f, :is_mobile do
+            = checkbox f, :is_mobile
+            | Mobile?
+          = error_tag f, :is_mobile
+      .form-group.-horiz
+        .checkbox
+          = label f, :is_active do
+            = checkbox f, :is_active
+            | Active?
+          span.hint When unchecked, this feed will be disabled.
+          = error_tag f, :is_active
+      .form-group.-horiz
+        = label f, :country_code, class: "control-label"
+        = select f, :country_code, country_codes_for_select, class: "form-control"
+        = error_tag f, :country_code
+
+  .form-fieldset
+    .info
+      h3
+        = gettext "eBay Options"
+      p
+        = gettext "This API key will be sent to eBay."
+    .form
+      .form-group.-horiz
+        = label f, :api_key, class: "control-label"
+        = text_input f, :api_key, class: "form-control"
+        = error_tag f, :api_key
+
+  .form-fieldset
+    .form
+      .form-group
+        = submit "Submit", class: "btn btn-primary"

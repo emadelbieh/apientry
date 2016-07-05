@@ -19,5 +19,3 @@
                 li= link "Show", to: feed_path(@conn, :show, feed)
                 li= link "Edit", to: feed_path(@conn, :edit, feed)
                 li= link "Delete", to: feed_path(@conn, :delete, feed), method: :delete, data: [confirm: "Are you sure?"]
-
-  = link "New feed", to: feed_path(@conn, :new), class: "btn btn-primary"

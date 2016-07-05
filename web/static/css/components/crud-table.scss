@@ -42,4 +42,11 @@ table.crud-table {
       display: inline;
     }
   }
+
+  > thead > tr:last-child > td,
+  > thead > tr:last-child > th,
+  > tbody > tr:last-child > td,
+  > tbody > tr:last-child > th {
+    border-bottom: 0;
+  }
 }

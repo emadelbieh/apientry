@@ -1,15 +1,16 @@
 @import '../common';
 
-$crumb-height: 64px;
+$crumb-height: 72px;
 
 .crumbs-section {
-  background: $primary;
+  background: $inset-bg;
+  border-bottom: solid 1px darken($inset-bg, 4%);
 }
 
 %crumb-icon {
   display: inline-block;
   background: lighten($primary, 25%);
-  color: $primary;
+  color: white;
   width: 24px;
   height: 24px;
   line-height: 24px;
@@ -45,13 +46,15 @@ $crumb-height: 64px;
   // Arrow
   > li:not(:last-child)::after {
     @include ion-icon('ios-arrow-right', 16px);
-    color: rgba($secondary, .50);
+    color: $gray-lighter;
     display: inline-block;
     margin: 0 16px;
+    position: relative;
+    top: -1px;
   }
 
   > li:last-child > a {
-    color: white;
+    color: $text-color;
   }
 
   > li > a {
@@ -59,7 +62,7 @@ $crumb-height: 64px;
     line-height: $crumb-height;
     white-space: nowrap;
     @include font-size(1);
-    color: $secondary;
+    color: $gray-lighter;
   }
 
   > li > a:focus,
@@ -69,6 +72,7 @@ $crumb-height: 64px;
 
   > .-home > a::before {
     @include ion-icon('ios-home', 20px);
+    color: $gray-lighter;
 
     position: relative;
     top: -2px;

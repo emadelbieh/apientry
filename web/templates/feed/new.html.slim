@@ -1,8 +1,6 @@
 = render Apientry.SharedView, "nav.html", conn: @conn, feeds: true, title: "Add new feed"
 
 .container
-  h2 New feed
-
-  = render "form.html", changeset: @changeset, action: feed_path(@conn, :create)
+  = render "form.html", changeset: @changeset, action: feed_path(@conn, :create), mode: :create
 
   = link "Back", to: feed_path(@conn, :index)
