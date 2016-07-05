@@ -10,7 +10,7 @@ defmodule Apientry.SearchControllerTest do
 
   test "legit requests", %{conn: conn} do
     MockEbay.mock_ok do
-      conn = get conn(), search_path(conn, :search, keyword: "nikon")
+      conn = get build_conn(), search_path(conn, :search, keyword: "nikon")
       assert conn.status == 200
 
       {_, content_type} = keyfind(conn.resp_headers, "content-type", 0)
@@ -25,13 +25,13 @@ defmodule Apientry.SearchControllerTest do
 
   test "other params", %{conn: conn} do
     MockEbay.mock_ok do
-      conn = get conn(), search_path(conn, :search, keyword: "nikon", xxx: "111")
+      conn = get build_conn(), search_path(conn, :search, keyword: "nikon", xxx: "111")
       assert conn.status == 200
     end
   end
 
   test "options for cors", %{conn: conn} do
-    conn = options conn(), search_path(conn, :search, keyword: "nikon")
+    conn = options build_conn(), search_path(conn, :search, keyword: "nikon")
     assert conn.status == 204 # no content
 
     {_, allowed_origins} = keyfind(conn.resp_headers, "access-control-allow-origin", 0)
@@ -43,20 +43,20 @@ defmodule Apientry.SearchControllerTest do
 
   test "failing requests when eBay is down", %{conn: conn} do
     MockEbay.mock_fail do
-      conn = get conn(), search_path(conn, :search, keyword: "nikon")
+      conn = get build_conn(), search_path(conn, :search, keyword: "nikon")
       body = json_response(conn, 500)
       assert "nxdomain" == body["message"]
     end
   end
 
   test "bad requests", %{conn: conn} do
-    conn = get conn(), search_path(conn, :search)
+    conn = get build_conn(), search_path(conn, :search)
     body = json_response(conn, 500)
     assert "Invalid request" == body["message"]
   end
 
   test "bad requests in XML", %{conn: conn} do
-    conn = conn()
+    conn = build_conn()
     |> put_req_header("accept", "text/xml")
     |> get(search_path(conn, :search))
 
@@ -68,7 +68,7 @@ defmodule Apientry.SearchControllerTest do
   end
 
   test "dry run of a legit request", %{conn: conn} do
-    conn = get conn(), search_path(conn, :dry_search, keyword: "nikon")
+    conn = get build_conn(), search_path(conn, :dry_search, keyword: "nikon")
     body = json_response(conn, 200)
 
     assert body == %{
@@ -80,7 +80,7 @@ defmodule Apientry.SearchControllerTest do
   end
 
   test "dry run of an invalid request", %{conn: conn} do
-    conn = get conn(), search_path(conn, :dry_search)
+    conn = get build_conn(), search_path(conn, :dry_search)
     body = json_response(conn, 200)
 
     assert body == %{"valid" => false}

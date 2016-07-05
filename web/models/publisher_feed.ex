@@ -8,8 +8,7 @@ defmodule Apientry.PublisherFeed do
     timestamps
   end
 
-  @required_fields ~w(publisher_id feed_id)
-  @optional_fields ~w()
+  @fields [:publisher_id, :feed_id]
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -17,8 +16,9 @@ defmodule Apientry.PublisherFeed do
   If no params are provided, an invalid changeset is returned
   with no validation performed.
   """
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @fields)
+    |> validate_required(@fields)
   end
 end

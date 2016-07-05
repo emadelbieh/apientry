@@ -5,6 +5,9 @@
 # is restricted to this project.
 use Mix.Config
 
+config :apientry,
+  ecto_repos: [Apientry.Repo]
+
 # Configures the endpoint
 config :apientry, Apientry.Endpoint,
   url: [host: "localhost"],
