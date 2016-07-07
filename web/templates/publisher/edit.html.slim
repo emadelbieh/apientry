@@ -4,21 +4,3 @@
 
 .container
   = render "form.html", changeset: @changeset, action: publisher_path(@conn, :update, @publisher)
-
-  .form-fieldset
-    .info
-      h3 Tracking IDs
-
-    .form
-      table.table
-        thead
-          tr
-            th Code
-        tbody
-          = for tracking_id <- @tracking_ids do
-            tr
-              td= link tracking_id.code, to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id)
-              td class="text-right"
-                = link "Delete", to: publisher_tracking_id_path(@conn, :delete, @publisher, tracking_id), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger"
-
-      = link "Add Tracking ID", to: publisher_tracking_id_path(@conn, :new, @publisher), class: "btn btn-default"

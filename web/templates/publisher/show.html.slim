@@ -1,2 +1,60 @@
-h2= @publisher.name
-p= @publisher.api_key
+= render Apientry.SharedView, "top.html", conn: @conn, active: :publishers
+= render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [publishers: true], title: [publisher: @publisher]
+= render Apientry.PublisherView, "nav.html", conn: @conn, publisher: @publisher, active: :show
+
+.container
+  .basic-panel
+    .form-fieldset
+      .info
+        h2= gettext "Publisher"
+      .form
+        p
+          = gettext "Name"
+          = ": "
+          = @publisher.name
+        a.btn.btn-accent.btn-sm[href="#{publisher_path(@conn, :edit, @publisher)}"] Update
+
+    .form-fieldset
+      .info
+        h3= gettext "API key"
+        p This is the API key that the user will pass onto Blackswan's API endpoint.
+      .form
+        pre= @publisher.api_key
+        = link "Regenerate API key", to: publisher_path(@conn, :edit, @publisher), class: "btn btn-sm btn-accent", method: :put, data: [confirm: "Are you sure? This will revoke access to the key."]
+
+    .form-fieldset
+      .info
+        h3= gettext "Tracking IDs"
+        p= "#{length(@tracking_ids)} associated with this account."
+      .form
+        / = for tracking_id <- @tracking_ids do
+        /   pre= tracking_id.code
+        a.btn.btn-accent.btn-sm[href="#{publisher_tracking_id_path(@conn, :index, @publisher)}"] Manage tracking IDs
+
+    .form-fieldset
+      .info
+        h3= gettext "Try this"
+        p Try pasting these to your terminal.
+      .form
+        textarea.form-control(rows=3)
+          = "curl \""
+          = "#{@conn.scheme}://#{@conn.host}:#{@conn.port}"
+          = "/publisher"
+          = "?apiKey=#{@publisher.api_key}"
+          = "&keyword=nikon"
+          = "&visitorIPAddress=8.8.8.8"
+          = "&visitorUserAgent=Mozilla"
+          = "\""
+
+        br
+        textarea.form-control(rows=4)
+          = "# Simulation mode (/dryrun)"
+          = "\n"
+          = "curl \""
+          = "#{@conn.scheme}://#{@conn.host}:#{@conn.port}"
+          = "/dryrun/publisher"
+          = "?apiKey=#{@publisher.api_key}"
+          = "&keyword=nikon"
+          = "&visitorIPAddress=8.8.8.8"
+          = "&visitorUserAgent=Mozilla"
+          = "\""
