@@ -32,8 +32,10 @@ defmodule Apientry.ChannelCase do
   end
 
   setup tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Apientry.Repo)
+
     unless tags[:async] do
-      Ecto.Adapters.SQL.restart_test_transaction(Apientry.Repo, [])
+      Ecto.Adapters.SQL.Sandbox.mode(Apientry.Repo, {:shared, self()})
     end
 
     :ok

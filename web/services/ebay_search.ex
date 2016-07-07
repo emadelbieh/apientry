@@ -10,12 +10,12 @@ defmodule EbaySearch do
   """
 
   @defaults %{
-    # apiKey: "78b0db8a-0ee1-4939-a2f9-d3cd95ec0fcc",
-    apiKey: "aa13ff97-9515-4db5-9a62-e8981b615d36",
-    showOffersOnly: "true",
-    visitorUserAgent: "",
-    visitorIPAddress: "",
-    trackingId: "8095719",
+    # apiKey: "aa13ff97-9515-4db5-9a62-e8981b615d36",
+    "apiKey" => "",
+    "keyword" => "",
+    "showOffersOnly" => "true",
+    "visitorUserAgent" => "",
+    "visitorIPAddress" => ""
   }
 
   @doc """
@@ -28,11 +28,11 @@ defmodule EbaySearch do
   - `visitorUserAgent`
   - `visitorIPAddress`
   - `trackingId`
+
+  Parameters are string keys, like Phoenix's `params`.
   """
   def search(format, params) do
-    params = Enum.into(params, %{})
-    params = Map.delete(params, :apiKey) # can't override this!
-    query_params = Map.merge(@defaults, params)
+    query_params = Enum.into(params, @defaults)
 
     search_base(format) <> "?" <> URI.encode_query(query_params)
   end

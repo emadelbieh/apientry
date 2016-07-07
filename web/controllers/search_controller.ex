@@ -62,6 +62,7 @@ defmodule Apientry.SearchController do
   def set_search_options(%{params: %{"keyword" => _} = params} = conn, _) do
     format = get_format(conn)
     url = EbaySearch.search(format, params)
+    IO.puts("-> url: #{inspect(url)}")
     country = IpLookup.lookup(params["visitorIPAddress"])
 
     conn
