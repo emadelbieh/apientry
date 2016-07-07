@@ -32,27 +32,30 @@ defmodule Apientry.TrackingIdController do
         |> put_flash(:info, "Tracking created successfully.")
         |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
       {:error, changeset} ->
-        render(conn, "new.html", changeset: changeset, publisher: pub_id)
+        publisher = Repo.get! Publisher, pub_id
+        render(conn, "new.html", changeset: changeset, publisher: publisher)
     end
   end
 
   def edit(conn, %{"publisher_id" => pub_id, "id" => id}) do
     tracking_id = Repo.get!(TrackingId, id)
+    publisher = Repo.get!(Publisher, pub_id)
     changeset = TrackingId.changeset(tracking_id)
-    render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, publisher: pub_id)
+    render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, publisher: publisher)
   end
 
   def update(conn, %{"publisher_id" => pub_id, "id" => id, "tracking_id" => tracking_id_params}) do
     tracking_id = Repo.get!(TrackingId, id)
     changeset = TrackingId.changeset(tracking_id, tracking_id_params)
+    publisher = Repo.get!(Publisher, pub_id)
 
     case Repo.update(changeset) do
-      {:ok, tracking_id} ->
+      {:ok, _tracking_id} ->
         conn
         |> put_flash(:info, "Tracking updated successfully.")
-        |> redirect(to: publisher_traking_id_path(conn, :index, pub_id))
+        |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
       {:error, changeset} ->
-        render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, publisher: pub_id)
+        render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, publisher: publisher)
     end
   end
 
