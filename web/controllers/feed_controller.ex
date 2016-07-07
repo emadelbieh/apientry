@@ -44,10 +44,10 @@ defmodule Apientry.FeedController do
     changeset = Feed.changeset(feed, feed_params)
 
     case Repo.update(changeset) do
-      {:ok, feed} ->
+      {:ok, _feed} ->
         conn
         |> put_flash(:info, "Feed updated successfully.")
-        |> redirect(to: feed_path(conn, :show, feed))
+        |> redirect(to: feed_path(conn, :index))
       {:error, changeset} ->
         render(conn, "edit.html", feed: feed, changeset: changeset)
     end
