@@ -25,7 +25,10 @@ defmodule Apientry.Searcher do
 
       %{
         "valid" => false,
-        "error" => :invalid_tracking_id
+        "error" => :invalid_tracking_id,
+        "details" => %{
+          "tracking_id" => "3928"
+        }
       }
 
   The possible errors are:
@@ -70,9 +73,10 @@ defmodule Apientry.Searcher do
         url: url
       }
     else
-      {:error, err, details} -> %{ valid: false, error: err, details: details }
-      {:error, err} -> %{ valid: false, error: err }
-      _ -> %{ valid: false }
+      {:error, err, details} ->
+        %{ valid: false, error: err, details: details }
+      _ ->
+        %{ valid: false, error: :unknown_error, details: %{} }
     end
   end
 
@@ -83,7 +87,7 @@ defmodule Apientry.Searcher do
   @doc """
   Finds the country of the user.
 
-  Returns the country as `{:ok, "US"}` or `{:error, message}`.
+  Returns the country as `{:ok, "US"}` or `{:error, message, details}`.
   """
   def get_country(%{"visitorIPAddress" => ip} = _params) do
     case IpLookup.lookup(ip) do
@@ -142,8 +146,8 @@ defmodule Apientry.Searcher do
   @doc """
   Validates that a given tracking ID belongs to a publisher.
 
-  Returns either `:ok` or `{:error, message}`. When the given `params` doesn't
-  have a `"trackingId"` key, it returns true.
+  Returns either `:ok` or `{:error, message, details}`. When the given `params`
+  doesr't have a `"trackingId"` key, it returns true.
 
       pry> validate_tracking_code(%{"trackingId" => "123"}, publisher)
       :ok
@@ -154,7 +158,7 @@ defmodule Apientry.Searcher do
       limit: 1
 
     case Repo.one(tracking_id) do
-      nil -> {:error, :invalid_tracking_id}
+      nil -> {:error, :invalid_tracking_id, %{tracking_id: t_id}}
       _ -> :ok
     end
   end
