@@ -20,7 +20,8 @@ exports.config = {
   paths: {
     watched: [
       "web/static",
-      "test/static"
+      "test/static",
+      "node_modules/bootstrap-orion/assets"
     ],
 
     public: "priv/static" // Where to compile files to

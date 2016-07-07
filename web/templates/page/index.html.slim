@@ -1,4 +1,8 @@
-= render Apientry.SharedView, "nav.html", conn: @conn
+= render Apientry.SharedView, "nav.html", conn: @conn, title: "Apientry"
+= render Apientry.SharedView, "subnav.html", conn: @conn, active: :home
 
 .container
-  h1 api entry
+  br
+  br
+  br
+  h1.text-center api entry

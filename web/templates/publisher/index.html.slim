@@ -1,21 +1,32 @@
-= render Apientry.SharedView, "nav.html", conn: @conn, publishers: true, action: {publisher_path(@conn, :new), "New publisher"}
+= render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_path(@conn, :new), "New publisher"}, title: gettext("Publishers")
+= render Apientry.SharedView, "subnav.html", conn: @conn, active: :publishers
 
-.container
-  table.crud-table
-    tbody
-      = for publisher <- @publishers do
-        tr
-          td.primary
-            = link publisher.name, to: publisher_path(@conn, :edit, publisher)
-          td.info
-            = publisher.api_key
-            = ", "
-            = length publisher.tracking_ids
-          td.text-right
-            = link "Edit", to: publisher_path(@conn, :edit, publisher), class: "btn btn-sm btn-default"
-            .dropdown.more-actions
-              button.toggle(data-toggle="dropdown" title="More actions...")
-              ul.dropdown-menu
-                li= link "Show", to: publisher_path(@conn, :show, publisher)
-                li= link "Edit", to: publisher_path(@conn, :edit, publisher)
-                li= link "Delete", to: publisher_path(@conn, :delete, publisher), method: :delete, data: [confirm: "Are you sure?"]
+.inset-bg
+  .container
+    .panel-heading
+      h2 Available publishers
+      .action
+        a.btn.btn-sm.btn-highlight[href="#{publisher_path(@conn, :new)}"]
+          = gettext "Add new"
+    table.crud-table
+      tbody
+        = for publisher <- @publishers do
+          tr
+            td.icon
+              span.default-image.-size64[class="-v#{:erlang.phash2(publisher.name, 10)}"]
+                = publisher.name |> String.slice(0..0) |> String.upcase
+            td.name
+              = link publisher.name, to: publisher_path(@conn, :edit, publisher)
+              span.info
+                = publisher.api_key
+            td.actions.crud-actions
+              span.info
+                = length publisher.tracking_ids
+                = " tracking IDs"
+              = link "Edit", to: publisher_path(@conn, :edit, publisher), class: "btn btn-sm btn-default"
+              .dropdown.more-actions
+                button.toggle(data-toggle="dropdown" title="More actions...")
+                ul.dropdown-menu
+                  li= link "Show", to: publisher_path(@conn, :show, publisher)
+                  li= link "Edit", to: publisher_path(@conn, :edit, publisher)
+                  li= link "Delete", to: publisher_path(@conn, :delete, publisher), method: :delete, data: [confirm: "Are you sure?"]

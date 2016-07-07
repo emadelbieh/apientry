@@ -1,44 +1,51 @@
 .top-nav
   .container
-    ul.top-nav-links
-      li
-        a[href="#{feed_path(@conn, :index)}"]
-          = gettext "Feeds"
-      li
-        a[href="#{publisher_path(@conn, :index)}"]
-          = gettext "Publishers"
+    .center
+      span.top-brand Apientry
 
-.crumbs-section
+.primary-heading
   .container
-    ul.crumbs-list
-      li.crumb.-home
-        a[href="/"]
+    .left
+      ul.back-crumbs
+        li.-home
+          a[href="/"]
 
-      = if assigns[:feeds] || assigns[:feed] do
-        li.crumb.-feeds
-          a[href="#{feed_path(@conn, :index)}"]
-            = gettext "Feeds"
+        = if assigns[:feeds] || assigns[:feed] do
+          li.crumb.-feeds
+            a[href="#{feed_path(@conn, :index)}"]
+              = gettext "Feeds"
 
-      = if assigns[:feed] do
-        li.crumb.-feed
-          a[href="#{feed_path(@conn, :edit, @feed)}"]
-            = @feed.feed_type
+        = if assigns[:publishers] || assigns[:publisher] do
+          li.crumb.-publishers
+            a[href="#{publisher_path(@conn, :index)}"]
+              = gettext "Publishers"
 
-      = if assigns[:publishers] || assigns[:publisher] do
-        li.crumb.-publishers
-          a[href="#{publisher_path(@conn, :index)}"]
-            = gettext "Publishers"
-
+    .center
       = if assigns[:publisher] do
-        li.crumb.-publisher
+        h1.primary-title
+          small Publishers
           a[href="#{publisher_path(@conn, :edit, @publisher)}"]
             = @publisher.name
+          = if assigns[:subtitle] do
+            small= @subtitle
+
+      = if assigns[:feed] do
+        h1.primary-title
+          small Feeds
+          a[href="#{feed_path(@conn, :edit, @feed)}"]
+            = @feed.feed_type
+          = if assigns[:subtitle] do
+            small= @subtitle
 
       = if assigns[:title] do
-        li.crumb.-title
-          a[href="#"]= @title
+        h1.primary-title
+          = if assigns[:pretitle] do
+            small= @pretitle
+          = @title
+          = if assigns[:subtitle] do
+            small= @subtitle
 
     = if assigns[:action] do
       - {path, title} = assigns[:action]
-      .crumbs-action
-        a.btn.btn-crumbs.btn-sm[href="#{path}"]= title
+      .right
+        a.btn.btn-accent-link.btn-sm[href="#{path}"]= title
