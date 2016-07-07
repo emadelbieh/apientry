@@ -1,0 +1,4 @@
+# See: https://github.com/gjaldon/heroku-buildpack-phoenix-static
+info "Building Phoenix static assets"
+./node_modules/.bin/brunch build --production
+mix phoenix.digest
