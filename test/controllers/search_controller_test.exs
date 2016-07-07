@@ -3,6 +3,7 @@ defmodule Apientry.SearchControllerTest do
   use MockEbay
   import List, only: [keyfind: 3]
   import Plug.Conn, only: [put_req_header: 3]
+  alias Apientry.{Feed, Publisher, TrackingId, Repo}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
