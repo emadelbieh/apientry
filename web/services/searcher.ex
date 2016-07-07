@@ -70,6 +70,7 @@ defmodule Apientry.Searcher do
         url: url
       }
     else
+      {:error, err, details} -> %{ valid: false, error: err, details: details }
       {:error, err} -> %{ valid: false, error: err }
       _ -> %{ valid: false }
     end
@@ -86,7 +87,7 @@ defmodule Apientry.Searcher do
   """
   def get_country(%{"visitorIPAddress" => ip} = _params) do
     case IpLookup.lookup(ip) do
-      nil -> {:error, :unknown_country}
+      nil -> {:error, :unknown_country, %{ip: ip}}
       country -> {:ok, country}
     end
   end
@@ -98,7 +99,7 @@ defmodule Apientry.Searcher do
   """
   def get_publisher(%{"apiKey" => api_key} = _params) do
     case Repo.one(from p in Publisher, where: p.api_key == ^api_key) do
-      nil -> {:error, :invalid_api_key}
+      nil -> {:error, :invalid_api_key, %{api_key: api_key}}
       publisher -> {:ok, publisher}
     end
   end
@@ -116,13 +117,13 @@ defmodule Apientry.Searcher do
   end
 
   def get_is_mobile(_) do
-    {:error, :unknown_user_agent}
+    {:error, :unknown_user_agent, %{}}
   end
 
   @doc """
   Gets the feed for a given country/is_mobile.
 
-  Returns `{:ok, feed}` or `{:error, message}`.
+  Returns `{:ok, feed}` or `{:error, message, details}`.
 
       pry> get_feed("US", true)
       {:ok, %Feed{...}}
@@ -133,7 +134,7 @@ defmodule Apientry.Searcher do
       limit: 1
 
     case Repo.one(feed) do
-      nil -> {:error, :no_feed_associated}
+      nil -> {:error, :no_feed_associated, %{is_mobile: is_mobile, country: country}}
       feed -> {:ok, feed}
     end
   end
@@ -172,7 +173,12 @@ defmodule Apientry.Searcher do
   def infer_defaults(params, conn) do
     params
     |> Map.put_new_lazy("visitorUserAgent", fn ->
-      get_req_header(conn, "user-agent")
+      [agent] = get_req_header(conn, "user-agent")
+      agent
+    end)
+    |> Map.put_new_lazy("visitorIPAddress", fn ->
+      {a, b, c, d} = conn.remote_ip
+      "#{a}.#{b}.#{c}.#{d}"
     end)
   end
 end

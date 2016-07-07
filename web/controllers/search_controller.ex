@@ -8,6 +8,7 @@ defmodule Apientry.SearchController do
   use Apientry.Web, :controller
 
   alias HTTPoison.Response
+  alias Apientry.Searcher
 
   plug :set_search_options when action in [:search, :dry_search]
 
@@ -61,15 +62,9 @@ defmodule Apientry.SearchController do
   """
   def set_search_options(%{params: %{"keyword" => _} = params} = conn, _) do
     format = get_format(conn)
-    url = EbaySearch.search(format, params)
-    IO.puts("-> url: #{inspect(url)}")
-    country = IpLookup.lookup(params["visitorIPAddress"])
-
-    conn
-    |> assign(:valid, true)
-    |> assign(:format, format)
-    |> assign(:country, country)
-    |> assign(:url, url)
+    result = Searcher.search(format, params, conn)
+    result
+    |> Enum.reduce(conn, fn {key, val}, conn -> assign(conn, key, val) end)
   end
 
   def set_search_options(conn, _) do
