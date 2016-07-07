@@ -1,6 +1,7 @@
 = if assigns[:publisher] do
   h1.primary-title
-    small Publishers
+    = if !assigns[:subtitle] do
+      small Publishers
     a[href="#{publisher_path(@conn, :edit, @publisher)}"]
       = @publisher.name
     = if assigns[:subtitle] do

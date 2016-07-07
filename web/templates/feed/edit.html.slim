@@ -1,3 +1,4 @@
+= render Apientry.SharedView, "top.html", conn: @conn, active: :feeds
 = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [feed: @feed], title: [feed: @feed]
 
 .container

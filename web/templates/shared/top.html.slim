@@ -1,0 +1,20 @@
+.top-nav
+  .container
+    .left
+      ul.top-links
+        li(class="#{assigns[:active] == :home && "-active" || ""}")
+          a[href="/"]
+            = gettext "Home"
+        li(class="#{assigns[:active] == :feeds && "-active" || ""}")
+          a[href="#{feed_path(@conn, :index)}"]
+            = gettext "Feeds"
+        li(class="#{assigns[:active] == :publishers && "-active" || ""}")
+          a[href="#{publisher_path(@conn, :index)}"]
+            = gettext "Publishers"
+    .center
+      a.top-brand[href="/"] Apientry
+    .right
+      .aux-links
+        span.info New user?
+        a(href="/") Register
+        a.btn.btn-sm.btn-aux(href="/") Sign in

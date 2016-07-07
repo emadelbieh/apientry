@@ -1,5 +1,5 @@
+= render Apientry.SharedView, "top.html", conn: @conn, active: :feeds
 = render Apientry.SharedView, "nav.html", conn: @conn, action: {feed_path(@conn, :new), "New feed"}, title: [title: gettext("Feeds")]
-= render Apientry.SharedView, "subnav.html", conn: @conn, active: :feeds
 
 .inset-bg
   .container
