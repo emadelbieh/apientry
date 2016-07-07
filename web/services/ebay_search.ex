@@ -6,7 +6,7 @@ defmodule EbaySearch do
       => "http://sandbox.api.ebay.../?keyword=nikon"
 
       iex> EbaySearch.search("html", keyword: "nikon")
-      "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&keyword=nikon&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent="
+      "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?keyword=nikon&apiKey=&keyword=&showOffersOnly=true&visitorIPAddress=&visitorUserAgent="
   """
 
   @defaults %{

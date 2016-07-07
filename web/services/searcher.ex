@@ -34,6 +34,7 @@ defmodule Apientry.Searcher do
   The possible errors are:
 
   - `:no_feed_associated` - there's no feed available for this `{country, mobile}` pair.
+  - `:no_api_key` - no `"apiKey"` was given.
   - `:unknown_country` - the given IP isn't available in the GeoIP database.
   - `:invalid_api_key` - The given `"apiKey"` has no Publisher associated with it.
   - `:invalid_tracking_id` - The given `"trackingId"` doesn't belong to the publisher.
@@ -108,6 +109,10 @@ defmodule Apientry.Searcher do
     end
   end
 
+  def get_publisher(_) do
+    {:error, :no_api_key, %{}}
+  end
+
   @doc """
   Checks if a given request is mobile.
 
@@ -117,7 +122,10 @@ defmodule Apientry.Searcher do
       {:ok, false}
   """
   def get_is_mobile(%{"visitorUserAgent" => agent} = _params) do
-    {:ok, MobileDetection.mobile?(agent)}
+    case MobileDetection.mobile?(agent) do
+      nil -> {:error, :unknown_user_agent, %{agent: agent}}
+      is_mobile -> {:ok, is_mobile}
+    end
   end
 
   def get_is_mobile(_) do
@@ -177,12 +185,16 @@ defmodule Apientry.Searcher do
   def infer_defaults(params, conn) do
     params
     |> Map.put_new_lazy("visitorUserAgent", fn ->
-      [agent] = get_req_header(conn, "user-agent")
-      agent
+      case get_req_header(conn, "user-agent") do
+        [agent] -> agent
+        _ -> nil
+      end
     end)
     |> Map.put_new_lazy("visitorIPAddress", fn ->
-      {a, b, c, d} = conn.remote_ip
-      "#{a}.#{b}.#{c}.#{d}"
+      case conn.remote_ip do
+        {a, b, c, d} -> "#{a}.#{b}.#{c}.#{d}"
+        _ -> nil
+      end
     end)
   end
 end

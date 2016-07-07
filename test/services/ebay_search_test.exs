@@ -3,10 +3,10 @@ defmodule EbaySearchTest do
   doctest EbaySearch
 
   test "keyword" do
-    url = EbaySearch.search("html", keyword: "nikon")
+    url = EbaySearch.search("html", keyword: "nikon", apiKey: "aoeu")
     assert url =~ ~r[/publisher/3.0/json/GeneralSearch]
     assert url =~ ~r[keyword=nikon]
-    assert url =~ ~r(apiKey=[a-z0-9\-]{36})
+    assert url =~ ~r[apiKey=aoeu]
   end
 
   test "xml" do

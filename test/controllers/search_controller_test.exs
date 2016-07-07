@@ -3,15 +3,24 @@ defmodule Apientry.SearchControllerTest do
   use MockEbay
   import List, only: [keyfind: 3]
   import Plug.Conn, only: [put_req_header: 3]
-  alias Apientry.{Feed, Publisher, TrackingId, Repo}
+  alias Apientry.Fixtures
 
   setup %{conn: conn} do
+    Fixtures.mock_feeds
+    Fixtures.mock_publishers
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
+  @valid_attrs [
+    keyword: "nikon",
+    apiKey: "panda-abc",
+    visitorIPAddress: "8.8.8.8",
+    visitorUserAgent: "Chrome"
+  ]
+
   test "legit requests", %{conn: conn} do
     MockEbay.mock_ok do
-      conn = get build_conn(), search_path(conn, :search, keyword: "nikon")
+      conn = get build_conn(), search_path(conn, :search, @valid_attrs)
       assert conn.status == 200
 
       {_, content_type} = keyfind(conn.resp_headers, "content-type", 0)
@@ -26,13 +35,13 @@ defmodule Apientry.SearchControllerTest do
 
   test "other params", %{conn: conn} do
     MockEbay.mock_ok do
-      conn = get build_conn(), search_path(conn, :search, keyword: "nikon", xxx: "111")
+      conn = get build_conn(), search_path(conn, :search, @valid_attrs ++ [xxx: 111])
       assert conn.status == 200
     end
   end
 
   test "options for cors", %{conn: conn} do
-    conn = options build_conn(), search_path(conn, :search, keyword: "nikon")
+    conn = options build_conn(), search_path(conn, :search, @valid_attrs)
     assert conn.status == 204 # no content
 
     {_, allowed_origins} = keyfind(conn.resp_headers, "access-control-allow-origin", 0)
@@ -44,7 +53,7 @@ defmodule Apientry.SearchControllerTest do
 
   test "failing requests when eBay is down", %{conn: conn} do
     MockEbay.mock_fail do
-      conn = get build_conn(), search_path(conn, :search, keyword: "nikon")
+      conn = get build_conn(), search_path(conn, :search, @valid_attrs)
       body = json_response(conn, 500)
       assert "nxdomain" == body["message"]
     end
@@ -69,15 +78,24 @@ defmodule Apientry.SearchControllerTest do
   end
 
   test "dry run of a legit request", %{conn: conn} do
-    conn = get build_conn(), search_path(conn, :dry_search, keyword: "nikon")
+    conn = get build_conn(), search_path(conn, :dry_search,
+     keyword: "nikon",
+     apiKey: "panda-abc",
+     visitorIPAddress: "8.8.8.8",
+     visitorUserAgent: "Chrome")
     body = json_response(conn, 200)
 
-    assert body == %{
-      "valid" => true,
-      "country" => nil,
-      "format" => "json",
-      "url" => "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=aa13ff97-9515-4db5-9a62-e8981b615d36&showOffersOnly=true&trackingId=8095719&visitorIPAddress=&visitorUserAgent=&keyword=nikon"
-    }
+    assert body["valid"] == true
+    assert body["country"] == "US"
+    assert body["format"] == "json"
+    assert body["is_mobile"] == false
+    assert body["url"] ==
+      "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch"
+      <> "?apiKey=us-d"
+      <> "&keyword=nikon"
+      <> "&showOffersOnly=true"
+      <> "&visitorIPAddress=8.8.8.8"
+      <> "&visitorUserAgent=Chrome"
   end
 
   test "dry run of an invalid request", %{conn: conn} do

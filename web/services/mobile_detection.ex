@@ -7,7 +7,11 @@ defmodule Apientry.MobileDetection do
 
   @expr ~r/Mobile|iP(hone|od|ad)|Android|BlackBerry|IEMobile|Kindle|NetFront|Silk-Accelerated|(hpw|web)OS|Fennec|Minimo|Opera M(obi|ini)|Blazer|Dolfin|Dolphin|Skyfire|Zune/
 
-  def mobile?(agent) do
+  def mobile?(agent) when is_binary(agent) do
     Regex.run(@expr, agent) && true || false
+  end
+
+  def mobile?(_) do
+    nil
   end
 end
