@@ -1,4 +1,6 @@
-= render Apientry.SharedView, "nav.html", conn: @conn, publisher: @publisher
+= render Apientry.SharedView, "top.html", conn: @conn, active: :publishers
+= render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [publishers: true], title: [publisher: @publisher]
+= render Apientry.PublisherView, "nav.html", conn: @conn, publisher: @publisher, active: :edit
 
 .container
   = render "form.html", changeset: @changeset, action: publisher_path(@conn, :update, @publisher)

@@ -1,0 +1,14 @@
+
+ul.back-crumbs
+  li.-home
+    a[href="/"]
+
+  = if assigns[:feeds] || assigns[:feed] do
+    li.crumb.-feeds
+      a[href="#{feed_path(@conn, :index)}"]
+        = gettext "Feeds"
+
+  = if assigns[:publishers] || assigns[:publisher] do
+    li.crumb.-publishers
+      a[href="#{publisher_path(@conn, :index)}"]
+        = gettext "Publishers"

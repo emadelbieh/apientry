@@ -1,0 +1,10 @@
+.secondary-nav
+  .container
+    .center
+      ul.secondary-links
+        li(class="#{assigns[:active] == :edit && "-active" || ""}")
+          a[href="#{publisher_path(@conn, :edit, @publisher)}"]
+            = gettext "Publisher"
+        li(class="#{assigns[:active] == :tracking_ids && "-active" || ""}")
+          a[href="#{publisher_tracking_id_path(@conn, :index, @publisher)}"]
+            = gettext "Tracking IDs"
