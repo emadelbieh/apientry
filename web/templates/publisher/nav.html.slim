@@ -2,9 +2,12 @@
   .container
     .center
       ul.secondary-links
-        li(class="#{assigns[:active] == :edit && "-active" || ""}")
-          a[href="#{publisher_path(@conn, :edit, @publisher)}"]
+        li(class="#{assigns[:active] == :show && "-active" || ""}")
+          a[href="#{publisher_path(@conn, :show, @publisher)}"]
             = gettext "Publisher"
         li(class="#{assigns[:active] == :tracking_ids && "-active" || ""}")
           a[href="#{publisher_tracking_id_path(@conn, :index, @publisher)}"]
             = gettext "Tracking IDs"
+        li(class="#{assigns[:active] == :edit && "-active" || ""}")
+          a[href="#{publisher_path(@conn, :edit, @publisher)}"]
+            = gettext "Settings"

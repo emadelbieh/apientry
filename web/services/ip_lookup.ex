@@ -17,7 +17,7 @@ defmodule IpLookup do
 
   def lookup(ip) do
     case Geolix.lookup(ip) do
-      %{country: result} -> result.country.iso_code
+      %{country: %{country: %{iso_code: code}}} -> code
       _ -> nil
     end
   end

@@ -16,7 +16,7 @@
               span.default-image.-size64[class="-v#{:erlang.phash2(publisher.name, 10)}"]
                 = publisher.name |> String.slice(0..0) |> String.upcase
             td.name
-              = link publisher.name, to: publisher_path(@conn, :edit, publisher)
+              = link publisher.name, to: publisher_path(@conn, :show, publisher)
               span.info
                 = publisher.api_key
             td.actions.crud-actions

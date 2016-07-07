@@ -1,7 +1,7 @@
 defmodule Apientry.PublisherController do
   use Apientry.Web, :controller
 
-  alias Apientry.Publisher
+  alias Apientry.{Publisher, TrackingId}
 
   plug :scrub_params, "publisher" when action in [:create, :update]
 
@@ -33,11 +33,16 @@ defmodule Apientry.PublisherController do
     end
   end
 
-  def edit(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id}) do
     publisher = Repo.get!(Publisher, id) |> Repo.preload(:tracking_ids)
+    render(conn, "show.html", publisher: publisher, tracking_ids: publisher.tracking_ids)
+  end
+
+  def edit(conn, %{"id" => id}) do
+    publisher = Repo.get!(Publisher, id)
     changeset = Publisher.changeset(publisher)
 
-    render(conn, "edit.html", publisher: publisher, changeset: changeset, tracking_ids: publisher.tracking_ids)
+    render(conn, "edit.html", publisher: publisher, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "publisher" => publisher_params}) do
