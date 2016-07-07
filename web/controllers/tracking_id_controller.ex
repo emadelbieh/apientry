@@ -30,7 +30,7 @@ defmodule Apientry.TrackingIdController do
       {:ok, _tracking_id} ->
         conn
         |> put_flash(:info, "Tracking created successfully.")
-        |> redirect(to: publisher_path(conn, :edit, pub_id))
+        |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset, publisher: pub_id)
     end
@@ -50,7 +50,7 @@ defmodule Apientry.TrackingIdController do
       {:ok, tracking_id} ->
         conn
         |> put_flash(:info, "Tracking updated successfully.")
-        |> redirect(to: publisher_path(conn, :edit, pub_id))
+        |> redirect(to: publisher_traking_id_path(conn, :index, pub_id))
       {:error, changeset} ->
         render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, publisher: pub_id)
     end
@@ -65,6 +65,6 @@ defmodule Apientry.TrackingIdController do
 
     conn
     |> put_flash(:info, "Tracking deleted successfully.")
-    |> redirect(to: publisher_path(conn, :edit, pub_id))
+    |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
   end
 end
