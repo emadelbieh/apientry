@@ -47,7 +47,7 @@ defmodule Apientry.FeedControllerTest do
   test "updates chosen resource and redirects when data is valid", %{conn: conn} do
     feed = Repo.insert! %Feed{}
     conn = put conn, feed_path(conn, :update, feed), feed: @valid_attrs
-    assert redirected_to(conn) == feed_path(conn, :show, feed)
+    assert redirected_to(conn) == feed_path(conn, :index)
     assert Repo.get_by(Feed, @valid_attrs)
   end
 
