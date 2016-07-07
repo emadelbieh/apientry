@@ -6,44 +6,10 @@
 .primary-heading
   .container
     .left
-      ul.back-crumbs
-        li.-home
-          a[href="/"]
-
-        = if assigns[:feeds] || assigns[:feed] do
-          li.crumb.-feeds
-            a[href="#{feed_path(@conn, :index)}"]
-              = gettext "Feeds"
-
-        = if assigns[:publishers] || assigns[:publisher] do
-          li.crumb.-publishers
-            a[href="#{publisher_path(@conn, :index)}"]
-              = gettext "Publishers"
+      = render Apientry.SharedView, "nav-crumbs.html", [conn: @conn] ++ (assigns[:crumbs] || [])
 
     .center
-      = if assigns[:publisher] do
-        h1.primary-title
-          small Publishers
-          a[href="#{publisher_path(@conn, :edit, @publisher)}"]
-            = @publisher.name
-          = if assigns[:subtitle] do
-            small= @subtitle
-
-      = if assigns[:feed] do
-        h1.primary-title
-          small Feeds
-          a[href="#{feed_path(@conn, :edit, @feed)}"]
-            = @feed.feed_type
-          = if assigns[:subtitle] do
-            small= @subtitle
-
-      = if assigns[:title] do
-        h1.primary-title
-          = if assigns[:pretitle] do
-            small= @pretitle
-          = @title
-          = if assigns[:subtitle] do
-            small= @subtitle
+      = render Apientry.SharedView, "nav-title.html", [conn: @conn] ++ (assigns[:title] || [])
 
     = if assigns[:action] do
       - {path, title} = assigns[:action]

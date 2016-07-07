@@ -1,0 +1,26 @@
+= render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_tracking_id_path(@conn, :new, @publisher), "New feed"}, title: [publisher: @publisher, subtitle: gettext("Tracking IDs")]
+= render Apientry.SharedView, "subnav.html", conn: @conn, active: :publishers
+
+.clear-bg
+  .container
+    .panel-heading
+      h2 Tracking ID's for publisher
+      .action
+        a.btn.btn-sm.btn-highlight[href="#{publisher_tracking_id_path(@conn, :new, @publisher)}"]
+          = gettext "Add new"
+    table.crud-table
+      tbody
+        = for tracking_id <- @tracking_ids do
+          tr
+            td.icon
+              span.default-image.-size64[class="-v#{:erlang.phash2(tracking_id.code, 10)}"]
+                = tracking_id.code |> String.slice(0..0) |> String.upcase
+            td.name
+              = tracking_id.code
+            td.actions.crud-actions
+              = link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id), class: "btn btn-sm btn-default"
+              .dropdown.more-actions
+                button.toggle(data-toggle="dropdown" title="More actions...")
+                ul.dropdown-menu
+                  li= link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id)
+                  li= link "Delete", to: publisher_tracking_id_path(@conn, :delete, @publisher, tracking_id), method: :delete, data: [confirm: "Are you sure?"]

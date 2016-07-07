@@ -22,7 +22,7 @@ defmodule Apientry.Router do
 
     put "/publishers/:id/regenerate_key", PublisherController, :regenerate
     resources "/publishers", PublisherController do
-      resources "/tracking_ids", TrackingIdController, except: [:index, :show]
+      resources "/tracking_ids", TrackingIdController, except: [:show]
     end
   end
 
