@@ -38,7 +38,7 @@ defmodule Apientry.SearchController do
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         conn
-        |> put_status(500)
+        |> put_status(400)
         |> render(:error, data: %{message: reason})
     end
   end
@@ -47,12 +47,12 @@ defmodule Apientry.SearchController do
   Handles searches that don't pass validation (no keywords).
 
       GET /publisher
-      HTTP 500 Internal Server Error
+      HTTP 400 Internal Server Error
       { "message": "Invalid request" }
   """
   def search(conn, _) do
     conn
-    |> put_status(500)
+    |> put_status(400)
     |> render(:error, data: %{message: "Invalid request"})
   end
 
