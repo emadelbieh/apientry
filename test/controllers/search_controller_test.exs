@@ -54,14 +54,14 @@ defmodule Apientry.SearchControllerTest do
   test "failing requests when eBay is down", %{conn: conn} do
     MockEbay.mock_fail do
       conn = get build_conn(), search_path(conn, :search, @valid_attrs)
-      body = json_response(conn, 500)
+      body = json_response(conn, 400)
       assert "nxdomain" == body["message"]
     end
   end
 
   test "bad requests", %{conn: conn} do
     conn = get build_conn(), search_path(conn, :search)
-    body = json_response(conn, 500)
+    body = json_response(conn, 400)
     assert "Invalid request" == body["message"]
   end
 
@@ -73,7 +73,7 @@ defmodule Apientry.SearchControllerTest do
     {_, content_type} = keyfind(conn.resp_headers, "content-type", 0)
     assert content_type == "text/xml; charset=utf-8"
 
-    assert conn.status === 500
+    assert conn.status === 400
     assert conn.resp_body == ~s[<Error message="Invalid request"></Error>]
   end
 
