@@ -1,5 +1,6 @@
 defmodule Apientry.PublisherControllerTest do
   use Apientry.ConnCase
+  use Apientry.MockBasicAuth
 
   alias Apientry.Publisher
   @valid_attrs %{name: "Test Publisher"}

@@ -2,6 +2,8 @@ defmodule Apientry.FeedControllerTest do
   use Apientry.ConnCase
 
   alias Apientry.Feed
+  use Apientry.MockBasicAuth
+
   @valid_attrs %{api_key: "some content", country_code: "some content", feed_type: "some content", is_active: true, is_mobile: true}
   @invalid_attrs %{}
 
