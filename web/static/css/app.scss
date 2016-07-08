@@ -6,3 +6,15 @@
 .inset-bg {
   min-height: 100vh;
 }
+
+.home-page-placeholder {
+  padding: 64px 0;
+  text-align: center;
+  color: $primary-lighter;
+  cursor: default;
+
+  &:before {
+    @include ion-icon('stats-bars');
+    @include font-size(16);
+  }
+}
