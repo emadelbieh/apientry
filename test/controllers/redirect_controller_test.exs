@@ -8,7 +8,7 @@ defmodule Apientry.RedirectControllerTest do
 
   test "bad request (no ?)", %{conn: conn} do
     conn = get conn, redirect_path(conn, :show, Base.encode64("hello"))
-    assert json_response(conn, 400)["error"] == "no_question_mark"
+    assert json_response(conn, 400)["error"] == "invalid_format"
   end
 
   test "bad request (invalid qs)", %{conn: conn} do
