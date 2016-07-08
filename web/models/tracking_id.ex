@@ -20,5 +20,6 @@ defmodule Apientry.TrackingId do
     model
     |> cast(params, @fields)
     |> validate_required(@fields)
+    |> unique_constraint(:code, name: :tracking_ids_code_index)
   end
 end

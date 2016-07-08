@@ -1,9 +1,14 @@
 = form_for @changeset, @action, fn f ->
-  = if @changeset.action do
-    .alert.alert-danger
-      p Oops, something went wrong! Please check the errors below.
-  .form-group
-    = label f, :code
-    = text_input f, :code, class: "form-control", autofocus: true
-  .form-group
-    = submit "Submit", class: "btn btn-primary"
+  .form-fieldset
+    .info
+      h2
+        = gettext "New Tracking ID"
+      p
+        = gettext "Enter a new tracking ID."
+    .form
+      .form-group
+        = label f, :code
+        = text_input f, :code, class: "form-control", autofocus: true
+        = error_tag f, :code
+      .form-group
+        = submit "Submit", class: "btn btn-primary"

@@ -1,8 +1,7 @@
 = render Apientry.SharedView, "top.html", conn: @conn, active: :publishers
-= render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_tracking_id_path(@conn, :new, @publisher), "New feed"}, title: [publisher: @publisher, subtitle: gettext("Tracking IDs")]
+= render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_tracking_id_path(@conn, :new, @publisher), "New feed"}, title: [publisher: @publisher, subtitle: gettext("New Tracking ID")]
 = render Apientry.PublisherView, "nav.html", conn: @conn, publisher: @publisher, active: :tracking_ids
 
 .container
   .basic-panel
-    h2 New tracking id
     = render "form.html", changeset: @changeset, action: publisher_tracking_id_path(@conn, :create, @publisher)
