@@ -39,19 +39,27 @@ defmodule MockEbay do
   end
 
   @doc "Mock HTTPoison.get"
+  def http_get("http://api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch?apiKey=us-d&keyword=nikon&showOffersOnly=true&visitorIPAddress=8.8.8.8&visitorUserAgent=Chrome") do
+    http_get_ok_xml
+  end
+
+  def http_get("http://api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch?apiKey=us-d&keyword=nikon&showOffersOnly=true&visitorIPAddress=8.8.8.8&visitorUserAgent=Chrome&xxx=111") do
+    http_get_ok_xml
+  end
+
   def http_get("http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=us-d&keyword=nikon&showOffersOnly=true&visitorIPAddress=8.8.8.8&visitorUserAgent=Chrome") do
-    http_get_ok
+    http_get_ok_json
   end
 
   def http_get("http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=us-d&keyword=nikon&showOffersOnly=true&visitorIPAddress=8.8.8.8&visitorUserAgent=Chrome&xxx=111") do
-    http_get_ok
+    http_get_ok_json
   end
 
   def http_get(url) do
     raise "Request not allowed: " <> url
   end
 
-  def http_get_ok do
+  def http_get_ok_xml do
     res = %Response{
       status_code: 200,
       body: ~s[<GeneralSearchResponse xmlns="urn:types.partner.api.shopping.com"/>],
@@ -61,6 +69,15 @@ defmodule MockEbay do
     { :ok, res }
   end
 
+  def http_get_ok_json do
+    res = %Response{
+      status_code: 200,
+      body: ~s<{"categories":{"category":[{}]}}>,
+      headers: [{"Content-Type", "application/json"}]
+    }
+
+    { :ok, res }
+  end
   def http_get_fail(_url) do
     { :error, %HTTPoison.Error{id: nil, reason: :nxdomain} }
   end

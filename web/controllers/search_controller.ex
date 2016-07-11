@@ -9,6 +9,7 @@ defmodule Apientry.SearchController do
 
   alias HTTPoison.Response
   alias Apientry.Searcher
+  alias Apientry.EbayTransformer
 
   plug :set_search_options when action in [:search, :dry_search]
 
@@ -27,10 +28,12 @@ defmodule Apientry.SearchController do
 
       GET /publisher?keyword=nikon
   """
-  def search(%{assigns: %{url: url}} = conn, _) do
+  def search(%{assigns: %{url: url, format: format}} = conn, _) do
     case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         headers = Enum.into(headers, %{}) # convert to map
+        body = body
+        |> EbayTransformer.transform(conn.assigns, format)
         conn
         |> put_status(status)
         |> put_resp_content_type(headers["Content-Type"])
