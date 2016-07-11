@@ -83,6 +83,29 @@ defmodule Apientry.EbayJsonTransformer do
   | `free_shipping`       | ?          |
   | `minimum_price`       | ?          |
   | `maximum_price`       | ?          |
+
+  ## Attribute URL
+
+  | Field                 | Taken from |
+  | -----                 | ---------- |
+  | `category_name`       | ?          |
+  | `attribute_name`      | ?          |
+
+  ## Review URL
+
+  | Field                 | Taken from |
+  | -----                 | ---------- |
+  | `store`               | ?          |
+  | `trusted`             | ?          |
+  | `authorized_reseller` | ?          |
+
+  ## AttributeValue URL
+
+  | Field                  | Taken from |
+  | -----                  | ---------- |
+  | `category_name`        | ?          |
+  | `attribute_name`       | ?          |
+  | `attribute_value_name` | ?          |
   """
 
   import Enum, only: [map: 2]
