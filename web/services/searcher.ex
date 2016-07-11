@@ -62,8 +62,7 @@ defmodule Apientry.Searcher do
 
   See [Apientry.Searcher] for details and examples.
   """
-  def search(format, params, conn \\ nil)
-  def search(format, params, conn) do
+  def search(format, params, conn \\ nil) do
     with \
       :ok              <- validate_params(params),
       {:ok, publisher} <- get_publisher(params),

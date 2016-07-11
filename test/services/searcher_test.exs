@@ -49,7 +49,8 @@ defmodule Apientry.SearcherTest do
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
-      "visitorUserAgent" => @chrome_user_agent
+      "visitorUserAgent" => @chrome_user_agent,
+      "domain" => "site.com"
     }, conn)
 
     assert body[:redirect_base] =~ ~r[http://.*/redirect/]
