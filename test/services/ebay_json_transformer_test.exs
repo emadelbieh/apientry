@@ -107,6 +107,76 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert url_data["stock_status"] == "in-stock"
   end
 
+  test "transform attributeURL" do
+    attribute_url = "http://www.shopping.com/camera-lenses/nikon/products?oq=nikon&linkin_id=8094918"
+    attribute_value_url = "http://www.shopping.com/camera-lenses/nikon/products?minPrice=0&maxPrice=5614&linkin_id=8094918"
+
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => @category_url,
+            "attributes" => %{
+              "attribute" => [
+                %{
+                  "name" => "Price range",
+                  "attributeURL" => attribute_url,
+                  "attributeValues" => %{
+                    "attributeValue" => [
+                      %{
+                        "name" => "$0 - $5614",
+                        "attributeValueURL" => attribute_value_url
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    result = EbayJsonTransformer.transform(data, @assigns)
+
+    cat = Enum.at(result["categories"]["category"], 0)
+    attr = Enum.at(cat["attributes"]["attribute"], 0)
+
+    url = attr["attributeURL"]
+    url_data = decode_url(url)
+
+    assert url_data["link"] == attribute_url
+    assert url_data["country_code"] == @country
+    assert url_data["domain"] == "www.shopping.com"
+    assert url_data["ip_address"] == @ip_address
+    assert url_data["is_mobile"] == to_string(@is_mobile)
+    assert url_data["request_domain"] == @domain
+    assert url_data["result_keyword"] == @keyword
+    assert url_data["user_agent"] == @browser
+
+    assert url_data["category_name"] == "Camera Lenses"
+    assert url_data["attribute_name"] == "Price range"
+
+    a_value = Enum.at(attr["attributeValues"]["attributeValue"], 0)
+
+    url = a_value["attributeValueURL"]
+    url_data = decode_url(url)
+
+    assert url_data["link"] == attribute_value_url
+    assert url_data["country_code"] == @country
+    assert url_data["domain"] == "www.shopping.com"
+    assert url_data["ip_address"] == @ip_address
+    assert url_data["is_mobile"] == to_string(@is_mobile)
+    assert url_data["request_domain"] == @domain
+    assert url_data["result_keyword"] == @keyword
+    assert url_data["user_agent"] == @browser
+
+    assert url_data["category_name"] == "Camera Lenses"
+    assert url_data["attribute_name"] == "Price range"
+    assert url_data["attribute_value_name"] == "$0 - $5614"
+  end
+
   def decode_url(url) do
     url
     |> String.replace(@redirect_base, "")

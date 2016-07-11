@@ -87,12 +87,16 @@ defmodule Apientry.EbayJsonTransformer do
 
   ## Attribute URL
 
-  | Field                 | Taken from |
-  | -----                 | ---------- |
-  | `category_name`       | ?          |
-  | `attribute_name`      | ?          |
+  - `categories.category[].attributes.attribute[].attributeURL
+
+  | Field            | Taken from       |
+  | -----            | ----------       |
+  | `category_name`  | `category.name`  |
+  | `attribute_name` | `attirbute.name` |
 
   ## Review URL
+
+  - `categories.category[].items.item[].offer.store.ratingInfo.reviewURL`
 
   | Field                 | Taken from |
   | -----                 | ---------- |
@@ -101,12 +105,16 @@ defmodule Apientry.EbayJsonTransformer do
   | `authorized_reseller` | ?          |
 
   ## AttributeValue URL
+  
+  - `categories.category[].attributes.attribute[].attributeValues.attributeValue[].attributeValueURL`
 
-  | Field                  | Taken from |
-  | -----                  | ---------- |
-  | `category_name`        | ?          |
-  | `attribute_name`       | ?          |
-  | `attribute_value_name` | ?          |
+  The following fields are added:
+
+  | Field                  | Taken from             |
+  | -----                  | ----------             |
+  | `category_name`        | `category.name`        |
+  | `attribute_name`       | `attirbute.name`       |
+  | `attribute_value_name` | `attirbute_value.name` |
   """
 
   import Enum, only: [map: 2]
@@ -130,6 +138,9 @@ defmodule Apientry.EbayJsonTransformer do
     cat
     |> Map.update("categoryURL", nil, fn url ->
       build_url(url, assigns, category_name: cat["name"])
+    end)
+    |> safe_update_in(["attributes", "attribute"], fn attributes ->
+      attributes |> map(& map_attribute(&1, cat, assigns))
     end)
     |> safe_update_in(["items", "item"], fn items ->
       items |> map(& map_item(&1, cat, assigns))
@@ -163,6 +174,38 @@ defmodule Apientry.EbayJsonTransformer do
        price_value: offer["basePrice"]["value"],
        currency: offer["basePrice"]["currency"],
        stock_status: offer["stockStatus"])
+    end)
+  end
+
+  @doc """
+  Transforms an `attribute` object.
+
+  Attributes are in `category.attributes.attribute[]`.
+  """
+  def map_attribute(attribute, category, assigns) do
+    attribute
+    |> Map.update("attributeURL", nil, fn url ->
+      build_url(url, assigns,
+       category_name: category["name"],
+       attribute_name: attribute["name"])
+    end)
+    |> safe_update_in(["attributeValues", "attributeValue"], fn items ->
+      items |> map(& map_attribute_value(&1, attribute, category, assigns))
+    end)
+  end
+
+  @doc """
+  Maps an `attributeValue` object.
+
+  Found in `attribute.attributeValues.attributeValue[]`.
+  """
+  def map_attribute_value(attribute_value, attribute, category, assigns) do
+    attribute_value
+    |> Map.update("attributeValueURL", nil, fn url ->
+      build_url(url, assigns,
+       category_name: category["name"],
+       attribute_name: attribute["name"],
+       attribute_value_name: attribute_value["name"])
     end)
   end
 

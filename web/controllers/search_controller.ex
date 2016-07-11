@@ -32,7 +32,6 @@ defmodule Apientry.SearchController do
     case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         headers = Enum.into(headers, %{}) # convert to map
-        IO.puts("-> body: #{inspect(body)}")
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
         conn
