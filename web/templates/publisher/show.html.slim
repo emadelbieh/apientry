@@ -58,3 +58,5 @@
           = "&visitorIPAddress=8.8.8.8"
           = "&visitorUserAgent=Mozilla"
           = "\""
+          = " -u "
+          = Application.get_env(:apientry, :basic_auth)[:username]
