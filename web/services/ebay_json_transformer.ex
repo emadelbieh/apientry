@@ -119,6 +119,8 @@ defmodule Apientry.EbayJsonTransformer do
 
   @doc """
   Transforms a `category` object.
+
+  Categories are in `categories.category[]`.
   """
   def map_category(cat, assigns) do
     cat
@@ -130,6 +132,11 @@ defmodule Apientry.EbayJsonTransformer do
     end)
   end
 
+  @doc """
+  Transforms an `item` object.
+
+  Item objects are in `cat.items.item[]`.
+  """
   def map_item(item, cat, assigns) do
     item
     |> Map.update("offer", nil, fn offer ->
@@ -137,6 +144,11 @@ defmodule Apientry.EbayJsonTransformer do
     end)
   end
 
+  @doc """
+  Transforms an `offer` object.
+
+  Offers are in `item.offer`.
+  """
   def map_offer(offer, _cat, assigns) do
     offer
     |> Map.update("offerURL", nil, fn url ->
