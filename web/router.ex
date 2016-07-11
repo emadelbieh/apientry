@@ -9,6 +9,10 @@ defmodule Apientry.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :secure do
+    plug BasicAuth, Application.get_env(:apientry, :basic_auth)
+  end
+
   pipeline :api do
     plug :accepts, ["json", "xml"]
     plug CORSPlug
@@ -16,6 +20,7 @@ defmodule Apientry.Router do
 
   scope "/", Apientry do
     pipe_through :browser
+    pipe_through :secure
     get "/", PageController, :index
 
     resources "/feeds", FeedController
@@ -29,13 +34,13 @@ defmodule Apientry.Router do
   scope "/", Apientry do
     pipe_through :api
     get "/publisher", SearchController, :search
-    get "/dryrun/publisher", SearchController, :dry_search
 
     options "/publisher", SearchController, :search # for cors
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Apientry do
-  #   pipe_through :api
-  # end
+  scope "/", Apientry do
+    pipe_through :api
+    pipe_through :secure
+    get "/dryrun/publisher", SearchController, :dry_search
+  end
 end

@@ -47,7 +47,8 @@ defmodule Apientry.Mixfile do
      {:phoenix_slime, github: "slime-lang/phoenix_slime"},
      {:credo, "~> 0.4", only: [:dev, :test]},
      {:mock, "~> 0.1.1", only: :test},
-     {:exrm, "~> 1.0.5"}]
+     {:exrm, "~> 1.0.5"},
+     {:basic_auth, "~> 1.0.0"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.

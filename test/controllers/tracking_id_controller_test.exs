@@ -1,7 +1,9 @@
 defmodule Apientry.TrackingIdControllerTest do
   use Apientry.ConnCase
+  use Apientry.MockBasicAuth
 
   alias Apientry.{TrackingId, Publisher}
+
   @valid_attrs %{code: "valid"}
   @invalid_attrs %{}
 

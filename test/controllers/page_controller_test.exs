@@ -1,5 +1,6 @@
 defmodule Apientry.PageControllerTest do
   use Apientry.ConnCase
+  use Apientry.MockBasicAuth
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"

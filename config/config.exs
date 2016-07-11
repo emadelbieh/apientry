@@ -36,6 +36,12 @@ config :geolix,
     { :country, File.cwd! <> "/vendor/mmdb/GeoLite2-Country.mmdb" }
   ]
 
+config :apientry, :basic_auth, [
+  realm: "Admin area",
+  username: System.get_env("AUTH_USERNAME") || "admin",
+  password: System.get_env("AUTH_PASSWORD") || "1234"
+]
+
 config :phoenix, :template_engines,
   slim: PhoenixSlime.Engine,
   slime: PhoenixSlime.Engine
