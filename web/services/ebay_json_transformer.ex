@@ -98,11 +98,11 @@ defmodule Apientry.EbayJsonTransformer do
 
   - `categories.category[].items.item[].offer.store.ratingInfo.reviewURL`
 
-  | Field                 | Taken from |
-  | -----                 | ---------- |
-  | `store`               | ?          |
-  | `trusted`             | ?          |
-  | `authorized_reseller` | ?          |
+  | Field                 | Taken from                 |
+  | -----                 | ----------                 |
+  | `store`               | `store.name`               |
+  | `trusted`             | `store.trusted`            |
+  | `authorized_reseller` | `store.authorizedReseller` |
 
   ## AttributeValue URL
   
@@ -174,6 +174,23 @@ defmodule Apientry.EbayJsonTransformer do
        price_value: offer["basePrice"]["value"],
        currency: offer["basePrice"]["currency"],
        stock_status: offer["stockStatus"])
+    end)
+    |> Map.update("store", nil, fn store ->
+      map_store(store, assigns)
+    end)
+  end
+
+  @doc """
+  Transforms a `store` object.
+  """
+
+  def map_store(store, assigns) do
+    store
+    |> safe_update_in(["ratingInfo", "reviewURL"], fn url ->
+      build_url(url, assigns,
+       store: store["name"],
+       trusted: store["trusted"],
+       authorized_reseller: store["authorizedReseller"])
     end)
   end
 

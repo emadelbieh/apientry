@@ -177,6 +177,70 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert url_data["attribute_value_name"] == "$0 - $5614"
   end
 
+  test "transform reviewURL" do
+    review_url = "http://www.shopping.com/xMR-store_42photo~MRD-6201~S-1~linkin_id-8094918"
+    store_name = "Shopping.com"
+    trusted = true
+    authorized_reseller = false
+
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => @category_url,
+            "items" => %{
+              "item" => [
+                %{
+                  "offer" => %{
+                    "name" => "AF Lens",
+                    "manufacturer" => "Nikon",
+                    "offerURL" => @offer_url,
+                    "used" => false,
+                    "basePrice" => %{
+                      "value" => "912.00",
+                      "currency" => "USD"
+                    },
+                    "stockStatus" => "in-stock",
+                    "store" => %{
+                      "name" => store_name,
+                      "trusted" => trusted,
+                      "authorized_reseller" => authorized_reseller,
+                      "ratingInfo" => %{
+                        "reviewURL" => review_url
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    result = EbayJsonTransformer.transform(data, @assigns)
+
+    cat = Enum.at(result["categories"]["category"], 0)
+    item = Enum.at(cat["items"]["item"], 0)
+    store = item["offer"]["store"]
+    url = store["ratingInfo"]["reviewURL"]
+    url_data = decode_url(url)
+
+    assert url_data["link"] == review_url
+    assert url_data["domain"] == "www.shopping.com"
+    assert url_data["country_code"] == @country
+    assert url_data["ip_address"] == @ip_address
+    assert url_data["is_mobile"] == to_string(@is_mobile)
+    assert url_data["request_domain"] == @domain
+    assert url_data["result_keyword"] == @keyword
+    assert url_data["user_agent"] == @browser
+
+    assert url_data["store"] == store_name
+    assert url_data["trusted"] == to_string(trusted)
+    assert url_data["authorized_reseller"] == to_string(authorized_reseller)
+  end
+
   def decode_url(url) do
     url
     |> String.replace(@redirect_base, "")
