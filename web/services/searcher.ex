@@ -61,9 +61,6 @@ defmodule Apientry.Searcher do
   Performs a search.
 
   See [Apientry.Searcher] for details and examples.
-
-  Note that the `conn` variable is unused, though it historically was; see
-  https://github.com/blackswan-ventures/apientry/pull/77.
   """
   def search(format, params, conn \\ nil)
   def search(format, params, conn) do
@@ -191,6 +188,10 @@ defmodule Apientry.Searcher do
 
   def validate_tracking_code(_, _) do
     :ok
+  end
+
+  defp redirect_base_path(nil = _conn) do
+    "" # only ever happens in tests
   end
 
   defp redirect_base_path(conn) do
