@@ -85,6 +85,7 @@ defmodule Apientry.Searcher do
         country: country,
         redirect_base: "", # TODO integrate redirect_path when /redirect is merged
         publisher_name: publisher.name,
+        params: params,
         url: url
       }
     else

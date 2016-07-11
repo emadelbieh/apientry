@@ -43,6 +43,7 @@ defmodule Apientry.EbayJsonTransformer do
   `Category` URL's affect the following:
 
   - `categories.category[].categoryURL`
+  - `searchHistory.categorySelection[].categoryURL`
 
   The following fields are added:
 
@@ -113,6 +114,9 @@ defmodule Apientry.EbayJsonTransformer do
   def transform(data, assigns) do
     data
     |> safe_update_in(["categories", "category"], fn cats ->
+      cats |> map(& map_category(&1, assigns))
+    end)
+    |> safe_update_in(["searchHistory", "categorySelection"], fn cats ->
       cats |> map(& map_category(&1, assigns))
     end)
   end
