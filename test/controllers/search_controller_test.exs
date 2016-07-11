@@ -21,7 +21,8 @@ defmodule Apientry.SearchControllerTest do
     keyword: "nikon",
     apiKey: "panda-abc",
     visitorIPAddress: "8.8.8.8",
-    visitorUserAgent: "Chrome"
+    visitorUserAgent: "Chrome",
+    domain: "site.com"
   ]
 
   test "legit requests", %{conn: conn} do
@@ -84,11 +85,7 @@ defmodule Apientry.SearchControllerTest do
   end
 
   test "dry run of a legit request", %{conn: conn} do
-    conn = get conn, search_path(conn, :dry_search,
-     keyword: "nikon",
-     apiKey: "panda-abc",
-     visitorIPAddress: "8.8.8.8",
-     visitorUserAgent: "Chrome")
+    conn = get conn, search_path(conn, :dry_search, @valid_attrs)
     body = json_response(conn, 200)
 
     assert body["valid"] == true
