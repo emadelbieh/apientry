@@ -67,6 +67,26 @@ curl -v "https://sandbox.apientry.com/dryrun/publisher?keyword=nikon&visitorIPAd
 
 I also recommend using [httpie](http://httpie.org/) instead of curl. It supports auto-formatting of JSON/XML responses, colors, and many other features.
 
+## Setting up production
+
+An [Ansible playbook](http://docs.ansible.com/) is available to set up the stack on bare Ubuntu servers.
+
+```sh
+cd ansible
+less hosts   # change/add hosts to deploy to here
+make setup
+```
+
+## Deploying
+
+[Edeliver](https://github.com/boldpoker/edeliver) is used to deploy.
+
+```sh
+less .deliver/config  # see PRODUCTION_HOSTS and BUILD_HOSTS
+mix edeliver build release -V --branch=master
+mix edeliver deploy upgrade to production
+```
+
 ## Learn more
 
   * Official website: http://www.phoenixframework.org/

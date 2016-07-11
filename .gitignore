@@ -15,3 +15,4 @@ erl_crash.dump
 # this depending on your deployment strategy.
 /priv/static/
 /rel
+/.deliver/releases

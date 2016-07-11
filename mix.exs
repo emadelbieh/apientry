@@ -21,7 +21,7 @@ defmodule Apientry.Mixfile do
      applications: [
        :phoenix, :phoenix_html, :cowboy, :logger, :gettext,
        :phoenix_ecto, :postgrex, :httpoison, :geolix,
-       :phoenix_slime, :cors_plug, :phoenix_pubsub
+       :phoenix_slime, :cors_plug, :phoenix_pubsub, :edeliver
      ]]
   end
 
@@ -33,7 +33,8 @@ defmodule Apientry.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.2.0"},
+    [
+     {:phoenix, "~> 1.2.0"},
      {:postgrex, ">= 0.0.0"},
      {:phoenix_ecto, "~> 3.0"},
      {:phoenix_html, "~> 2.6"},
@@ -47,8 +48,10 @@ defmodule Apientry.Mixfile do
      {:phoenix_slime, github: "slime-lang/phoenix_slime"},
      {:credo, "~> 0.4", only: [:dev, :test]},
      {:mock, "~> 0.1.1", only: :test},
-     {:exrm, "~> 1.0.5"},
-     {:basic_auth, "~> 1.0.0"}]
+     {:exrm, "~> 1.0.6"},
+     {:basic_auth, "~> 1.0.0"},
+     {:edeliver, "~> 1.2.9"},
+    ]
   end
 
   # Aliases are shortcut or tasks specific to the current project.

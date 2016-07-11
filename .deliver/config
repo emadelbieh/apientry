@@ -1,0 +1,28 @@
+# https://github.com/boldpoker/edeliver/wiki/Configuration-(.deliver-config)
+APP="apientry" # name of your release
+
+BUILD_HOST="54.84.208.240" # host where to build the release
+BUILD_USER="deployer" # local user at build host
+BUILD_AT="/home/deployer/apientry/builds" # build directory on build host
+
+# STAGING_HOSTS="test1.acme.org test2.acme.org" # staging / test hosts separated by space
+# STAGING_USER="test" # local user at staging hosts
+# TEST_AT="/opt/app/apientry" # deploy directory on staging hosts. default is DELIVER_TO
+
+PRODUCTION_HOSTS="54.84.208.240" # deploy / production hosts separated by space
+PRODUCTION_USER="deployer" # local user at deploy hosts
+DELIVER_TO="/opt/app/apientry" # deploy directory on production hosts
+
+# https://github.com/boldpoker/edeliver/wiki/Run-additional-build-tasks
+pre_erlang_clean_compile() {
+  status "Preparing assets with: brunch build and phoenix.digest"
+  __sync_remote "
+    [ -f ~/.profile ] && source ~/.profile
+    set -e
+    cd '$BUILD_AT'
+    mkdir -p priv/static
+    npm install
+    ./node_modules/.bin/brunch build --production
+    APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest $SILENCE
+  "
+} 
