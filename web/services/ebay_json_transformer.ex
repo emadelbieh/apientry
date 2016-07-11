@@ -89,7 +89,7 @@ defmodule Apientry.EbayJsonTransformer do
 
   def transform(data, assigns) do
     data
-    |> update_in(["categories", "category"], fn cats ->
+    |> safe_update_in(["categories", "category"], fn cats ->
       cats |> map(& map_category(&1, assigns))
     end)
   end
@@ -101,6 +101,29 @@ defmodule Apientry.EbayJsonTransformer do
     cat
     |> Map.update("categoryURL", nil, fn url ->
       build_url(url, assigns, category_name: cat["name"])
+    end)
+    |> safe_update_in(["items", "item"], fn items ->
+      items |> map(& map_item(&1, cat, assigns))
+    end)
+  end
+
+  def map_item(item, cat, assigns) do
+    item
+    |> Map.update("offer", nil, fn offer ->
+      map_offer(offer, cat, assigns)
+    end)
+  end
+
+  def map_offer(offer, _cat, assigns) do
+    offer
+    |> Map.update("offerURL", nil, fn url ->
+      build_url(url, assigns,
+       offer_name: offer["name"],
+       manufacturer: offer["manufacturer"],
+       used: offer["used"],
+       price_value: offer["basePrice"]["value"],
+       currency: offer["basePrice"]["currency"],
+       stock_status: offer["stockStatus"])
     end)
   end
 
@@ -131,5 +154,14 @@ defmodule Apientry.EbayJsonTransformer do
   def build_url_string(params, assigns) do
     assigns.redirect_base
     <> Base.encode64("?" <> URI.encode_query(params))
+  end
+
+  # Supress nil errors, in case an offer has no items (or whatnot).
+  defp safe_update_in(data, keys, fun) do
+    try do
+      update_in(data, keys, fun)
+    rescue
+      _ -> data
+    end
   end
 end

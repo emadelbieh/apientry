@@ -53,6 +53,60 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert url_data["category_name"] == "Camera Lenses"
   end
 
+  test "transform offerURL" do
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => @category_url,
+            "items" => %{
+              "item" => [
+                %{
+                  "offer" => %{
+                    "name" => "AF Lens",
+                    "manufacturer" => "Nikon",
+                    "offerURL" => @offer_url,
+                    "used" => false,
+                    "basePrice" => %{
+                      "value" => "912.00",
+                      "currency" => "USD"
+                    },
+                    "stockStatus" => "in-stock"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    result = EbayJsonTransformer.transform(data, @assigns)
+
+    cat = Enum.at(result["categories"]["category"], 0)
+    item = Enum.at(cat["items"]["item"], 0)
+    offer = item["offer"]
+    url = offer["offerURL"]
+    url_data = decode_url(url)
+
+    assert url_data["link"] == @offer_url
+    assert url_data["country_code"] == @country
+    assert url_data["domain"] == "rover.ebay.com"
+    assert url_data["ip_address"] == @ip_address
+    assert url_data["is_mobile"] == to_string(@is_mobile)
+    assert url_data["request_domain"] == @domain
+    assert url_data["result_keyword"] == @keyword
+    assert url_data["user_agent"] == @browser
+
+    assert url_data["offer_name"] == "AF Lens"
+    assert url_data["manufacturer"] == "Nikon"
+    assert url_data["used"] == "false"
+    assert url_data["price_value"] == "912.00"
+    assert url_data["currency"] == "USD"
+    assert url_data["stock_status"] == "in-stock"
+  end
+
   def decode_url(url) do
     url
     |> String.replace(@redirect_base, "")
