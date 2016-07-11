@@ -47,6 +47,15 @@ defmodule Apientry.Searcher do
   # alias Apientry.EbaySearch
   # alias Apientry.IpLookup
 
+  # Keep this sorted, please
+  @required_params [
+    "apiKey",
+    "domain",
+    "keyword",
+    "visitorIPAddress",
+    "visitorUserAgent"
+  ]
+
   @doc """
   Performs a search.
 
@@ -56,8 +65,9 @@ defmodule Apientry.Searcher do
   https://github.com/blackswan-ventures/apientry/pull/77.
   """
   def search(format, params, conn \\ nil)
-  def search(format, %{"keyword" => _} = params, _conn) do
+  def search(format, params, _conn) do
     with \
+      :ok              <- validate_params(params),
       {:ok, publisher} <- get_publisher(params),
       {:ok, country}   <- get_country(params),
       {:ok, is_mobile} <- get_is_mobile(params),
@@ -65,6 +75,7 @@ defmodule Apientry.Searcher do
       {:ok, feed}      <- get_feed(country, is_mobile)
     do
       params = put_in(params["apiKey"], feed.api_key)
+      params = Map.delete(params, "domain")
       url = EbaySearch.search(format, params)
       %{
         valid: true,
@@ -84,6 +95,13 @@ defmodule Apientry.Searcher do
 
   def search(_format, _params, _conn) do
     %{valid: false}
+  end
+
+  def validate_params(params) do
+    case @required_params -- Map.keys(params) do
+      [] -> :ok
+      missing -> {:error, :missing_params, %{required: missing}}
+    end
   end
 
   @doc """

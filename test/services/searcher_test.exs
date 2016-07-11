@@ -23,7 +23,8 @@ defmodule Apientry.SearcherTest do
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
-      "visitorUserAgent" => @chrome_user_agent
+      "visitorUserAgent" => @chrome_user_agent,
+      "domain" => "site.com"
     })
 
     expected =
@@ -46,7 +47,8 @@ defmodule Apientry.SearcherTest do
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
-      "visitorUserAgent" => @iphone_user_agent
+      "visitorUserAgent" => @iphone_user_agent,
+      "domain" => "site.com"
     })
     assert body[:is_mobile] == true
   end
@@ -56,7 +58,8 @@ defmodule Apientry.SearcherTest do
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
-      "visitorUserAgent" => @chrome_user_agent
+      "visitorUserAgent" => @chrome_user_agent,
+      "domain" => "site.com"
     })
     assert body[:is_mobile] == false
   end
@@ -66,7 +69,8 @@ defmodule Apientry.SearcherTest do
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @gb_ip,
-      "visitorUserAgent" => @chrome_user_agent
+      "visitorUserAgent" => @chrome_user_agent,
+      "domain" => "site.com"
     })
 
     expected =
@@ -90,7 +94,8 @@ defmodule Apientry.SearcherTest do
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
       "visitorUserAgent" => @chrome_user_agent,
-      "trackingId" => "panda-a"
+      "trackingId" => "panda-a",
+      "domain" => "site.com"
     })
 
     expected =
@@ -115,10 +120,31 @@ defmodule Apientry.SearcherTest do
       "keyword" => "nikon",
       "trackingId" => "avant-a", # not our tracking ID!
       "visitorIPAddress" => @us_ip,
-      "visitorUserAgent" => @chrome_user_agent
+      "visitorUserAgent" => @chrome_user_agent,
+      "domain" => "site.com"
     })
 
     assert body[:valid] == false
     assert body[:error] == :invalid_tracking_id
+  end
+
+  test "validating params" do
+    body = Searcher.search("json", %{ })
+
+    assert body[:valid] == false
+    assert body[:error] == :missing_params
+    assert Enum.find(body[:details][:required], & &1 == "apiKey")
+    assert Enum.find(body[:details][:required], & &1 == "domain")
+    assert Enum.find(body[:details][:required], & &1 == "keyword")
+    assert Enum.find(body[:details][:required], & &1 == "visitorIPAddress")
+    assert Enum.find(body[:details][:required], & &1 == "visitorUserAgent")
+  end
+
+  test "validating params (2)" do
+    body = Searcher.search("json", %{"apiKey" => ""})
+
+    assert body[:valid] == false
+    assert body[:error] == :missing_params
+    assert ! Enum.find(body[:details][:required], & &1 == "apiKey")
   end
 end
