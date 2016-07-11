@@ -66,7 +66,7 @@ defmodule Apientry.Searcher do
   https://github.com/blackswan-ventures/apientry/pull/77.
   """
   def search(format, params, conn \\ nil)
-  def search(format, params, _conn) do
+  def search(format, params, conn) do
     with \
       :ok              <- validate_params(params),
       {:ok, publisher} <- get_publisher(params),
@@ -83,7 +83,7 @@ defmodule Apientry.Searcher do
         format: format,
         is_mobile: is_mobile,
         country: country,
-        redirect_base: "", # TODO integrate redirect_path when /redirect is merged
+        redirect_base: redirect_base_path(conn),
         publisher_name: publisher.name,
         params: params,
         url: url
@@ -94,10 +94,6 @@ defmodule Apientry.Searcher do
       _ ->
         %{ valid: false, error: :unknown_error, details: %{} }
     end
-  end
-
-  def search(_format, _params, _conn) do
-    %{valid: false}
   end
 
   def validate_params(params) do
@@ -195,5 +191,9 @@ defmodule Apientry.Searcher do
 
   def validate_tracking_code(_, _) do
     :ok
+  end
+
+  defp redirect_base_path(conn) do
+    Apientry.Router.Helpers.redirect_url(conn, :show, "")
   end
 end
