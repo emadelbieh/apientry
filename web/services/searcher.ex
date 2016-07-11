@@ -39,6 +39,7 @@ defmodule Apientry.Searcher do
   - `:invalid_api_key` - The given `"apiKey"` has no Publisher associated with it.
   - `:invalid_tracking_id` - The given `"trackingId"` doesn't belong to the publisher.
   - `:unknown_user_agent` - Can't figure out the user agent.
+  - `:missing_parameters` - Some parameters are missing.
   """
 
   import Ecto.Query, only: [from: 2]
@@ -100,7 +101,7 @@ defmodule Apientry.Searcher do
   def validate_params(params) do
     case @required_params -- Map.keys(params) do
       [] -> :ok
-      missing -> {:error, :missing_params, %{required: missing}}
+      missing -> {:error, :missing_parameters, %{required: missing}}
     end
   end
 

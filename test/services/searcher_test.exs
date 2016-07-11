@@ -132,7 +132,7 @@ defmodule Apientry.SearcherTest do
     body = Searcher.search("json", %{ })
 
     assert body[:valid] == false
-    assert body[:error] == :missing_params
+    assert body[:error] == :missing_parameters
     assert Enum.find(body[:details][:required], & &1 == "apiKey")
     assert Enum.find(body[:details][:required], & &1 == "domain")
     assert Enum.find(body[:details][:required], & &1 == "keyword")
@@ -144,7 +144,7 @@ defmodule Apientry.SearcherTest do
     body = Searcher.search("json", %{"apiKey" => ""})
 
     assert body[:valid] == false
-    assert body[:error] == :missing_params
+    assert body[:error] == :missing_parameters
     assert ! Enum.find(body[:details][:required], & &1 == "apiKey")
   end
 end
