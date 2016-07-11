@@ -205,7 +205,7 @@ defmodule Apientry.EbayJsonTransformerTest do
                     "store" => %{
                       "name" => store_name,
                       "trusted" => trusted,
-                      "authorized_reseller" => authorized_reseller,
+                      "authorizedReseller" => authorized_reseller,
                       "ratingInfo" => %{
                         "reviewURL" => review_url
                       }
