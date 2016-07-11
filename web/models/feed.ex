@@ -26,5 +26,8 @@ defmodule Apientry.Feed do
     model
     |> cast(params, @fields)
     |> validate_required(@fields)
+    |> unique_constraint(:country_code,
+       name: :feeds_feed_type_country_code_is_mobile_index,
+       message: "This combination of country/mobile already exists.")
   end
 end

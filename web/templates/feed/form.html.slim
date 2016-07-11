@@ -1,8 +1,8 @@
 .basic-panel
   = form_for @changeset, @action, fn f ->
-    = if @changeset.action do
-      .alert.alert-danger
-        p Oops, something went wrong! Please check the errors below.
+    / = if @changeset.action do
+    /   .alert.alert-danger
+    /     p Oops, something went wrong! Please check the errors below.
 
     .form-fieldset
       .info
@@ -17,12 +17,19 @@
           = hidden_input f, :feed_type, value: "ebay"
           = text_input f, :feed_type, class: "form-control", value: "ebay", disabled: true
           = error_tag f, :feed_type
+
+        .form-group.-horiz
+          = label f, :country_code, class: "control-label"
+          = select f, :country_code, country_codes_for_select, class: "form-control"
+          = error_tag f, :country_code
+
         .form-group.-horiz
           .checkbox
             = label f, :is_mobile do
               = checkbox f, :is_mobile
               | Mobile?
             = error_tag f, :is_mobile
+
         .form-group.-horiz
           .checkbox
             = label f, :is_active do
@@ -30,10 +37,6 @@
               | Active?
             span.hint When unchecked, this feed will be disabled.
             = error_tag f, :is_active
-        .form-group.-horiz
-          = label f, :country_code, class: "control-label"
-          = select f, :country_code, country_codes_for_select, class: "form-control"
-          = error_tag f, :country_code
 
     .form-fieldset
       .info
