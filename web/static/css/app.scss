@@ -18,3 +18,17 @@
     @include font-size(16);
   }
 }
+
+.help-block.-error {
+  & {
+    color: $brand-danger;
+    @include font-size(-1);
+  }
+
+  &::before {
+    @include ion-icon('android-alert', 16px);
+    margin-right: 8px;
+    position: relative;
+    top: -1px;
+  }
+}
