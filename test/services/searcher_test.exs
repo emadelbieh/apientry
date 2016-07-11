@@ -1,5 +1,5 @@
 defmodule Apientry.SearcherTest do
-  use Apientry.ModelCase
+  use Apientry.ConnCase, async: true
   alias Apientry.Searcher
   alias Apientry.Fixtures
 
@@ -40,6 +40,20 @@ defmodule Apientry.SearcherTest do
     assert body[:format] == "json"
     assert body[:country] == "US"
     assert body[:url] == expected
+  end
+
+  test "setting redirect_base (conn)", %{conn: conn} do
+    conn = get conn, "/"
+
+    body = Searcher.search("json", %{
+      "apiKey" => @panda_key,
+      "keyword" => "nikon",
+      "visitorIPAddress" => @us_ip,
+      "visitorUserAgent" => @chrome_user_agent,
+      "domain" => "site.com"
+    }, conn)
+
+    assert body[:redirect_base] =~ ~r[http://.*/redirect/]
   end
 
   test "mobile check" do
