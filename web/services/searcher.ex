@@ -42,7 +42,6 @@ defmodule Apientry.Searcher do
   """
 
   import Ecto.Query, only: [from: 2]
-  import Plug.Conn, only: [get_req_header: 2]
 
   alias Apientry.{Feed, Repo, MobileDetection, Publisher, TrackingId}
   # alias Apientry.EbaySearch
@@ -52,10 +51,12 @@ defmodule Apientry.Searcher do
   Performs a search.
 
   See [Apientry.Searcher] for details and examples.
+
+  Note that the `conn` variable is unused, though it historically was; see
+  https://github.com/blackswan-ventures/apientry/pull/77.
   """
   def search(format, params, conn \\ nil)
-  def search(format, %{"keyword" => _} = params, conn) do
-    params = infer_defaults(params, conn)
+  def search(format, %{"keyword" => _} = params, _conn) do
     with \
       {:ok, publisher} <- get_publisher(params),
       {:ok, country}   <- get_country(params),
@@ -173,28 +174,5 @@ defmodule Apientry.Searcher do
 
   def validate_tracking_code(_, _) do
     :ok
-  end
-
-  @doc """
-  Infers default User-Agent from a `Plug.Conn`.
-  """
-  def infer_defaults(params, nil) do
-    params
-  end
-
-  def infer_defaults(params, conn) do
-    params
-    |> Map.put_new_lazy("visitorUserAgent", fn ->
-      case get_req_header(conn, "user-agent") do
-        [agent] -> agent
-        _ -> nil
-      end
-    end)
-    |> Map.put_new_lazy("visitorIPAddress", fn ->
-      case conn.remote_ip do
-        {a, b, c, d} -> "#{a}.#{b}.#{c}.#{d}"
-        _ -> nil
-      end
-    end)
   end
 end

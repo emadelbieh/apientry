@@ -14,7 +14,7 @@ defmodule Apientry.MockBasicAuth do
     |> put_req_header("authorization", header_content)
   end
 
-  defmacro __using__(module, opts \\ nil) do
+  defmacro __using__(_module, _opts \\ nil) do
     quote do
       setup %{conn: conn} do
         conn = conn
