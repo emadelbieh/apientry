@@ -18,7 +18,7 @@ defmodule Apientry.EbayJsonTransformer do
       pry> Base.decode64!("P2xpbms9aHR0cDovL2dvb2dsZS5jb20maXNfbW9iaWxlPXRydWU=")
       "?link=http://google.com&is_mobile=true"
 
-  The query string will have these fields below.
+  The query string will have these fields below. See `build_url/3`.
 
   | Field            | Taken from                           |
   | -----            | ----------                           |
@@ -85,7 +85,51 @@ defmodule Apientry.EbayJsonTransformer do
   | `maximum_price`       | ?          |
   """
 
-  def transform(data, _assigns) do
+  import Enum, only: [map: 2]
+
+  def transform(data, assigns) do
     data
+    |> update_in(["categories", "category"], fn cats ->
+      cats |> map(& map_category(&1, assigns))
+    end)
+  end
+
+  @doc """
+  Transforms a `category` object.
+  """
+  def map_category(cat, assigns) do
+    cat
+    |> Map.update("categoryURL", nil, fn url ->
+      build_url(url, assigns, category_name: cat["name"])
+    end)
+  end
+
+  @doc """
+  Builds a URL for a given `url`.
+  """
+  def build_url(url, assigns, extras \\ []) do
+    options = %{
+      link: url,
+      domain: URI.parse(url).host,
+      is_mobile: assigns.is_mobile,
+      result_keyword: assigns.params["keyword"],
+      ip_address: assigns.params["visitorIPAddress"],
+      country_code: assigns.country,
+      user_agent: assigns.params["visitorUserAgent"],
+      request_domain: assigns.params["domain"]
+    }
+
+    options = Enum.into(extras, options)
+
+    build_url_string(options, assigns)
+  end
+
+  @doc """
+  Builds a URL from given `params`.
+  """
+
+  def build_url_string(params, assigns) do
+    assigns.redirect_base
+    <> Base.encode64("?" <> URI.encode_query(params))
   end
 end
