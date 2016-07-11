@@ -14,7 +14,7 @@ defmodule Apientry.TrackingIdControllerTest do
 
   test "renders form for new resources", %{conn: conn, publisher: publisher} do
     conn = get conn, publisher_tracking_id_path(conn, :new, publisher)
-    assert html_response(conn, 200) =~ "New tracking id"
+    assert html_response(conn, 200) =~ "New Tracking ID"
   end
 
   test "creates resource and redirects when data is valid", %{conn: conn, publisher: publisher} do
@@ -25,7 +25,7 @@ defmodule Apientry.TrackingIdControllerTest do
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn, publisher: publisher} do
     conn = post conn, publisher_tracking_id_path(conn, :create, publisher), tracking_id: @invalid_attrs
-    assert html_response(conn, 200) =~ "New tracking id"
+    assert html_response(conn, 200) =~ "New Tracking ID"
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn, publisher: publisher} do
