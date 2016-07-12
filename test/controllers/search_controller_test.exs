@@ -62,14 +62,15 @@ defmodule Apientry.SearchControllerTest do
     MockEbay.mock_fail do
       conn = get build_conn(), search_path(conn, :search, @valid_attrs)
       body = json_response(conn, 400)
-      assert "nxdomain" == body["message"]
+      assert "nxdomain" == body["error"]
     end
   end
 
   test "bad requests", %{conn: conn} do
     conn = get build_conn(), search_path(conn, :search)
     body = json_response(conn, 400)
-    assert "Invalid request" == body["message"]
+    assert "missing_parameters" == body["error"]
+    assert body["details"]["required"]
   end
 
   test "bad requests in XML", %{conn: conn} do
@@ -81,7 +82,7 @@ defmodule Apientry.SearchControllerTest do
     assert content_type == "text/xml; charset=utf-8"
 
     assert conn.status === 400
-    assert conn.resp_body == ~s[<Error message="Invalid request"></Error>]
+    assert conn.resp_body =~ ~r[<Error error="missing_parameters" />]
   end
 
   test "dry run of a legit request", %{conn: conn} do
@@ -105,6 +106,6 @@ defmodule Apientry.SearchControllerTest do
     conn = get conn, search_path(conn, :dry_search)
     body = json_response(conn, 200)
 
-    assert body == %{"valid" => false}
+    assert body["valid"] == false
   end
 end

@@ -12,8 +12,4 @@ defmodule Apientry.SearchView do
   def render("error.json", %{data: json_data}) do
     json_data
   end
-
-  def render("error.xml", %{data: %{message: message}}) do
-    ~s[<Error message="#{message}"></Error>]
-  end
 end

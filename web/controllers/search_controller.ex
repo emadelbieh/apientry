@@ -42,28 +42,27 @@ defmodule Apientry.SearchController do
       {:error, %HTTPoison.Error{reason: reason}} ->
         conn
         |> put_status(400)
-        |> render(:error, data: %{message: reason})
+        |> render(:error, data: %{error: reason})
     end
   end
 
-  @doc """
-  Handles searches that don't pass validation (no keywords).
+  def search(%{assigns: %{error: error, details: details}} = conn, _) do
+    conn
+    |> put_status(400)
+    |> render(:error, data: %{error: error, details: details})
+  end
 
-      GET /publisher
-      HTTP 400 Internal Server Error
-      { "message": "Invalid request" }
-  """
   def search(conn, _) do
     conn
     |> put_status(400)
-    |> render(:error, data: %{message: "Invalid request"})
+    |> render(:error, data: %{error: :unknown_error})
   end
 
   @doc """
   Sets search options to be picked up by `search/2` (et al).
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
   """
-  def set_search_options(%{params: %{"keyword" => _} = params} = conn, _) do
+  def set_search_options(%{params: params} = conn, _) do
     format = get_format(conn)
     result = Searcher.search(format, params, conn)
     result
