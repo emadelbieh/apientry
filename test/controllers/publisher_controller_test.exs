@@ -42,7 +42,7 @@ defmodule Apientry.PublisherControllerTest do
   test "updates chosen resource and redirects when data is valid", %{conn: conn} do
     publisher = Repo.insert! %Publisher{}
     conn = put conn, publisher_path(conn, :update, publisher), publisher: @valid_attrs
-    assert redirected_to(conn) == publisher_path(conn, :index)
+    assert redirected_to(conn) == publisher_path(conn, :show, publisher)
     assert Repo.get_by(Publisher, @valid_attrs)
   end
 
@@ -62,7 +62,7 @@ defmodule Apientry.PublisherControllerTest do
   test "api key regeneration", %{conn: conn} do
     publisher = Repo.insert! %Publisher{name: "Test Publisher", api_key: "testkey"}
     conn = put conn, publisher_path(conn, :regenerate, publisher)
-    assert redirected_to(conn) == publisher_path(conn, :index)
+    assert redirected_to(conn) == publisher_path(conn, :show, publisher)
     refute Repo.get_by(Publisher, api_key: "testkey")
   end
 end
