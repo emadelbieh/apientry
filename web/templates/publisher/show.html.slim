@@ -20,7 +20,7 @@
         p This is the API key that the user will pass onto Blackswan's API endpoint.
       .form
         pre= @publisher.api_key
-        = link "Regenerate API key", to: publisher_path(@conn, :edit, @publisher), class: "btn btn-sm btn-accent", method: :put, data: [confirm: "Are you sure? This will revoke access to the key."]
+        = link "Regenerate API key", to: publisher_path(@conn, :regenerate, @publisher), class: "btn btn-sm btn-accent", method: :put, data: [confirm: "Are you sure? This will revoke access to the key."]
 
     .form-fieldset
       .info

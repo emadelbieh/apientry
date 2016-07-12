@@ -1,0 +1,7 @@
+= if get_flash(@conn, :info) do
+  .flash-box.-info(role="alert")
+    p= get_flash(@conn, :info)
+
+= if get_flash(@conn, :error) do
+  .flash-box.-error(role="alert")
+    p= get_flash(@conn, :error)

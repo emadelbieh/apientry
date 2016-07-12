@@ -53,7 +53,8 @@ defmodule Apientry.PublisherController do
       {:ok, _publisher} ->
         conn
         |> put_flash(:info, "Publisher updated successfully.")
-        |> redirect(to: publisher_path(conn, :index))
+        conn
+        |> redirect(to: publisher_path(conn, :show, publisher))
       {:error, changeset} ->
         render(conn, "edit.html", publisher: publisher, changeset: changeset, tracking_ids: publisher.tracking_ids)
     end
@@ -77,11 +78,11 @@ defmodule Apientry.PublisherController do
       {:ok, publisher} ->
         conn
         |> put_flash(:info, "New API Key generated for #{publisher.name}")
-        |> redirect(to: publisher_path(conn, :index))
+        |> redirect(to: publisher_path(conn, :show, publisher))
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "Unable to generate API Key for #{publisher.name}")
-        |> redirect(to: publisher_path(conn, :index))
+        |> redirect(to: publisher_path(conn, :show, publisher))
     end
   end
 end

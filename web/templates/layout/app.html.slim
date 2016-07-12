@@ -6,5 +6,6 @@ html
     title= page_title(assigns)
     link[rel="stylesheet" href="#{static_path(@conn, "/css/app.css")}"]
   body
+    = render Apientry.SharedView, "flash.html", conn: @conn
     = render @view_module, @view_template, assigns
     script[src="#{static_path(@conn, "/js/app.js")}"]
