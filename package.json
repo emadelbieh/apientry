@@ -14,9 +14,10 @@
     "modularscale-sass": "2.1.1",
     "onmount": "1.2.1",
     "phoenix": "file:deps/phoenix",
+    "phoenix_html": "file:deps/phoenix_html",
     "uglify-js-brunch": "2.0.1",
     "bootstrap-sass": "3.3.6",
-    "bootstrap-orion": "mashupgarage/bootstrap-orion#v0.2.0",
+    "bootstrap-orion": "mashupgarage/bootstrap-orion#v0.4.0",
     "sass-brunch": "2.6.3"
   }
 }
