@@ -69,11 +69,10 @@ I also recommend using [httpie](http://httpie.org/) instead of curl. It supports
 
 ## Setting up production
 
-An [Ansible playbook](http://docs.ansible.com/) is available to set up the stack on bare Ubuntu servers.
+An [Ansible playbook](http://docs.ansible.com/) is available to set up the stack on bare Ubuntu servers. See [ansible/](ansible/).
 
 ```sh
 cd ansible
-less hosts   # change/add hosts to deploy to here
 make setup
 ```
 

@@ -37,6 +37,13 @@
 
     - name: updating hex
       shell: mix local.hex --force
+      args:
+        creates: /home/ubuntu/.mix/archives/hex-0.12.1
 
     - name: updating rebar
       shell: mix local.rebar --force
+      args:
+        creates: /home/ubuntu/.mix/rebar
+
+    - name: make /opt/app
+      file: path=/opt/app state=directory owner=deployer
