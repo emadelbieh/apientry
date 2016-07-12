@@ -82,7 +82,7 @@ defmodule Apientry.SearchControllerTest do
     assert content_type == "text/xml; charset=utf-8"
 
     assert conn.status === 400
-    assert conn.resp_body == ~r[<Error error="missing_parameters" />]
+    assert conn.resp_body =~ ~r[<Error error="missing_parameters" />]
   end
 
   test "dry run of a legit request", %{conn: conn} do
