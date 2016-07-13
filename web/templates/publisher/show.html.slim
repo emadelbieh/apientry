@@ -46,6 +46,7 @@
             = "&visitorIPAddress=8.8.8.8"
             = "&visitorUserAgent=Mozilla"
             = "&domain=shopping.com"
+            = if @tracking_ids != [], do: "&trackingId=#{List.first(@tracking_ids).code}"
             = "\""
 
           br
@@ -60,6 +61,7 @@
             = "&visitorIPAddress=8.8.8.8"
             = "&visitorUserAgent=Mozilla"
             = "&domain=shopping.com"
+            = if @tracking_ids != [], do: "&trackingId=#{List.first(@tracking_ids).code}"
             = "\""
             = " -u "
             = Application.get_env(:apientry, :basic_auth)[:username]
