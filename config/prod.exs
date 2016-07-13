@@ -13,7 +13,10 @@ use Mix.Config
 # which you typically run after static files are built.
 config :apientry, Apientry.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "example.com", port: 80],
+  url: [
+    host: System.get_env("SITE_HOST") || "sandbox.apientry.com",
+    port: Integer.parse(System.get_env("SITE_PORT") || "443") |> elem(0)
+  ],
   cache_static_manifest: "priv/static/manifest.json",
   root: ".",
   server: true
@@ -40,8 +43,8 @@ config :logger, level: :info
 # We also recommend setting `force_ssl`, ensuring no data is
 # ever sent via http, always redirecting to https:
 #
-#     config :apientry, Apientry.Endpoint,
-#       force_ssl: [hsts: true]
+config :apientry, Apientry.Endpoint,
+  force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
 
