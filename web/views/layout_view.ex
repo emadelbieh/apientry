@@ -52,4 +52,26 @@ defmodule Apientry.LayoutView do
 
   def page_title(_, _, _),
     do: gettext "Apientry"
+
+  @doc """
+  Returns the active top
+  """
+  def active_top_link(%{view_module: view, view_template: template} = assigns) do
+    active_top_link(view, template, assigns)
+  end
+
+  def active_top_link(Apientry.PageView, _, _),
+    do: :home
+
+  def active_top_link(Apientry.FeedView, _, _),
+    do: :feeds
+
+  def active_top_link(Apientry.PublisherView, _, _),
+    do: :publishers
+
+  def active_top_link(Apientry.TrackingIdView, _, _),
+    do: :publishers
+
+  def active_top_link(_, _, _),
+    do: nil
 end

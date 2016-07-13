@@ -1,7 +1,7 @@
-= render Apientry.SharedView, "top.html", conn: @conn, active: :feeds
-= render Apientry.SharedView, "nav.html", conn: @conn, action: {feed_path(@conn, :new), "New feed"}, title: [title: gettext("Feeds")]
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, action: {feed_path(@conn, :new), "New feed"}, title: [title: gettext("Feeds")]
 
-.inset-bg
+.body.inset-bg
   .container
     .panel-heading
       h2 Available feeds

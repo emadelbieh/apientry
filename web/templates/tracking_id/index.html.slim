@@ -1,8 +1,8 @@
-= render Apientry.SharedView, "top.html", conn: @conn, active: :publishers
-= render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_tracking_id_path(@conn, :new, @publisher), "New feed"}, crumbs: [publishers: true], title: [publisher: @publisher, subtitle: gettext("Tracking IDs")]
-= render Apientry.PublisherView, "nav.html", conn: @conn, publisher: @publisher, active: :tracking_ids
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_tracking_id_path(@conn, :new, @publisher), "New feed"}, crumbs: [publishers: true], title: [publisher: @publisher, subtitle: gettext("Tracking IDs")]
+  = render Apientry.PublisherView, "nav.html", conn: @conn, publisher: @publisher, active: :tracking_ids
 
-.clear-bg
+.body.clear-bg
   .container
     .panel-heading
       h2 Tracking ID's for publisher
