@@ -13,7 +13,10 @@ use Mix.Config
 # which you typically run after static files are built.
 config :apientry, Apientry.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "sandbox.apientry.com", port: 443],
+  url: [
+    host: System.get_env("SITE_HOST") || "sandbox.apientry.com",
+    port: Integer.parse(System.get_env("SITE_PORT") || "443") |> elem(0)
+  ],
   cache_static_manifest: "priv/static/manifest.json",
   root: ".",
   server: true
