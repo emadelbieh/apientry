@@ -17,6 +17,9 @@ defmodule Apientry.DomainFilter do
 
       iex> Apientry.DomainFilter.matches?("ebay.com", "sandbox.ebay.com")
       true
+
+      iex> Apientry.DomainFilter.matches?("ebay.com", "notebay.com")
+      false
   """
 
   @doc """
@@ -35,7 +38,7 @@ defmodule Apientry.DomainFilter do
   defp domain_match?(domain, host) when domain == host, do: true
 
   defp domain_match?(domain, host) do
-    offset = String.length(host) - String.length(domain)
-    String.slice(host, offset..-1) == domain
+    offset = String.length(host) - String.length(domain) - 1
+    String.slice(host, offset..-1) == "." <> domain
   end
 end
