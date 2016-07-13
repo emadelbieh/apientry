@@ -15,7 +15,7 @@ config :apientry, Apientry.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [
     host: System.get_env("SITE_HOST") || "sandbox.apientry.com",
-    port: Integer.parse(System.get_env("SITE_PORT") || "443") |> elem(0)
+    port: Integer.parse(System.get_env("SITE_PORT") || "80") |> elem(0)
   ],
   cache_static_manifest: "priv/static/manifest.json",
   root: ".",
