@@ -52,7 +52,6 @@ defmodule Apientry.Searcher do
   @required_params [
     "apiKey",
     "domain",
-    "keyword",
     "visitorIPAddress",
     "visitorUserAgent"
   ]

@@ -149,7 +149,6 @@ defmodule Apientry.SearcherTest do
     assert body[:error] == :missing_parameters
     assert Enum.find(body[:details][:required], & &1 == "apiKey")
     assert Enum.find(body[:details][:required], & &1 == "domain")
-    assert Enum.find(body[:details][:required], & &1 == "keyword")
     assert Enum.find(body[:details][:required], & &1 == "visitorIPAddress")
     assert Enum.find(body[:details][:required], & &1 == "visitorUserAgent")
   end
