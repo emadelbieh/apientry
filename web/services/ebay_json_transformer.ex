@@ -143,9 +143,27 @@ defmodule Apientry.EbayJsonTransformer do
       attributes |> map(& map_attribute(&1, cat, assigns))
     end)
     |> safe_update_in(["items", "item"], fn items ->
-      items |> map(& map_item(&1, cat, assigns))
+      items
+      |> Enum.filter_map(
+        &filter_item(&1, assigns),
+        &map_item(&1, cat, assigns))
     end)
   end
+
+  @doc """
+  Filters out items from the same domain.
+  """
+  def filter_item(
+    %{"offer" => %{"offerURL" => url}} = _item,
+    %{params: %{"domain" => domain}} = _assigns)
+  do
+    case URI.parse(url).host do
+      ^domain -> false
+      _ -> true
+    end
+  end
+
+  def filter_item(_, _), do: false
 
   @doc """
   Transforms an `item` object.
