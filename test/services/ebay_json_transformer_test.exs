@@ -148,6 +148,47 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert !item
   end
 
+  test "reject offers in same domain (passing the root domain)" do
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => @category_url,
+            "items" => %{
+              "item" => [
+                %{
+                  "offer" => %{
+                    "name" => "AF Lens",
+                    "manufacturer" => "Nikon",
+                    "offerURL" => @offer_url,
+                    "used" => false,
+                    "basePrice" => %{
+                      "value" => "912.00",
+                      "currency" => "USD"
+                    },
+                    "stockStatus" => "in-stock"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    assigns = @assigns
+    |> Map.update!(:params, fn params ->
+      params
+      |> Map.put("domain", "ebay.com")
+    end)
+    result = EbayJsonTransformer.transform(data, assigns)
+
+    cat = Enum.at(result["categories"]["category"], 0)
+    item = Enum.at(cat["items"]["item"], 0)
+    assert !item
+  end
+
   test "transform attributeURL" do
     attribute_url = "http://www.shopping.com/camera-lenses/nikon/products?oq=nikon&linkin_id=8094918"
     attribute_value_url = "http://www.shopping.com/camera-lenses/nikon/products?minPrice=0&maxPrice=5614&linkin_id=8094918"
