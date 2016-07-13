@@ -117,6 +117,7 @@ defmodule Apientry.EbayJsonTransformer do
   | `attribute_value_name` | `attirbute_value.name` |
   """
 
+  alias Apientry.DomainFilter
   import Enum, only: [map: 2]
 
   def transform(data, assigns) do
@@ -157,10 +158,7 @@ defmodule Apientry.EbayJsonTransformer do
     %{"offer" => %{"offerURL" => url}} = _item,
     %{params: %{"domain" => domain}} = _assigns)
   do
-    case URI.parse(url).host do
-      ^domain -> false
-      _ -> true
-    end
+    ! DomainFilter.matches?(domain, URI.parse(url).host)
   end
 
   def filter_item(_, _), do: false
