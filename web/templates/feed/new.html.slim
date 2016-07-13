@@ -1,7 +1,6 @@
-= render Apientry.SharedView, "top.html", conn: @conn, active: :feeds
-= render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [feeds: true], title: [title: "Feeds", subtitle: "Add new"]
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [feeds: true], title: [title: "Feeds", subtitle: "Add new"]
 
-.container
-  = render "form.html", changeset: @changeset, action: feed_path(@conn, :create), mode: :create
-
-  = link "Back", to: feed_path(@conn, :index)
+.body
+  .container
+    = render "form.html", changeset: @changeset, action: feed_path(@conn, :create), mode: :create

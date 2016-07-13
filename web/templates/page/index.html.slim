@@ -1,5 +1,6 @@
-= render Apientry.SharedView, "top.html", conn: @conn, active: :home
-= render Apientry.SharedView, "nav.html", conn: @conn, title: [title: "Apientry"]
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, title: [title: "Apientry"]
 
-.container
-  .home-page-placeholder
+.body
+  .container
+    .home-page-placeholder
