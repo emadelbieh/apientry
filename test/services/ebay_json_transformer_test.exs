@@ -107,47 +107,139 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert url_data["stock_status"] == "in-stock"
   end
 
-  # Not relevant after https://github.com/blackswan-ventures/apientry/issues/96
-  # test "reject offers in same domain" do
-  #   data = %{
-  #     "categories" => %{
-  #       "category" => [
-  #         %{
-  #           "name" => "Camera Lenses",
-  #           "categoryURL" => @category_url,
-  #           "items" => %{
-  #             "item" => [
-  #               %{
-  #                 "offer" => %{
-  #                   "name" => "AF Lens",
-  #                   "manufacturer" => "Nikon",
-  #                   "offerURL" => @offer_url,
-  #                   "used" => false,
-  #                   "basePrice" => %{
-  #                     "value" => "912.00",
-  #                     "currency" => "USD"
-  #                   },
-  #                   "stockStatus" => "in-stock"
-  #                 }
-  #               }
-  #             ]
-  #           }
-  #         }
-  #       ]
-  #     }
-  #   }
+  test "transform productOffersURL" do
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => @category_url,
+            "items" => %{
+              "item" => [
+                %{
+                  "product" => %{
+                    "name" => "AF Lens",
+                    "onSale" => true,
+                    "onSalePercentOff" => "0",
+                    "productOffersURL" => @offer_url,
+                    "productSpecsURL" => @offer_url,
+                    "freeShipping" => false,
+                    "minPrice" => %{
+                      "value" => "912.00"
+                    },
+                    "maxPrice" => %{
+                      "value" => "922.00"
+                    },
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
 
-  #   assigns = @assigns
-  #   |> Map.update!(:params, fn params ->
-  #     params
-  #     |> Map.put("domain", "rover.ebay.com")
-  #   end)
-  #   result = EbayJsonTransformer.transform(data, assigns)
+    result = EbayJsonTransformer.transform(data, @assigns)
 
-  #   cat = Enum.at(result["categories"]["category"], 0)
-  #   item = Enum.at(cat["items"]["item"], 0)
-  #   assert !item
-  # end
+    cat = Enum.at(result["categories"]["category"], 0)
+    item = Enum.at(cat["items"]["item"], 0)
+    product = item["product"]
+    url = product["productOffersURL"]
+    url_data = decode_url(url)
+
+    assert product["productOffersURL"] == product["productSpecsURL"]
+
+    assert url_data["link"] == @offer_url
+    assert url_data["country_code"] == @country
+    assert url_data["domain"] == "rover.ebay.com"
+    assert url_data["ip_address"] == @ip_address
+    assert url_data["is_mobile"] == to_string(@is_mobile)
+    assert url_data["request_domain"] == @domain
+    assert url_data["result_keyword"] == @keyword
+    assert url_data["user_agent"] == @browser
+
+    assert url_data["product_name"] == "AF Lens"
+    assert url_data["category_name"] == "Camera Lenses"
+    assert url_data["on_sale"] == "true" # to_string'd
+    assert url_data["on_sale_percent_off"] == "0"
+    assert url_data["free_shipping"] == "false"
+    assert url_data["minimum_price"] == "912.00"
+    assert url_data["maximum_price"] == "922.00"
+  end
+
+  test "reject offers in same domain based on offerURL" do
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => @category_url,
+            "items" => %{
+              "item" => [
+                %{
+                  "offer" => %{
+                    "name" => "AF Lens",
+                    "manufacturer" => "Nikon",
+                    "offerURL" => @offer_url,
+                    "used" => false,
+                    "basePrice" => %{
+                      "value" => "912.00",
+                      "currency" => "USD"
+                    },
+                    "stockStatus" => "in-stock"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    assigns = @assigns
+    |> Map.update!(:params, fn params ->
+      params
+      |> Map.put("domain", "ebay.com")
+    end)
+    result = EbayJsonTransformer.transform(data, assigns)
+
+    cat = Enum.at(result["categories"]["category"], 0)
+    item = Enum.at(cat["items"]["item"], 0)
+    assert !item
+  end
+
+  test "reject offers in same domain based on productOffersURL" do
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => @category_url,
+            "items" => %{
+              "item" => [
+                %{
+                  "product" => %{
+                    "productOffersURL" => @offer_url
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    assigns = @assigns
+    |> Map.update!(:params, fn params ->
+      params
+      |> Map.put("domain", "ebay.com")
+    end)
+    result = EbayJsonTransformer.transform(data, assigns)
+
+    cat = Enum.at(result["categories"]["category"], 0)
+    item = Enum.at(cat["items"]["item"], 0)
+    assert !item
+  end
 
   test "reject offers in same domain (passing the root domain)" do
     data = %{
