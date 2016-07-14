@@ -2,6 +2,7 @@ defmodule Apientry.SearcherTest do
   use Apientry.ConnCase, async: true
   alias Apientry.Searcher
   alias Apientry.Fixtures
+  alias Apientry.DbCacheSupervisor
 
   @gb_ip "212.58.224.22"  # bbc.co.uk
   @us_ip "216.58.221.110" # google.com
@@ -15,6 +16,7 @@ defmodule Apientry.SearcherTest do
   setup do
     Fixtures.mock_feeds
     Fixtures.mock_publishers
+    DbCacheSupervisor.update
     :ok
   end
 

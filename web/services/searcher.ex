@@ -42,9 +42,7 @@ defmodule Apientry.Searcher do
   - `:missing_parameters` - Some parameters are missing.
   """
 
-  import Ecto.Query, only: [from: 2]
-
-  alias Apientry.{Feed, Repo, MobileDetection, Publisher, TrackingId}
+  alias Apientry.MobileDetection
   # alias Apientry.EbaySearch
   # alias Apientry.IpLookup
 
@@ -116,7 +114,7 @@ defmodule Apientry.Searcher do
   Returns the publisher as `{:ok, publisher}` or `{:error, message}`.
   """
   def get_publisher(%{"apiKey" => api_key} = _params) do
-    case Repo.one(from p in Publisher, where: p.api_key == ^api_key) do
+    case DbCache.lookup(:publisher, :api_key, api_key) do
       nil -> {:error, :invalid_api_key, %{api_key: api_key}}
       publisher -> {:ok, publisher}
     end
@@ -154,11 +152,9 @@ defmodule Apientry.Searcher do
       {:ok, %Feed{...}}
   """
   def get_feed(country, is_mobile) do
-    feed = from f in Feed,
-      where: f.is_mobile == ^is_mobile and f.country_code == ^country,
-      limit: 1
+    feed = DbCache.lookup(:feed, :type_country_mobile, {"ebay", country, is_mobile})
 
-    case Repo.one(feed) do
+    case feed do
       nil -> {:error, :no_feed_associated, %{is_mobile: is_mobile, country: country}}
       feed -> {:ok, feed}
     end
@@ -174,11 +170,9 @@ defmodule Apientry.Searcher do
       :ok
   """
   def validate_tracking_code(%{"trackingId" => t_id}, publisher) do
-    tracking_id = from t in TrackingId,
-      where: t.publisher_id == ^publisher.id and t.code == ^t_id,
-      limit: 1
+    tracking_id = DbCache.lookup(:tracking_id, :publisher_code, {publisher.id, t_id})
 
-    case Repo.one(tracking_id) do
+    case tracking_id do
       nil -> {:error, :invalid_tracking_id, %{tracking_id: t_id}}
       _ -> :ok
     end

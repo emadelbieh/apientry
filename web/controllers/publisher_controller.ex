@@ -25,6 +25,7 @@ defmodule Apientry.PublisherController do
 
     case Repo.insert(changeset) do
       {:ok, _publisher} ->
+        DbCache.update(:publisher)
         conn
         |> put_flash(:info, "Publisher created successfully.")
         |> redirect(to: publisher_path(conn, :index))
@@ -51,6 +52,7 @@ defmodule Apientry.PublisherController do
 
     case Repo.update(changeset) do
       {:ok, _publisher} ->
+        DbCache.update(:publisher)
         conn
         |> put_flash(:info, "Publisher updated successfully.")
         conn
@@ -64,6 +66,7 @@ defmodule Apientry.PublisherController do
     publisher = Repo.get!(Publisher, id)
 
     Repo.delete!(publisher)
+    DbCache.update(:publisher)
 
     conn
     |> put_flash(:info, "Publisher deleted successfully.")
