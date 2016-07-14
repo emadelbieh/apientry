@@ -38,4 +38,21 @@ defmodule Apientry.DbCacheSupervisor do
 
     Supervisor.start_link(children, strategy: :one_for_one)
   end
+
+  @doc """
+  Updates all database caches.
+
+  Sends `DbCache.update/1` to all available workers.
+  """
+  def update do
+    DbCache.update :feed
+    DbCache.update :publisher
+    DbCache.update :tracking_id
+  end
+
+  def stop do
+    DbCache.stop :feed
+    DbCache.stop :publisher
+    DbCache.stop :tracking_id
+  end
 end

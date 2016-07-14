@@ -74,6 +74,13 @@ defmodule DbCache do
   end
 
   @doc """
+  Stops a server.
+  """
+  def stop(pid, reason \\ :shutdown) do
+    GenServer.stop(pid, reason)
+  end
+
+  @doc """
   Callback for GenServer.
   """
   def handle_call(:init, _, %{indices: indices} = state) do
