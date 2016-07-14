@@ -64,7 +64,7 @@ defmodule DbCache do
   Lookup many.
   """
   def lookup_all(pid, index, value) do
-    GenServer.call(pid, {:lookup, index, value})
+    GenServer.call(pid, {:lookup_all, index, value})
   end
 
   @doc """
@@ -86,11 +86,15 @@ defmodule DbCache do
     {:reply, state, state}
   end
 
-  def handle_call({:lookup, index, value}, _, %{tables: tables} = state) do
+  def handle_call({:lookup_all, index, value}, _, %{tables: tables} = state) do
     table = tables[index]
-    results = :ets.lookup(table, value) # [{"12", %Model}, ...]
-    objects = Enum.map(results, fn {_, obj} -> obj end)
-    {:reply, objects, state}
+    if table do
+      results = :ets.lookup(table, value) # [{"12", %Model}, ...]
+      objects = Enum.map(results, fn {_, obj} -> obj end)
+      {:reply, objects, state}
+    else
+      {:reply, [], state}
+    end
   end
 
   def handle_call(:fetch, _, %{repo: repo, query: query, tables: tables, indices: indices} = state) do

@@ -21,6 +21,33 @@ defmodule Apientry.DbCacheTest do
       assert result.country_code == "US"
       assert result.is_mobile == true
     end
+
+    test "lookup_all (fail)", %{pid: pid} do
+      DbCache.fetch(pid)
+      result = DbCache.lookup_all(pid, :type_country_mobile, {:non, :existing, :record})
+      assert result == []
+    end
+
+    test "lookup_all (non-existent index)", %{pid: pid} do
+      DbCache.fetch(pid)
+      result = DbCache.lookup_all(pid, :not_an_index, nil)
+      assert result == []
+    end
+
+    test "lookup (type country mobile)", %{pid: pid} do
+      DbCache.fetch(pid)
+      result = DbCache.lookup(pid, :type_country_mobile, {"ebay", "US", true})
+      assert result.__struct__ == Feed
+      assert result.feed_type == "ebay"
+      assert result.country_code == "US"
+      assert result.is_mobile == true
+    end
+
+    test "lookup (fail)", %{pid: pid} do
+      DbCache.fetch(pid)
+      result = DbCache.lookup(pid, :type_country_mobile, {:non, :existing, :record})
+      assert result == nil
+    end
   end
 
   defp mock_feeds(_context) do
