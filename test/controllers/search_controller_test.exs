@@ -1,5 +1,5 @@
 defmodule Apientry.SearchControllerTest do
-  use Apientry.ConnCase
+  use Apientry.ConnCase, async: true
   use MockEbay
   import List, only: [keyfind: 3]
   import Plug.Conn, only: [put_req_header: 3]

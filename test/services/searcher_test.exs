@@ -1,5 +1,5 @@
 defmodule Apientry.SearcherTest do
-  use Apientry.ConnCase
+  use Apientry.ConnCase, async: true
   alias Apientry.Searcher
   alias Apientry.Fixtures
   alias Apientry.DbCacheSupervisor

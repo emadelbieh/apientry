@@ -45,8 +45,8 @@ defmodule Apientry.DbCacheSupervisor do
   Sends `DbCache.update/1` to all available workers.
   """
   def update do
-    DbCache.update :feed
-    DbCache.update :publisher
-    DbCache.update :tracking_id
+    DbCache.update(:feed)
+    DbCache.update(:publisher)
+    DbCache.update(:tracking_id)
   end
 end

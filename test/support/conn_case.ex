@@ -39,10 +39,6 @@ defmodule Apientry.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Apientry.Repo, {:shared, self()})
     end
 
-    Ecto.Adapters.SQL.Sandbox.allow(Apientry.Repo, self(), Process.whereis(:feed))
-    Ecto.Adapters.SQL.Sandbox.allow(Apientry.Repo, self(), Process.whereis(:publisher))
-    Ecto.Adapters.SQL.Sandbox.allow(Apientry.Repo, self(), Process.whereis(:tracking_id))
-
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

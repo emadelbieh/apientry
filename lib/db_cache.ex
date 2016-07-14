@@ -11,7 +11,7 @@ defmodule DbCache do
           country_mobile: &({&1.country_code, &1.is_mobile})
         ])
 
-      # Updates indices
+      # Updates indices; returns a pid
       DbCache.update(:feed)
 
       # Find one
@@ -42,9 +42,26 @@ defmodule DbCache do
 
   @doc """
   Updates the indices based on database records.
+
+  The DB query happens in the thread of the caller, *not* the GenServer thread.
+  This is to make sure that the server doesn't lock up waiting for database
+  I/O, queueing lookups unnecessarily. This also makes DbCache work with Ecto
+  SQL Sandboxing in tests.
+
+  Optionally, you may call this with `Task.start_link/1` or `Task.async/1` to
+  make the update happen in the background.
   """
   def update(pid) do
-    GenServer.cast(pid, :update)
+    %{repo: repo, query: query} = GenServer.call(pid, :get_state)
+    items = repo.all(query)
+    GenServer.cast(pid, {:update, items})
+  end
+
+  @doc """
+  Updates the indices based on given database records.
+  """
+  def update(pid, items) do
+    GenServer.cast(pid, {:update, items})
   end
 
   @doc """
@@ -82,7 +99,7 @@ defmodule DbCache do
     {:ok, do_update(state)}
   end
 
-  def handle_call(:debug, _, state) do
+  def handle_call(:get_state, _, state) do
     {:reply, state, state}
   end
 
@@ -105,9 +122,17 @@ defmodule DbCache do
     {:noreply, state}
   end
 
-  defp do_update(%{repo: repo, query: query, tables: tables, indices: indices} = state) do
-    results = repo.all(query)
+  def handle_cast({:update, items}, state) do
+    state = do_update(items, state)
+    {:noreply, state}
+  end
 
+  defp do_update(%{repo: repo, query: query} = state) do
+    results = repo.all(query)
+    do_update(results, state)
+  end
+
+  defp do_update(results, %{tables: tables, indices: indices} = state) do
     for {index, _} <- indices do
       table = tables[index]
       :ets.delete_all_objects(table)
