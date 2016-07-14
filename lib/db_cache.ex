@@ -37,18 +37,14 @@ defmodule DbCache do
       """
     end
 
-    with {:ok, pid} <- GenServer.start_link(__MODULE__, options, name: options[:name]) do
-      GenServer.call(pid, :init)
-      GenServer.call(pid, :update)
-      {:ok, pid}
-    end
+    GenServer.start_link(__MODULE__, options, name: options[:name])
   end
 
   @doc """
   Updates the indices based on database records.
   """
   def update(pid) do
-    GenServer.call(pid, :update)
+    GenServer.cast(pid, :update)
   end
 
   @doc """
@@ -65,34 +61,25 @@ defmodule DbCache do
   end
 
   @doc """
-  Looks up many records based on an index.
-
+  Looks up many records based on an ndex.
   Returns a list of records.
   """
   def lookup_all(pid, index, value) do
     GenServer.call(pid, {:lookup_all, index, value})
   end
 
-  @doc """
-  Stops a server.
-  """
-  def stop(pid, reason \\ :shutdown) do
-    GenServer.stop(pid, reason)
-  end
-
-  @doc """
-  Callback for GenServer.
-  """
-  def handle_call(:init, _, %{indices: indices} = state) do
+  @doc false
+  def init(%{indices: indices} = state) do
     tables = Enum.reduce(indices, %{}, fn {index, _fun}, map ->
       table = :ets.new(:"db_cache_#{index}", [:bag])
       Map.put(map, index, table)
     end)
 
-    state = state
-    |> Map.put(:tables, tables)
+    state =
+      state
+      |> Map.put(:tables, tables)
 
-    {:reply, :ok, state}
+    {:ok, do_update(state)}
   end
 
   def handle_call(:debug, _, state) do
@@ -101,27 +88,37 @@ defmodule DbCache do
 
   def handle_call({:lookup_all, index, value}, _, %{tables: tables} = state) do
     table = tables[index]
-    if table do
-      results = :ets.lookup(table, value) # [{"12", %Model}, ...]
-      objects = Enum.map(results, fn {_, obj} -> obj end)
-      {:reply, objects, state}
-    else
-      {:reply, [], state}
-    end
+
+    objects =
+      if table do
+        results = :ets.lookup(table, value) # [{"12", %Model}, ...]
+        Enum.map(results, fn {_, obj} -> obj end)
+      else
+        []
+      end
+
+    {:reply, objects, state}
   end
 
-  def handle_call(:update, _, %{repo: repo, query: query, tables: tables, indices: indices} = state) do
+  def handle_cast(:update, state) do
+    state = do_update(state)
+    {:noreply, state}
+  end
+
+  defp do_update(%{repo: repo, query: query, tables: tables, indices: indices} = state) do
     results = repo.all(query)
 
-    for {index, index_fun} <- indices do
+    for {index, _} <- indices do
       table = tables[index]
       :ets.delete_all_objects(table)
-      for record <- results do
-        key = index_fun.(record)
-        :ets.insert(table, {key, record})
-      end
     end
 
-    {:reply, :ok, state}
+    for {index, index_fun} <- indices, record <- results do
+      table = tables[index]
+      key = index_fun.(record)
+      :ets.insert(table, {key, record})
+    end
+
+    state
   end
 end

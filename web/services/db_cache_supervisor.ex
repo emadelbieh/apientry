@@ -49,10 +49,4 @@ defmodule Apientry.DbCacheSupervisor do
     DbCache.update :publisher
     DbCache.update :tracking_id
   end
-
-  def stop do
-    DbCache.stop :feed
-    DbCache.stop :publisher
-    DbCache.stop :tracking_id
-  end
 end
