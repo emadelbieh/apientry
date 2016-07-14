@@ -51,6 +51,7 @@ defmodule Apientry.Mixfile do
      {:exrm, "~> 1.0.6"},
      {:basic_auth, "~> 1.0.0"},
      {:edeliver, "~> 1.2.9"},
+     {:plug, "~> 1.2-rc", override: true}, # https://twitter.com/elixirlang/status/753171413821976577
     ]
   end
 
