@@ -107,46 +107,47 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert url_data["stock_status"] == "in-stock"
   end
 
-  test "reject offers in same domain" do
-    data = %{
-      "categories" => %{
-        "category" => [
-          %{
-            "name" => "Camera Lenses",
-            "categoryURL" => @category_url,
-            "items" => %{
-              "item" => [
-                %{
-                  "offer" => %{
-                    "name" => "AF Lens",
-                    "manufacturer" => "Nikon",
-                    "offerURL" => @offer_url,
-                    "used" => false,
-                    "basePrice" => %{
-                      "value" => "912.00",
-                      "currency" => "USD"
-                    },
-                    "stockStatus" => "in-stock"
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
+  # Not relevant after https://github.com/blackswan-ventures/apientry/issues/96
+  # test "reject offers in same domain" do
+  #   data = %{
+  #     "categories" => %{
+  #       "category" => [
+  #         %{
+  #           "name" => "Camera Lenses",
+  #           "categoryURL" => @category_url,
+  #           "items" => %{
+  #             "item" => [
+  #               %{
+  #                 "offer" => %{
+  #                   "name" => "AF Lens",
+  #                   "manufacturer" => "Nikon",
+  #                   "offerURL" => @offer_url,
+  #                   "used" => false,
+  #                   "basePrice" => %{
+  #                     "value" => "912.00",
+  #                     "currency" => "USD"
+  #                   },
+  #                   "stockStatus" => "in-stock"
+  #                 }
+  #               }
+  #             ]
+  #           }
+  #         }
+  #       ]
+  #     }
+  #   }
 
-    assigns = @assigns
-    |> Map.update!(:params, fn params ->
-      params
-      |> Map.put("domain", "rover.ebay.com")
-    end)
-    result = EbayJsonTransformer.transform(data, assigns)
+  #   assigns = @assigns
+  #   |> Map.update!(:params, fn params ->
+  #     params
+  #     |> Map.put("domain", "rover.ebay.com")
+  #   end)
+  #   result = EbayJsonTransformer.transform(data, assigns)
 
-    cat = Enum.at(result["categories"]["category"], 0)
-    item = Enum.at(cat["items"]["item"], 0)
-    assert !item
-  end
+  #   cat = Enum.at(result["categories"]["category"], 0)
+  #   item = Enum.at(cat["items"]["item"], 0)
+  #   assert !item
+  # end
 
   test "reject offers in same domain (passing the root domain)" do
     data = %{
