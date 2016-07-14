@@ -71,8 +71,8 @@ defmodule Apientry.Searcher do
       {:ok, feed}      <- get_feed(country, is_mobile)
     do
       params = put_in(params["apiKey"], feed.api_key)
-      params = Map.delete(params, "domain")
-      url = EbaySearch.search(format, params)
+      new_params = Map.delete(params, "domain")
+      url = EbaySearch.search(format, new_params)
       %{
         valid: true,
         format: format,
