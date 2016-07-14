@@ -10,7 +10,7 @@ defmodule DbCache do
           country_mobile: &({&1.country_code, &1.is_mobile})
         ])
 
-      # fetches everything
+      # Updates indices
       DbCache.fetch(pid)
 
       # Find one
@@ -23,7 +23,7 @@ defmodule DbCache do
   use GenServer
 
   @doc """
-  Returns `{:ok, pid}`.
+  Starts the GenServer. Returns `{:ok, pid}`.
   """
   def start_link(opts \\ []) do
     options = Enum.into(opts, %{})
@@ -43,14 +43,16 @@ defmodule DbCache do
   end
 
   @doc """
-  Fetches database.
+  Updates the indices based on database records.
   """
   def fetch(pid) do
     GenServer.call(pid, :fetch)
   end
 
   @doc """
-  Lookup.
+  Looks up a record based on an index.
+
+  Returns a single record, or `nil`.
   """
   def lookup(pid, index, value) do
     case lookup_all(pid, index, value) do
@@ -61,7 +63,9 @@ defmodule DbCache do
   end
 
   @doc """
-  Lookup many.
+  Looks up many records based on an index.
+
+  Returns a list of records.
   """
   def lookup_all(pid, index, value) do
     GenServer.call(pid, {:lookup_all, index, value})
