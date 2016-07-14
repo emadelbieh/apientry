@@ -11,7 +11,7 @@ defmodule DbCache do
         ])
 
       # Updates indices
-      DbCache.fetch(pid)
+      DbCache.update(pid)
 
       # Find one
       DbCache.lookup(pid, :country_mobile, {"US", true})
@@ -28,15 +28,15 @@ defmodule DbCache do
   def start_link(opts \\ []) do
     options = Enum.into(opts, %{})
 
-    unless options[:repo] && options[:query] && options[:indices] do
+    unless options[:repo] && options[:query] && options[:indices] && options[:name] do
       raise """
       Invalid options
 
-      Required options: :repo, :query, :indices
+      Required options: :repo, :query, :indices, :name
       """
     end
 
-    with {:ok, pid} <- GenServer.start_link(__MODULE__, options) do
+    with {:ok, pid} <- GenServer.start_link(__MODULE__, options, name: options[:name]) do
       GenServer.call(pid, :init)
       {:ok, pid}
     end
@@ -45,8 +45,8 @@ defmodule DbCache do
   @doc """
   Updates the indices based on database records.
   """
-  def fetch(pid) do
-    GenServer.call(pid, :fetch)
+  def update(pid) do
+    GenServer.call(pid, :update)
   end
 
   @doc """
@@ -101,7 +101,7 @@ defmodule DbCache do
     end
   end
 
-  def handle_call(:fetch, _, %{repo: repo, query: query, tables: tables, indices: indices} = state) do
+  def handle_call(:update, _, %{repo: repo, query: query, tables: tables, indices: indices} = state) do
     results = repo.all(query)
 
     for {index, index_fun} <- indices do

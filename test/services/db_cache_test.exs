@@ -4,48 +4,50 @@ defmodule Apientry.DbCacheTest do
   alias Apientry.Repo
   alias Apientry.Feed
 
+  @name :db_cache_feed
+
   describe "database cache" do
     setup [:mock_feeds, :start_cache]
 
-    test "lookup_all (feed type)", %{pid: pid} do
-      DbCache.fetch(pid)
-      result = DbCache.lookup_all(pid, :feed_type, "ebay")
+    test "lookup_all (feed type)" do
+      DbCache.update(@name)
+      result = DbCache.lookup_all(@name, :feed_type, "ebay")
       assert length(result) == 6
     end
 
-    test "lookup_all (type country mobile)", %{pid: pid} do
-      DbCache.fetch(pid)
-      [result] = DbCache.lookup_all(pid, :type_country_mobile, {"ebay", "US", true})
+    test "lookup_all (type country mobile)" do
+      DbCache.update(@name)
+      [result] = DbCache.lookup_all(@name, :type_country_mobile, {"ebay", "US", true})
       assert result.__struct__ == Feed
       assert result.feed_type == "ebay"
       assert result.country_code == "US"
       assert result.is_mobile == true
     end
 
-    test "lookup_all (fail)", %{pid: pid} do
-      DbCache.fetch(pid)
-      result = DbCache.lookup_all(pid, :type_country_mobile, {:non, :existing, :record})
+    test "lookup_all (fail)" do
+      DbCache.update(@name)
+      result = DbCache.lookup_all(@name, :type_country_mobile, {:non, :existing, :record})
       assert result == []
     end
 
-    test "lookup_all (non-existent index)", %{pid: pid} do
-      DbCache.fetch(pid)
-      result = DbCache.lookup_all(pid, :not_an_index, nil)
+    test "lookup_all (non-existent index)" do
+      DbCache.update(@name)
+      result = DbCache.lookup_all(@name, :not_an_index, nil)
       assert result == []
     end
 
-    test "lookup (type country mobile)", %{pid: pid} do
-      DbCache.fetch(pid)
-      result = DbCache.lookup(pid, :type_country_mobile, {"ebay", "US", true})
+    test "lookup (type country mobile)" do
+      DbCache.update(@name)
+      result = DbCache.lookup(@name, :type_country_mobile, {"ebay", "US", true})
       assert result.__struct__ == Feed
       assert result.feed_type == "ebay"
       assert result.country_code == "US"
       assert result.is_mobile == true
     end
 
-    test "lookup (fail)", %{pid: pid} do
-      DbCache.fetch(pid)
-      result = DbCache.lookup(pid, :type_country_mobile, {:non, :existing, :record})
+    test "lookup (fail)" do
+      DbCache.update(@name)
+      result = DbCache.lookup(@name, :type_country_mobile, {:non, :existing, :record})
       assert result == nil
     end
   end
@@ -62,6 +64,7 @@ defmodule Apientry.DbCacheTest do
 
   defp start_cache(_context) do
     {:ok, pid} = DbCache.start_link(
+      name: @name,
       repo: Repo,
       query: Feed,
       indices: [
