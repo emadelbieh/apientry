@@ -3,6 +3,7 @@ defmodule DbCache do
   Database caching.
 
       {:ok, pid} = DbCache.start_link(
+        name: :feed,
         repo: Apientry.Repo,
         query: Apientry.Feed,
         indices: [
@@ -11,13 +12,13 @@ defmodule DbCache do
         ])
 
       # Updates indices
-      DbCache.update(pid)
+      DbCache.update(:feed)
 
       # Find one
-      DbCache.lookup(pid, :country_mobile, {"US", true})
+      DbCache.lookup(:feed, :country_mobile, {"US", true})
 
       # Find many
-      DbCache.lookup_all(pid, :country, "US")
+      DbCache.lookup_all(:feed, :country, "US")
   """
 
   use GenServer
@@ -38,6 +39,7 @@ defmodule DbCache do
 
     with {:ok, pid} <- GenServer.start_link(__MODULE__, options, name: options[:name]) do
       GenServer.call(pid, :init)
+      GenServer.call(pid, :update)
       {:ok, pid}
     end
   end
