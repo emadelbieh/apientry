@@ -11,7 +11,7 @@ defmodule Apientry.DbCacheSupervisor do
   alias Apientry.Publisher
   alias Apientry.TrackingId
 
-  def start_link do
+  def start_link(opts \\ []) do
     children = [
       worker(DbCache, [[
         name: :feed,
@@ -36,7 +36,7 @@ defmodule Apientry.DbCacheSupervisor do
         ]]], id: :tracking_id)
     ]
 
-    Supervisor.start_link(children, strategy: :one_for_one)
+    Supervisor.start_link(children, strategy: :one_for_one, name: opts[:name])
   end
 
   @doc """
