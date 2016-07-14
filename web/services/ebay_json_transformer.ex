@@ -71,19 +71,19 @@ defmodule Apientry.EbayJsonTransformer do
 
   `ProductOffer` URL's cover:
 
-  - `???`
+  - `categories.category[].items.item[].product`
 
   The following fields are added:
 
-  | Field                 | Taken from |
-  | -----                 | ---------- |
-  | `product_name`        | ?          |
-  | `category_name`       | ?          |
-  | `on_sale`             | ?          |
-  | `on_sale_percent_off` | ?          |
-  | `free_shipping`       | ?          |
-  | `minimum_price`       | ?          |
-  | `maximum_price`       | ?          |
+  | Field                 | Taken from                 |
+  | -----                 | ----------                 |
+  | `product_name`        | `product.name`             |
+  | `category_name`       | `category.name`            |
+  | `on_sale`             | `product.onSale`           |
+  | `on_sale_percent_off` | `product.onSalePercentOff` |
+  | `free_shipping`       | `product.freeShipping`     |
+  | `minimum_price`       | `product.minPrice`         |
+  | `maximum_price`       | `product.maxPrice`         |
 
   ## Attribute URL
 
@@ -173,6 +173,9 @@ defmodule Apientry.EbayJsonTransformer do
     |> Map.update("offer", nil, fn offer ->
       map_offer(offer, cat, assigns)
     end)
+    |> Map.update("product", nil, fn offer ->
+      map_product(product, cat, assigns)
+    end)
   end
 
   @doc """
@@ -194,6 +197,32 @@ defmodule Apientry.EbayJsonTransformer do
     |> Map.update("store", nil, fn store ->
       map_store(store, assigns)
     end)
+  end
+
+  @doc """
+  Transforms a `product` object.
+
+  Products are in `item.product`.
+  """
+  def map_product(product, cat, assigns) do
+    product
+    |> Map.update("productOffersURL", nil, fn url ->
+      build_product_url(url, assigns, product, category)
+    end)
+    |> Map.update("productSpecsURL", nil, fn url ->
+      build_product_url(url, assigns, product, category)
+    end)
+  end
+
+  def build_product_url(url, assigns, product, category) do
+    build_url(url, assigns,
+     product_name: product["name"],
+     category_name: category["name"],
+     on_sale: product["onSale"],
+     on_sale_percent_off: product["onSalePercentOff"],
+     free_shipping: product["freeShipping"],
+     minimum_price: product["minPrice"],
+     maximum_price: product["maximumPrice"])
   end
 
   @doc """
