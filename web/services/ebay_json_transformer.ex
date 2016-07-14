@@ -149,6 +149,11 @@ defmodule Apientry.EbayJsonTransformer do
         &filter_item(&1, assigns),
         &map_item(&1, cat, assigns))
     end)
+    |> safe_update_in(["items"], fn items ->
+      count = length(items["item"] || [])
+      items
+      |> Map.put("returnedItemCount", count)
+    end)
   end
 
   @doc """

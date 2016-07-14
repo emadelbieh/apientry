@@ -206,6 +206,8 @@ defmodule Apientry.EbayJsonTransformerTest do
     cat = Enum.at(result["categories"]["category"], 0)
     item = Enum.at(cat["items"]["item"], 0)
     assert !item
+
+    assert cat["items"]["returnedItemCount"] == 0
   end
 
   test "reject offers in same domain based on productOffersURL" do
