@@ -82,8 +82,8 @@ defmodule Apientry.EbayJsonTransformer do
   | `on_sale`             | `product.onSale`           |
   | `on_sale_percent_off` | `product.onSalePercentOff` |
   | `free_shipping`       | `product.freeShipping`     |
-  | `minimum_price`       | `product.minPrice`         |
-  | `maximum_price`       | `product.maxPrice`         |
+  | `minimum_price`       | `product.minPrice.value`   |
+  | `maximum_price`       | `product.maxPrice.value`   |
 
   ## Attribute URL
 
@@ -161,7 +161,14 @@ defmodule Apientry.EbayJsonTransformer do
     ! DomainFilter.matches?(domain, URI.parse(url).host)
   end
 
-  def filter_item(_, _), do: false
+  def filter_item(
+    %{"product" => %{"productOffersURL" => url}} = _item,
+    %{params: %{"domain" => domain}} = _assigns)
+  do
+    ! DomainFilter.matches?(domain, URI.parse(url).host)
+  end
+
+  def filter_item(_, _), do: true
 
   @doc """
   Transforms an `item` object.
@@ -173,7 +180,7 @@ defmodule Apientry.EbayJsonTransformer do
     |> Map.update("offer", nil, fn offer ->
       map_offer(offer, cat, assigns)
     end)
-    |> Map.update("product", nil, fn offer ->
+    |> Map.update("product", nil, fn product ->
       map_product(product, cat, assigns)
     end)
   end
@@ -204,7 +211,7 @@ defmodule Apientry.EbayJsonTransformer do
 
   Products are in `item.product`.
   """
-  def map_product(product, cat, assigns) do
+  def map_product(product, category, assigns) do
     product
     |> Map.update("productOffersURL", nil, fn url ->
       build_product_url(url, assigns, product, category)
@@ -221,8 +228,8 @@ defmodule Apientry.EbayJsonTransformer do
      on_sale: product["onSale"],
      on_sale_percent_off: product["onSalePercentOff"],
      free_shipping: product["freeShipping"],
-     minimum_price: product["minPrice"],
-     maximum_price: product["maximumPrice"])
+     minimum_price: get_in(product, ["minPrice", "value"]),
+     maximum_price: get_in(product, ["maxPrice", "value"]))
   end
 
   @doc """
