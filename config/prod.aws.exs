@@ -12,7 +12,7 @@ config :apientry, Apientry.Endpoint,
   server: true
 
 # Do not print debug messages in production
-config :logger, level: :info
+config :logger, level: :error
 
 config :apientry, Apientry.Endpoint,
   secret_key_base: "mmqcFIqKIVtMAVBn1c0u3YO+m6pzRAloZYNNkUQFJr8TxrRrm/rK0v+LCyDPQ4nI"
