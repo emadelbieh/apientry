@@ -1,9 +1,19 @@
 # This overrides `prod.secret.exs` in edeliver AWS deployments.
 use Mix.Config
 
-# In this file, we keep production configuration that
-# you likely want to automate and keep it away from
-# your version control system.
+config :apientry, Apientry.Endpoint,
+  http: [port: 3000],
+  url: [
+    host: "apientry.com",
+    port: 80
+  ],
+  cache_static_manifest: "priv/static/manifest.json",
+  root: ".",
+  server: true
+
+# Do not print debug messages in production
+config :logger, level: :info
+
 config :apientry, Apientry.Endpoint,
   secret_key_base: "mmqcFIqKIVtMAVBn1c0u3YO+m6pzRAloZYNNkUQFJr8TxrRrm/rK0v+LCyDPQ4nI"
 

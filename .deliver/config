@@ -32,7 +32,7 @@ pre_erlang_get_and_update_deps() {
   if [ "$TARGET_MIX_ENV" = "prod" ]; then
     status "Copying '$_secret_config_file_on_build_host' file to build dir"
     __sync_remote " # execute on build host
-      cp '$BUILD_AT/config/prod-aws.secret.exs' '$BUILD_AT/config/prod.secret.exs'
+      cp '$BUILD_AT/config/prod.aws.exs' '$BUILD_AT/config/prod.exs'
     "
   fi
 }
