@@ -42,6 +42,9 @@ config :geolix,
     {:country, File.cwd! <> "/vendor/mmdb/GeoLite2-Country.mmdb"}
   ]
 
+# Don't auto-update; it's only useful in production
+config :apientry, :db_cache, interval: nil
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

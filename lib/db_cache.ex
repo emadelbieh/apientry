@@ -23,6 +23,9 @@ defmodule DbCache do
 
   use GenServer
 
+  @config Application.get_env(:apientry, :db_cache)
+  @interval (@config && @config[:interval])
+
   @doc """
   Starts the GenServer. Returns `{:ok, pid}`.
   """
@@ -96,7 +99,19 @@ defmodule DbCache do
       state
       |> Map.put(:tables, tables)
 
+    if @interval != nil do
+      Process.send_after self(), :tick, @interval
+    end
+
     {:ok, do_update(state)}
+  end
+
+  # A `:tick` happens every `@interval` to update ourselves from the database.
+  def handle_info(:tick, state) do
+    pid = self()
+    Task.start fn -> update pid end
+    Process.send_after pid, :tick, @interval
+    {:noreply, state}
   end
 
   def handle_call(:get_state, _, state) do
