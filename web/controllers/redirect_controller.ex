@@ -46,7 +46,9 @@ defmodule Apientry.RedirectController do
       {:ok, map} <- decode_query(query_string),
       {:ok, url} <- extract_link(map)
     do
-      Apientry.Amplitude.track_redirect(map)
+      if get_req_header(conn, "x-apientry-dnt") == [] do
+        Apientry.Amplitude.track_redirect(map)
+      end
 
       conn
       |> redirect(external: url)

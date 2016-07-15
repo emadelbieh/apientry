@@ -35,7 +35,9 @@ defmodule Apientry.SearchController do
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
 
-        Apientry.Amplitude.track_publisher(conn.assigns)
+        if get_req_header(conn, "x-apientry-dnt") == [] do
+          Apientry.Amplitude.track_publisher(conn.assigns)
+        end
 
         conn
         |> put_status(status)
