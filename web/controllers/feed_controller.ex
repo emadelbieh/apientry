@@ -20,6 +20,7 @@ defmodule Apientry.FeedController do
 
     case Repo.insert(changeset) do
       {:ok, _feed} ->
+        DbCache.update(:feed)
         conn
         |> put_flash(:info, "Feed created successfully.")
         |> redirect(to: feed_path(conn, :index))
@@ -45,6 +46,7 @@ defmodule Apientry.FeedController do
 
     case Repo.update(changeset) do
       {:ok, _feed} ->
+        DbCache.update(:feed)
         conn
         |> put_flash(:info, "Feed updated successfully.")
         |> redirect(to: feed_path(conn, :index))
@@ -59,6 +61,7 @@ defmodule Apientry.FeedController do
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(feed)
+    DbCache.update(:feed)
 
     conn
     |> put_flash(:info, "Feed deleted successfully.")

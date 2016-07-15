@@ -28,6 +28,7 @@ defmodule Apientry.TrackingIdController do
 
     case Repo.insert(changeset) do
       {:ok, _tracking_id} ->
+        DbCache.update(:tracking_id)
         conn
         |> put_flash(:info, "Tracking created successfully.")
         |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
@@ -51,6 +52,7 @@ defmodule Apientry.TrackingIdController do
 
     case Repo.update(changeset) do
       {:ok, _tracking_id} ->
+        DbCache.update(:tracking_id)
         conn
         |> put_flash(:info, "Tracking updated successfully.")
         |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
@@ -65,6 +67,7 @@ defmodule Apientry.TrackingIdController do
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(tracking_id)
+    DbCache.update(:tracking_id)
 
     conn
     |> put_flash(:info, "Tracking deleted successfully.")

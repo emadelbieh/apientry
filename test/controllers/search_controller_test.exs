@@ -1,13 +1,15 @@
 defmodule Apientry.SearchControllerTest do
-  use Apientry.ConnCase
+  use Apientry.ConnCase, async: true
   use MockEbay
   import List, only: [keyfind: 3]
   import Plug.Conn, only: [put_req_header: 3]
   alias Apientry.Fixtures
+  alias Apientry.DbCacheSupervisor
 
   setup %{conn: conn} do
     Fixtures.mock_feeds
     Fixtures.mock_publishers
+    DbCacheSupervisor.update
 
     conn = conn
     |> put_req_header("accept", "application/json")
