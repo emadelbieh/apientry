@@ -9,7 +9,7 @@ defmodule Apientry.MockBasicAuth do
   @password Application.get_env(:apientry, :basic_auth)[:password]
 
   def auth(conn) do
-    header_content = "Basic " <> Base.encode64("#{@username}:#{@password}")
+    header_content = "Basic " <> Base.url_encode64("#{@username}:#{@password}")
     conn
     |> put_req_header("authorization", header_content)
   end

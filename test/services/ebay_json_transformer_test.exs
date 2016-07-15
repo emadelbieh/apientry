@@ -421,7 +421,7 @@ defmodule Apientry.EbayJsonTransformerTest do
   def decode_url(url) do
     url
     |> String.replace(@redirect_base, "")
-    |> Base.decode64!()
+    |> Base.url_decode64!()
     |> String.slice(1..-1)
     |> URI.decode_query()
   end

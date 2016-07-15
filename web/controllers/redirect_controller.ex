@@ -6,14 +6,14 @@ defmodule Apientry.RedirectController do
 
       http://sandbox.apientry.com/redirect/P2xpbms9aHR0cDovL2dvb2dsZS5jb20=
 
-  The fragment is a Base64-encoded string, starting with a `?` and a valid URI
+  The fragment is a url safe Base64-encoded string, starting with a `?` and a valid URI
   [query string](https://en.wikipedia.org/wiki/Query_string).
 
       ?querystring
 
   The query string should at least have a `link` property.
 
-      pry> Base.decode64("P2xpbms9aHR0cDovL2dvb2dsZS5jb20=")
+      pry> Base.url_decode64("P2xpbms9aHR0cDovL2dvb2dsZS5jb20=")
       "?link=http://google.com"
 
   ## Return values
