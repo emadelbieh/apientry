@@ -22,19 +22,10 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
-
 # Configure phoenix generators
 config :phoenix, :generators,
   migration: true,
   binary_id: false
-
-config :geolix,
-  databases: [
-    { :country, File.cwd! <> "/vendor/mmdb/GeoLite2-Country.mmdb" }
-  ]
 
 config :apientry, :basic_auth, [
   realm: "Admin area",
@@ -45,3 +36,15 @@ config :apientry, :basic_auth, [
 config :phoenix, :template_engines,
   slim: PhoenixSlime.Engine,
   slime: PhoenixSlime.Engine
+
+config :geolix,
+  databases: [
+    {:country, File.cwd! <> "/vendor/mmdb/GeoLite2-Country.mmdb"}
+  ]
+
+# Don't auto-update; it's only useful in production
+config :apientry, :db_cache, interval: nil
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env}.exs"

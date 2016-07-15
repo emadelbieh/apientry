@@ -23,3 +23,10 @@ config :apientry, Apientry.Repo,
   url: "postgres://apientry:fxuJbaisGapsBacroarh@apientry-production.c1snflmeflqw.us-east-1.rds.amazonaws.com:5432/apientry_production",
   pool_size: 10,
   ssl: true
+
+# Load remotely in AWS, because the local .mmdb file is not available when
+# building an exrm release.
+config :geolix,
+  databases: [
+    {:country, "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz"}
+  ]
