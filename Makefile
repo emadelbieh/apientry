@@ -9,7 +9,7 @@ deploy_release:
 	mix edeliver deploy release to production -V
 
 start:
-	mix edeliver start production
+	mix edeliver restart production
 
 migrate:
-	mix edeliver migrate production
+	./utils/migrate.sh

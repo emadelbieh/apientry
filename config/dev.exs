@@ -36,8 +36,6 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :apientry, Apientry.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "apientry_dev",
-  hostname: "localhost",
+  url: System.get_env("DATABASE_URL") ||
+    "postgres://postgres:postgres@localhost:5432/apientry_dev",
   pool_size: 10
