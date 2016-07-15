@@ -32,6 +32,9 @@
     - name: create user
       user: name=deployer
 
+    - name: mkdir .ssh
+      file: path=/home/deployer/.ssh state=directory owner=deployer
+
     - name: copy .ssh/authorized_keys
       copy: src=./files/ssh-authorized-keys dest=/home/deployer/.ssh/authorized_keys owner=deployer mode=600
 
