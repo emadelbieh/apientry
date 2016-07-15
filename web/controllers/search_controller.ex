@@ -34,6 +34,9 @@ defmodule Apientry.SearchController do
         headers = Enum.into(headers, %{}) # convert to map
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
+
+        Amplitude.track_publisher(conn.assigns)
+
         conn
         |> put_status(status)
         |> put_resp_content_type(headers["Content-Type"])

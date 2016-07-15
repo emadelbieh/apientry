@@ -27,6 +27,7 @@ defmodule Apientry.SearchControllerTest do
     domain: "site.com"
   ]
 
+  @tag :capture_log
   test "legit requests", %{conn: conn} do
     MockEbay.mock_ok do
       conn = get build_conn(), search_path(conn, :search, @valid_attrs)
@@ -42,6 +43,7 @@ defmodule Apientry.SearchControllerTest do
     end
   end
 
+  @tag :capture_log
   test "other params", %{conn: conn} do
     MockEbay.mock_ok do
       conn = get build_conn(), search_path(conn, :search, @valid_attrs ++ [xxx: 111])

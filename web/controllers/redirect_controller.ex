@@ -46,6 +46,8 @@ defmodule Apientry.RedirectController do
       {:ok, map} <- decode_query(query_string),
       {:ok, url} <- extract_link(map)
     do
+      Amplitude.track_redirect(map)
+
       conn
       |> redirect(external: url)
     else
@@ -61,7 +63,7 @@ defmodule Apientry.RedirectController do
   end
 
   defp decode_base64(fragment) do
-    case Base.decode64(fragment) do
+    case Base.url_decode64(fragment) do
       {:ok, decoded} -> {:ok, decoded}
       _ -> {:error, :invalid_base64, %{}}
     end

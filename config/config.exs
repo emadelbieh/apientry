@@ -45,6 +45,12 @@ config :geolix,
 # Don't auto-update; it's only useful in production
 config :apientry, :db_cache, interval: nil
 
+config :apientry, :amplitude,
+  url: "https://api.amplitude.com/httpapi",
+  app_id: "151574",
+  api_key: "13368ee3449b1b5bffa9b7253b232e9e",
+  secret_key: "a978ce4186ee60c202079ef56274222e"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
