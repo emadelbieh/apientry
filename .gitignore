@@ -16,3 +16,4 @@ erl_crash.dump
 /priv/static/
 /rel
 /.deliver/releases
+/config/*.override.exs

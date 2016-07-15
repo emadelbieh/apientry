@@ -53,4 +53,9 @@ config :apientry, :amplitude,
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+
+if File.exists?("#{Mix.env}.override.exs") do
+  import_config "#{Mix.env}.override.exs"
+else
+  import_config "#{Mix.env}.exs"
+end
