@@ -1,4 +1,4 @@
-- hosts: webservers
+- hosts: build
   user: ubuntu
   become: true
   become_user: root
@@ -29,15 +29,6 @@
     - name: install nodejs
       apt: pkg=nodejs=6.3.0-1nodesource1~trusty1 state=present
 
-    - name: create user
-      user: name=deployer shell=/bin/bash
-
-    - name: mkdir .ssh
-      file: path=/home/deployer/.ssh state=directory owner=deployer
-
-    - name: copy .ssh/authorized_keys
-      copy: src=./files/ssh-authorized-keys dest=/home/deployer/.ssh/authorized_keys owner=deployer mode=600
-
     - name: updating hex
       shell: mix local.hex --force
       args:
@@ -47,6 +38,22 @@
       shell: mix local.rebar --force
       args:
         creates: /home/ubuntu/.mix/rebar
+
+- hosts: webservers
+  user: ubuntu
+  become: true
+  become_user: root
+  vars:
+    ubuntu_version: trusty
+  tasks:
+    - name: create user
+      user: name=deployer shell=/bin/bash
+
+    - name: mkdir .ssh
+      file: path=/home/deployer/.ssh state=directory owner=deployer
+
+    - name: copy .ssh/authorized_keys
+      copy: src=./files/ssh-authorized-keys dest=/home/deployer/.ssh/authorized_keys owner=deployer mode=600
 
     - name: make /opt/app
       file: path=/opt/app state=directory owner=deployer
