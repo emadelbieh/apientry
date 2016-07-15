@@ -39,8 +39,3 @@ config :apientry, Apientry.Repo,
   url: System.get_env("DATABASE_URL") ||
     "postgres://postgres:postgres@localhost:5432/apientry_dev",
   pool_size: 10
-
-config :geolix,
-  databases: [
-    {:country, File.cwd! <> "/vendor/mmdb/GeoLite2-Country.mmdb"}
-  ]

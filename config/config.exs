@@ -40,3 +40,8 @@ config :apientry, :basic_auth, [
 config :phoenix, :template_engines,
   slim: PhoenixSlime.Engine,
   slime: PhoenixSlime.Engine
+
+config :geolix,
+  databases: [
+    {:country, File.cwd! <> "/vendor/mmdb/GeoLite2-Country.mmdb"}
+  ]
