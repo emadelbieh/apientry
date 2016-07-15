@@ -35,7 +35,7 @@ defmodule Apientry.SearchController do
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
 
-        Amplitude.track_publisher(conn.assigns)
+        Apientry.Amplitude.track_publisher(conn.assigns)
 
         conn
         |> put_status(status)

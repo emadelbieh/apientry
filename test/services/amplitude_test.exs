@@ -1,4 +1,4 @@
-defmodule AmplitudeTest do
+defmodule Apientry.AmplitudeTest do
   use ExUnit.Case
   import Mock
 
@@ -49,7 +49,7 @@ defmodule AmplitudeTest do
     body = {:form, [api_key: "13368ee3449b1b5bffa9b7253b232e9e",
                     event: Poison.encode!(expected)]}
 
-    {:ok, pid} = Amplitude.track_publisher(params)
+    {:ok, pid} = Apientry.Amplitude.track_publisher(params)
     ref = Process.monitor(pid)
 
     assert_receive {:DOWN, ^ref, :process, ^pid, :normal}, 100
@@ -75,7 +75,7 @@ defmodule AmplitudeTest do
     body = {:form, [api_key: "13368ee3449b1b5bffa9b7253b232e9e",
                     event: Poison.encode!(expected)]}
 
-    {:ok, pid} = Amplitude.track_redirect(params)
+    {:ok, pid} = Apientry.Amplitude.track_redirect(params)
     ref = Process.monitor(pid)
 
     assert_receive {:DOWN, ^ref, :process, ^pid, :normal}, 10

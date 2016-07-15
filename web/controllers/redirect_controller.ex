@@ -46,7 +46,7 @@ defmodule Apientry.RedirectController do
       {:ok, map} <- decode_query(query_string),
       {:ok, url} <- extract_link(map)
     do
-      Amplitude.track_redirect(map)
+      Apientry.Amplitude.track_redirect(map)
 
       conn
       |> redirect(external: url)
