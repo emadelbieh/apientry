@@ -1,4 +1,4 @@
-defmodule Amplitude do
+defmodule Apientry.Amplitude do
   @moduledoc """
   Amplitude.com API
   """
