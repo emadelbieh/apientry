@@ -30,7 +30,7 @@
       apt: pkg=nodejs=6.3.0-1nodesource1~trusty1 state=present
 
     - name: create user
-      user: name=deployer
+      user: name=deployer shell=/bin/bash
 
     - name: mkdir .ssh
       file: path=/home/deployer/.ssh state=directory owner=deployer
