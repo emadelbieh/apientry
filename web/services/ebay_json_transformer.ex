@@ -15,7 +15,7 @@ defmodule Apientry.EbayJsonTransformer do
 
   The Base64 fragment decodes to a `?` with a query string.
 
-      pry> Base.decode64!("P2xpbms9aHR0cDovL2dvb2dsZS5jb20maXNfbW9iaWxlPXRydWU=")
+      pry> Base.url_decode64!("P2xpbms9aHR0cDovL2dvb2dsZS5jb20maXNfbW9iaWxlPXRydWU=")
       "?link=http://google.com&is_mobile=true"
 
   The query string will have these fields below. See `build_url/3`.
@@ -105,7 +105,7 @@ defmodule Apientry.EbayJsonTransformer do
   | `authorized_reseller` | `store.authorizedReseller` |
 
   ## AttributeValue URL
-  
+
   - `categories.category[].attributes.attribute[].attributeValues.attributeValue[].attributeValueURL`
 
   The following fields are added:
@@ -309,7 +309,7 @@ defmodule Apientry.EbayJsonTransformer do
 
   def build_url_string(params, assigns) do
     assigns.redirect_base
-    <> Base.encode64("?" <> URI.encode_query(params))
+    <> Base.url_encode64("?" <> URI.encode_query(params))
   end
 
   # Supress nil errors, in case an offer has no items (or whatnot).

@@ -6,14 +6,14 @@ defmodule Apientry.RedirectController do
 
       http://sandbox.apientry.com/redirect/P2xpbms9aHR0cDovL2dvb2dsZS5jb20=
 
-  The fragment is a Base64-encoded string, starting with a `?` and a valid URI
+  The fragment is a url safe Base64-encoded string, starting with a `?` and a valid URI
   [query string](https://en.wikipedia.org/wiki/Query_string).
 
       ?querystring
 
   The query string should at least have a `link` property.
 
-      pry> Base.decode64("P2xpbms9aHR0cDovL2dvb2dsZS5jb20=")
+      pry> Base.url_decode64("P2xpbms9aHR0cDovL2dvb2dsZS5jb20=")
       "?link=http://google.com"
 
   ## Return values
@@ -46,6 +46,10 @@ defmodule Apientry.RedirectController do
       {:ok, map} <- decode_query(query_string),
       {:ok, url} <- extract_link(map)
     do
+      if get_req_header(conn, "x-apientry-dnt") == [] do
+        Apientry.Amplitude.track_redirect(map)
+      end
+
       conn
       |> redirect(external: url)
     else
@@ -61,7 +65,7 @@ defmodule Apientry.RedirectController do
   end
 
   defp decode_base64(fragment) do
-    case Base.decode64(fragment) do
+    case Base.url_decode64(fragment) do
       {:ok, decoded} -> {:ok, decoded}
       _ -> {:error, :invalid_base64, %{}}
     end
