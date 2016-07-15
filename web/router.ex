@@ -37,6 +37,8 @@ defmodule Apientry.Router do
     get "/redirect/:fragment", RedirectController, :show
 
     options "/publisher", SearchController, :search # for cors
+
+    get "/__healthcheck", HealthCheckController, :index
   end
 
   scope "/", Apientry do
