@@ -26,3 +26,13 @@ pre_erlang_clean_compile() {
     APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest $SILENCE
   "
 } 
+# https://github.com/boldpoker/edeliver/wiki/Embed-Secrets---Credentials-into-the-Release
+pre_erlang_get_and_update_deps() {
+  # copy it on the build host to the build directory when building
+  if [ "$TARGET_MIX_ENV" = "prod" ]; then
+    status "Copying '$_secret_config_file_on_build_host' file to build dir"
+    __sync_remote " # execute on build host
+      cp '$BUILD_AT/config/prod-aws.secret.exs' '$BUILD_AT/config/prod.secret.exs'
+    "
+  fi
+}
