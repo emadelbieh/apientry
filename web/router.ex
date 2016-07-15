@@ -39,9 +39,13 @@ defmodule Apientry.Router do
     options "/publisher", SearchController, :search # for cors
 
     get "/__healthcheck", HealthCheckController, :index
+
     get "/loaderio-b86e3ad1127445bea97f60fc77392f9c", LoaderVerificationController, :show_b86e3ad1
     get "/loaderio-b86e3ad1127445bea97f60fc77392f9c.html", LoaderVerificationController, :show_b86e3ad1
     get "/loaderio-b86e3ad1127445bea97f60fc77392f9c.txt", LoaderVerificationController, :show_b86e3ad1
+    get "/loaderio-694461ab4a923d21b45b975c4032b9ff", LoaderVerificationController, :show_694461ab
+    get "/loaderio-694461ab4a923d21b45b975c4032b9ff.html", LoaderVerificationController, :show_694461ab
+    get "/loaderio-694461ab4a923d21b45b975c4032b9ff.txt", LoaderVerificationController, :show_694461ab
   end
 
   scope "/", Apientry do
