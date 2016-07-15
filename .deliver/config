@@ -29,9 +29,9 @@ pre_erlang_clean_compile() {
 pre_erlang_get_and_update_deps() {
   # copy it on the build host to the build directory when building
   if [ "$TARGET_MIX_ENV" = "prod" ]; then
-    status "Copying '$_secret_config_file_on_build_host' file to build dir"
+    status "Copying 'prod.aws.exs' file to build dir"
     __sync_remote " # execute on build host
-      cp '$BUILD_AT/config/prod.aws.exs' '$BUILD_AT/config/prod.exs'
+      cp '$BUILD_AT/config/prod.aws.exs' '$BUILD_AT/config/prod.override.exs'
     "
   fi
 }
