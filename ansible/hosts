@@ -1,6 +1,9 @@
+# vim:ft=config
+
 [build]
 54.84.208.240
 
 [webservers]
+# Please keep this in sync with `.deliver/config`
 54.84.208.240
-54.174.203.202
+52.207.238.14

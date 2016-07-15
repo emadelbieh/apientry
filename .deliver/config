@@ -7,7 +7,8 @@ BUILD_USER="deployer"
 BUILD_AT="/home/deployer/apientry/builds"
 
 # deploy / production hosts separated by space
-PRODUCTION_HOSTS="54.84.208.240 54.174.203.202"
+# Please keep this in sync with `ansible/hosts`
+PRODUCTION_HOSTS="54.84.208.240 52.207.238.14"
 PRODUCTION_USER="deployer"
 DELIVER_TO="/opt/app/apientry"
 
