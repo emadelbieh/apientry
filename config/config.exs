@@ -31,11 +31,6 @@ config :phoenix, :generators,
   migration: true,
   binary_id: false
 
-config :geolix,
-  databases: [
-    { :country, File.cwd! <> "/vendor/mmdb/GeoLite2-Country.mmdb" }
-  ]
-
 config :apientry, :basic_auth, [
   realm: "Admin area",
   username: System.get_env("AUTH_USERNAME") || "admin",
