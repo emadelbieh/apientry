@@ -20,20 +20,22 @@ defmodule Apientry.Amplitude do
   }
 
   def track_publisher(body) do
+    new_properties = %{
+      "request_domain" => body[:params]["domain"],
+      "ip_address" => body[:params]["visitorIPAddress"],
+      "user_agent" => body[:params]["visitorUserAgent"],
+      "country_code" => body[:country],
+      "is_mobile" => body[:is_mobile],
+      "link" => body[:url],
+    }
+
     params = %{
       user_id: body[:publisher_name],
       event_type: "request",
       ip: body[:params]["visitorIPAddress"],
-      event_properties: %{
-        ip_address: body[:params]["visitorIPAddress"],
-        country: body[:country],
-        is_mobile: body[:is_mobile],
-        link: body[:url],
-        keyword: body[:params]["keyword"],
-        user_agent: body[:params]["visitorUserAgent"],
-        request_domain: body[:params]["domain"],
-      },
+      event_properties: Map.merge(body[:params], new_properties),
       groups: %{
+        company_id: 1,
         company_name: "ebay"
       }
     }
