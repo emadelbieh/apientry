@@ -1,9 +1,23 @@
 defmodule Apientry.Amplitude do
   @moduledoc """
-  Amplitude.com API
+  Amplitude.com API sender.
+
+  ## References
+
+  - [Amplitude HTTP API reference](https://amplitude.zendesk.com/hc/en-us/articles/204771828)
+  - [Property list as of v1.1.0](https://github.com/blackswan-ventures/apientry/issues/65#issuecomment-233222630)
   """
 
   @amplitude Application.get_env(:apientry, :amplitude) |> Enum.into(%{})
+
+  @event_names %{
+    "CLICK_ATTRIBUTEVALUE_URL" => true,
+    "CLICK_ATTRIBUTE_URL" => true,
+    "CLICK_CATEGORY_URL" => true,
+    "CLICK_OFFER_URL" => true,
+    "CLICK_PRODUCT_URL" => true,
+    "CLICK_REVIEW_URL" => true,
+  }
 
   def track_publisher(body) do
     params = %{
@@ -54,5 +68,4 @@ defmodule Apientry.Amplitude do
       end
     end
   end
-
 end

@@ -42,6 +42,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     url = Enum.at(result["categories"]["category"], 0)["categoryURL"]
     url_data = decode_url(url)
 
+    assert url_data["event"] == "CLICK_CATEGORY_URL"
     assert url_data["link"] == @category_url
     assert url_data["country_code"] == @country
     assert url_data["domain"] == "www.shopping.com"
@@ -90,6 +91,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     url = offer["offerURL"]
     url_data = decode_url(url)
 
+    assert url_data["event"] == "CLICK_OFFER_URL"
     assert url_data["link"] == @offer_url
     assert url_data["country_code"] == @country
     assert url_data["domain"] == "rover.ebay.com"
@@ -149,6 +151,7 @@ defmodule Apientry.EbayJsonTransformerTest do
 
     assert product["productOffersURL"] == product["productSpecsURL"]
 
+    assert url_data["event"] == "CLICK_PRODUCT_URL"
     assert url_data["link"] == @offer_url
     assert url_data["country_code"] == @country
     assert url_data["domain"] == "rover.ebay.com"
@@ -323,6 +326,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     url = attr["attributeURL"]
     url_data = decode_url(url)
 
+    assert url_data["event"] == "CLICK_ATTRIBUTE_URL"
     assert url_data["link"] == attribute_url
     assert url_data["country_code"] == @country
     assert url_data["domain"] == "www.shopping.com"
@@ -340,6 +344,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     url = a_value["attributeValueURL"]
     url_data = decode_url(url)
 
+    assert url_data["event"] == "CLICK_ATTRIBUTEVALUE_URL"
     assert url_data["link"] == attribute_value_url
     assert url_data["country_code"] == @country
     assert url_data["domain"] == "www.shopping.com"
@@ -404,6 +409,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     url = store["ratingInfo"]["reviewURL"]
     url_data = decode_url(url)
 
+    assert url_data["event"] == "CLICK_REVIEW_URL"
     assert url_data["link"] == review_url
     assert url_data["domain"] == "www.shopping.com"
     assert url_data["country_code"] == @country
