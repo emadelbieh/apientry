@@ -30,3 +30,5 @@ config :geolix,
   databases: [
     {:country, "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz"}
   ]
+
+config :apientry, :db_cache, interval: 30_000

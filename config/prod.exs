@@ -23,4 +23,4 @@ config :apientry, Apientry.Repo,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   ssl: true
 
-config :apientry, :db_cache, interval: 60_000
+config :apientry, :db_cache, interval: 30_000
