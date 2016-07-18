@@ -65,14 +65,20 @@ defmodule Apientry.AmplitudeTest do
   test_with_mock "track_redirect", %{url: url, headers: headers},
     HTTPoison, [], [post: fn _url, _body, _headers -> {:ok, "ok"} end] do
     params = %{
-      "link" => "www.example.com"
+      "event" => "CLICK_OFFER_URL",
+      "link" => "www.example.com",
+      "offer_name" => "Camera Lens"
     }
 
     expected = %{
       user_id: params["link"],
-      event_type: "redirect",
-      user_properties: params,
+      event_type: "CLICK_OFFER_URL",
+      event_properties: %{
+        "link" => "www.example.com",
+        "offer_name" => "Camera Lens"
+      },
       groups: %{
+        company_id: 1,
         company_name: "ebay"
       }
     }

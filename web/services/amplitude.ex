@@ -46,9 +46,10 @@ defmodule Apientry.Amplitude do
   def track_redirect(body) do
     params = %{
       user_id: body["link"], # Using this for now as it's the only required field
-      event_type: "redirect",
-      user_properties: body,
+      event_type: body["event"],
+      event_properties: Map.delete(body, "event"),
       groups: %{
+        company_id: 1,
         company_name: "ebay"
       }
     }
