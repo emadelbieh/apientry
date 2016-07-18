@@ -57,7 +57,7 @@ defmodule Apientry.Searcher do
   @doc """
   Performs a search.
 
-  See [Apientry.Searcher] for details and examples.
+  See `Apientry.Searcher` for details and examples.
   """
   def search(format, params, conn \\ nil) do
     with \

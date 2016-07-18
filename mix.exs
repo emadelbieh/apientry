@@ -9,8 +9,11 @@ defmodule Apientry.Mixfile do
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     source_url: "https://github.com/blackswan-ventures/apientry",
+     homepage_url: "https://github.com/blackswan-ventures/apientry",
      aliases: aliases,
-     deps: deps]
+     deps: deps,
+     docs: docs]
   end
 
   # Configuration for the OTP application.
@@ -53,6 +56,8 @@ defmodule Apientry.Mixfile do
      {:basic_auth, "~> 1.0.0"},
      {:edeliver, "~> 1.2.9"},
      {:plug, "~> 1.2-rc", override: true}, # https://twitter.com/elixirlang/status/753171413821976577
+     {:earmark, "~> 0.1", only: :dev},
+     {:ex_doc, "~> 0.11", only: :dev},
     ]
   end
 
@@ -75,5 +80,15 @@ defmodule Apientry.Mixfile do
       _ ->
         "0.0.0"
     end
+  end
+
+  def docs do
+    [
+      source_ref: "v#{git_version}",
+      main: "main",
+      extras:
+        Path.wildcard("*.md") ++
+        Path.wildcard("docs/**/*.md")
+    ]
   end
 end

@@ -17,3 +17,4 @@ erl_crash.dump
 /rel
 /.deliver/releases
 /config/*.override.exs
+/doc
