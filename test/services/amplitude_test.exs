@@ -32,7 +32,7 @@ defmodule Apientry.AmplitudeTest do
       user_id: params[:publisher_name],
       event_type: "request",
       ip: params[:params]["visitorIPAddress"],
-      user_properties: %{
+      event_properties: %{
         ip_address: params[:params]["visitorIPAddress"],
         country: params[:country],
         is_mobile: params[:is_mobile],

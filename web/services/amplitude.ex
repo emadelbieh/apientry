@@ -24,7 +24,7 @@ defmodule Apientry.Amplitude do
       user_id: body[:publisher_name],
       event_type: "request",
       ip: body[:params]["visitorIPAddress"],
-      user_properties: %{
+      event_properties: %{
         ip_address: body[:params]["visitorIPAddress"],
         country: body[:country],
         is_mobile: body[:is_mobile],
