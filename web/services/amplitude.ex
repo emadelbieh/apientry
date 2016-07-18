@@ -77,10 +77,9 @@ defmodule Apientry.Amplitude do
     Task.start fn ->
       case HTTPoison.post(@amplitude.url, data, headers) do
         {:ok, response} ->
-          IO.puts "\n\nAmplitude response: #{inspect response} \n\n"
-
+          nil
         {:error, reason} ->
-          IO.puts "\n\nAmplitude error: #{inspect reason} \n\n"
+          IO.puts "\n\nAmplitude error: #{inspect reason}\n\n"
       end
     end
   end
