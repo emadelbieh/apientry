@@ -18,6 +18,8 @@ defmodule EbaySearch do
     "visitorIPAddress" => ""
   }
 
+  @ebay_search_domain Application.get_env(:apientry, :ebay_search_domain)
+
   @doc """
   Generates Ebay Search URLs.
   Allowed options:
@@ -46,6 +48,6 @@ defmodule EbaySearch do
   end
 
   defp raw_search_base(ebay_format) do
-    "http://api.ebaycommercenetwork.com/publisher/3.0/#{ebay_format}/GeneralSearch"
+    "#{@ebay_search_domain}/publisher/3.0/#{ebay_format}/GeneralSearch"
   end
 end
