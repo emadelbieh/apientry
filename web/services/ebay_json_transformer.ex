@@ -2,7 +2,7 @@ defmodule Apientry.EbayJsonTransformer do
   @moduledoc """
   Transforms a JSON string based on some request information.
 
-  Transforms given `data` (a JSON string).
+  `transform/2` transforms given `data`, a Map parsed form JSON. It returns a Map as well.
 
       pry> Apientry.EbayJsonTransformer.transform(json_data, assigns)
 
@@ -42,8 +42,8 @@ defmodule Apientry.EbayJsonTransformer do
 
   `Category` URL's affect the following:
 
-  - `categories.category[].categoryURL`
-  - `searchHistory.categorySelection[].categoryURL`
+      categories.category[].categoryURL
+      searchHistory.categorySelection[].categoryURL
 
   The following fields are added:
 
@@ -55,7 +55,7 @@ defmodule Apientry.EbayJsonTransformer do
   ## Offer
   `Offer` URL's cover:
 
-  - `categories.category[].items.item[].offer.offerURL`
+      categories.category[].items.item[].offer.offerURL
 
   The following fields are added:
 
@@ -73,7 +73,7 @@ defmodule Apientry.EbayJsonTransformer do
 
   `ProductOffer` URL's cover:
 
-  - `categories.category[].items.item[].product`
+      categories.category[].items.item[].product
 
   The following fields are added:
 
@@ -90,7 +90,9 @@ defmodule Apientry.EbayJsonTransformer do
 
   ## Attribute URL
 
-  - `categories.category[].attributes.attribute[].attributeURL
+      categories.category[].attributes.attribute[].attributeURL
+
+  The following fielsd are added:
 
   | Field            | Taken from              |
   | -----            | ----------              |
@@ -100,7 +102,9 @@ defmodule Apientry.EbayJsonTransformer do
 
   ## Review URL
 
-  - `categories.category[].items.item[].offer.store.ratingInfo.reviewURL`
+      categories.category[].items.item[].offer.store.ratingInfo.reviewURL
+
+  The following fields are added:
 
   | Field                 | Taken from                 |
   | -----                 | ----------                 |
@@ -111,7 +115,7 @@ defmodule Apientry.EbayJsonTransformer do
 
   ## AttributeValue URL
 
-  - `categories.category[].attributes.attribute[].attributeValues.attributeValue[].attributeValueURL`
+      categories.category[].attributes.attribute[].attributeValues.attributeValue[].attributeValueURL
 
   The following fields are added:
 
@@ -125,6 +129,11 @@ defmodule Apientry.EbayJsonTransformer do
 
   alias Apientry.DomainFilter
 
+  @doc """
+  Transforms JSON data.
+
+  It transforms given `data`, a Map parsed form JSON. It returns a Map as well.
+  """
   def transform(data, assigns) do
     data
     |> safe_update_in(["categories", "category"], fn cats ->
