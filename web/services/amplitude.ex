@@ -19,6 +19,19 @@ defmodule Apientry.Amplitude do
     "CLICK_REVIEW_URL" => true,
   }
 
+  @doc """
+  Checks if a given event name is valid.
+
+      pry> Apientry.Amplitude.valid_event_name?("CLICK_OFFER_URL")
+      true
+
+      pry> Apientry.Amplitude.valid_event_name?("...")
+      false
+    """
+  def valid_event_name?(name) do
+    @event_names[name] == true
+  end
+
   def track_publisher(body) do
     new_properties = %{
       "request_domain" => body[:params]["domain"],

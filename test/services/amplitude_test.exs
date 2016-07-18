@@ -2,6 +2,8 @@ defmodule Apientry.AmplitudeTest do
   use ExUnit.Case
   import Mock
 
+  doctest Apientry.Amplitude
+
   setup do
     HTTPoison.start
     url = "https://api.amplitude.com/httpapi"

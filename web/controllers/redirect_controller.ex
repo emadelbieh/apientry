@@ -34,17 +34,21 @@ defmodule Apientry.RedirectController do
   - `invalid_base64` - Can't decode the string.
   - `invalid_format` - No `?` was found in the beginning.
   - `invalid_query_string` - The query string can't be decoded; likely because of unbalaced `%XX` entities.
+  - `invalid_event` - The given `event` name is wrong.
   - `no_link` - no `link` was present.
   """
 
   use Apientry.Web, :controller
+
+  alias Apientry.Amplitude
 
   def show(conn, %{"fragment" => fragment} = _params) do
     with \
       {:ok, decoded_fragment} <- decode_base64(fragment),
       {:ok, query_string} <- strip_question_mark(decoded_fragment),
       {:ok, map} <- decode_query(query_string),
-      {:ok, url} <- extract_link(map)
+      {:ok, url} <- extract_link(map),
+      :ok <- verify_event(map)
     do
       if get_req_header(conn, "x-apientry-dnt") == [] do
         Apientry.Amplitude.track_redirect(map)
@@ -63,6 +67,15 @@ defmodule Apientry.RedirectController do
         |> json(%{ "error": "Invalid request", "details": %{} })
     end
   end
+
+  defp verify_event(%{"event" => event}) do
+    case Amplitude.valid_event_name?(event) do
+      true -> :ok
+      _ -> {:error, :invalid_event, %{}}
+    end
+  end
+
+  defp verify_event(_), do: {:error, :invalid_event, %{}}
 
   defp decode_base64(fragment) do
     case Base.url_decode64(fragment) do
