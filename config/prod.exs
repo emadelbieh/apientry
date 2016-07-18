@@ -24,3 +24,6 @@ config :apientry, Apientry.Repo,
   ssl: true
 
 config :apientry, :db_cache, interval: 30_000
+
+config :apientry, :ebay_search_domain,
+  "http://sandbox.api.ebaycommercenetwork.com"

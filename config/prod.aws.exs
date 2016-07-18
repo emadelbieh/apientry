@@ -32,3 +32,6 @@ config :geolix,
   ]
 
 config :apientry, :db_cache, interval: 30_000
+
+config :apientry, :ebay_search_domain,
+  "http://api.ebaycommercenetwork.com"
