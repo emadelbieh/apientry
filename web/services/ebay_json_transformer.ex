@@ -124,15 +124,18 @@ defmodule Apientry.EbayJsonTransformer do
   """
 
   alias Apientry.DomainFilter
-  import Enum, only: [map: 2]
 
   def transform(data, assigns) do
     data
     |> safe_update_in(["categories", "category"], fn cats ->
-      cats |> map(& map_category(&1, assigns))
+      cats
+      |> Stream.filter(&filter_item(&1, assigns, ["categoryURL"]))
+      |> Enum.map(&map_category(&1, assigns))
     end)
     |> safe_update_in(["searchHistory", "categorySelection"], fn cats ->
-      cats |> map(& map_category(&1, assigns))
+      cats
+      |> Stream.filter(&filter_item(&1, assigns, ["categoryURL"]))
+      |> Enum.map(& map_category(&1, assigns))
     end)
   end
 
@@ -149,13 +152,15 @@ defmodule Apientry.EbayJsonTransformer do
        category_name: cat["name"])
     end)
     |> safe_update_in(["attributes", "attribute"], fn attributes ->
-      attributes |> map(& map_attribute(&1, cat, assigns))
+      attributes
+      |> Stream.filter(&filter_item(&1, assigns, ["attributeURL"]))
+      |> Enum.map(&map_attribute(&1, cat, assigns))
     end)
     |> safe_update_in(["items", "item"], fn items ->
       items
-      |> Enum.filter_map(
-        &filter_item(&1, assigns),
-        &map_item(&1, cat, assigns))
+      |> Stream.filter(&filter_item(&1, assigns, ["offer", "offerURL"]))
+      |> Stream.filter(&filter_item(&1, assigns, ["product", "productOffersURL"]))
+      |> Enum.map(&map_item(&1, cat, assigns))
     end)
     |> safe_update_in(["items"], fn items ->
       count = length(items["item"] || [])
@@ -167,21 +172,12 @@ defmodule Apientry.EbayJsonTransformer do
   @doc """
   Filters out items from the same domain.
   """
-  def filter_item(
-    %{"offer" => %{"offerURL" => url}} = _item,
-    %{params: %{"domain" => domain}} = _assigns)
-  do
-    ! DomainFilter.matches?(domain, URI.parse(url).host)
+  def filter_item(item, %{params: %{"domain" => domain}} = _assigns, access) do
+    case get_in(item, access) do
+      nil -> true
+      url -> ! DomainFilter.matches?(domain, URI.parse(url).host)
+    end
   end
-
-  def filter_item(
-    %{"product" => %{"productOffersURL" => url}} = _item,
-    %{params: %{"domain" => domain}} = _assigns)
-  do
-    ! DomainFilter.matches?(domain, URI.parse(url).host)
-  end
-
-  def filter_item(_, _), do: true
 
   @doc """
   Transforms an `item` object.
@@ -276,7 +272,9 @@ defmodule Apientry.EbayJsonTransformer do
        attribute_name: attribute["name"])
     end)
     |> safe_update_in(["attributeValues", "attributeValue"], fn items ->
-      items |> map(& map_attribute_value(&1, attribute, category, assigns))
+      items
+      |> Stream.filter(&filter_item(&1, assigns, ["attributeValueURL"]))
+      |> Enum.map(& map_attribute_value(&1, attribute, category, assigns))
     end)
   end
 

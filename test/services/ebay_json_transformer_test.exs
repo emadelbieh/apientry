@@ -4,8 +4,9 @@ defmodule Apientry.EbayJsonTransformerTest do
   alias Apientry.EbayJsonTransformer
 
   @redirect_base "https://sandbox.apientry.com/redirect/"
-  @category_url "http://www.shopping.com/camera-lenses/nikon/products?oq=nikon&linkin_id=8094918"
-  @offer_url "http://rover.ebay.com/rover/13/0/19/DealFrame/DealFrame.cmp?bm=222&BEFID=96323&aon=%5E1&MerchantID=6201&crawler_id=6201&dealId=I5GqWCz_Dxeyilo9jj06YQ%3D%3D&url=https%3A%2F%2Fwww.42photo.com%2FProduct%2Fnikon-70-200mm-f-2-8g-af-s-ed-vr-ii-zoom-lens-77mm%2F92703&linkin_id=8094918&Issdt=160711052619&searchID=p24.ea21531013086131c1d6&DealName=Nikon+70-200mm+f%2F2.8G+AF-S+ED+VR+II+Zoom+Lens+%2877mm%29&dlprc=1949.0&AR=1&NG=1&NDP=5&PN=1&ST=7&FPT=DSP&NDS=&NMS=&MRS=&PD=95870214&brnId=14763&IsFtr=0&IsSmart=0&op=&CM=&RR=1&IsLps=0&code=&acode=153&category=&HasLink=&ND=&MN=&GR=&lnkId=&SKU=JAA807DA&IID=&MEID="
+  @category_url "http://www.xyz.com/camera-lenses/nikon/products?oq=nikon&linkin_id=8094918"
+  @ebay_category_url "http://www.shopping.com/camera-lenses/nikon/products?oq=nikon&linkin_id=8094918"
+  @ebay_offer_url "http://rover.ebay.com/rover/13/0/19/DealFrame/DealFrame.cmp?bm=222&BEFID=96323&aon=%5E1&MerchantID=6201&crawler_id=6201&dealId=I5GqWCz_Dxeyilo9jj06YQ%3D%3D&url=https%3A%2F%2Fwww.42photo.com%2FProduct%2Fnikon-70-200mm-f-2-8g-af-s-ed-vr-ii-zoom-lens-77mm%2F92703&linkin_id=8094918&Issdt=160711052619&searchID=p24.ea21531013086131c1d6&DealName=Nikon+70-200mm+f%2F2.8G+AF-S+ED+VR+II+Zoom+Lens+%2877mm%29&dlprc=1949.0&AR=1&NG=1&NDP=5&PN=1&ST=7&FPT=DSP&NDS=&NMS=&MRS=&PD=95870214&brnId=14763&IsFtr=0&IsSmart=0&op=&CM=&RR=1&IsLps=0&code=&acode=153&category=&HasLink=&ND=&MN=&GR=&lnkId=&SKU=JAA807DA&IID=&MEID="
   @keyword "nikon camera"
   @ip_address "8.8.8.8"
   @is_mobile true
@@ -45,7 +46,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert url_data["event"] == "CLICK_CATEGORY_URL"
     assert url_data["link"] == @category_url
     assert url_data["country_code"] == @country
-    assert url_data["domain"] == "www.shopping.com"
+    assert url_data["domain"] == "www.xyz.com"
     assert url_data["ip_address"] == @ip_address
     assert url_data["is_mobile"] == to_string(@is_mobile)
     assert url_data["request_domain"] == @domain
@@ -67,7 +68,7 @@ defmodule Apientry.EbayJsonTransformerTest do
                   "offer" => %{
                     "name" => "AF Lens",
                     "manufacturer" => "Nikon",
-                    "offerURL" => @offer_url,
+                    "offerURL" => @ebay_offer_url,
                     "used" => false,
                     "basePrice" => %{
                       "value" => "912.00",
@@ -92,7 +93,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     url_data = decode_url(url)
 
     assert url_data["event"] == "CLICK_OFFER_URL"
-    assert url_data["link"] == @offer_url
+    assert url_data["link"] == @ebay_offer_url
     assert url_data["country_code"] == @country
     assert url_data["domain"] == "rover.ebay.com"
     assert url_data["ip_address"] == @ip_address
@@ -123,8 +124,8 @@ defmodule Apientry.EbayJsonTransformerTest do
                     "name" => "AF Lens",
                     "onSale" => true,
                     "onSalePercentOff" => "0",
-                    "productOffersURL" => @offer_url,
-                    "productSpecsURL" => @offer_url,
+                    "productOffersURL" => @ebay_offer_url,
+                    "productSpecsURL" => @ebay_offer_url,
                     "freeShipping" => false,
                     "minPrice" => %{
                       "value" => "912.00"
@@ -152,7 +153,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert product["productOffersURL"] == product["productSpecsURL"]
 
     assert url_data["event"] == "CLICK_PRODUCT_URL"
-    assert url_data["link"] == @offer_url
+    assert url_data["link"] == @ebay_offer_url
     assert url_data["country_code"] == @country
     assert url_data["domain"] == "rover.ebay.com"
     assert url_data["ip_address"] == @ip_address
@@ -183,7 +184,7 @@ defmodule Apientry.EbayJsonTransformerTest do
                   "offer" => %{
                     "name" => "AF Lens",
                     "manufacturer" => "Nikon",
-                    "offerURL" => @offer_url,
+                    "offerURL" => @ebay_offer_url,
                     "used" => false,
                     "basePrice" => %{
                       "value" => "912.00",
@@ -200,10 +201,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     }
 
     assigns = @assigns
-    |> Map.update!(:params, fn params ->
-      params
-      |> Map.put("domain", "ebay.com")
-    end)
+    |> put_in([:params, "domain"], "ebay.com")
     result = EbayJsonTransformer.transform(data, assigns)
 
     cat = Enum.at(result["categories"]["category"], 0)
@@ -211,6 +209,26 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert !item
 
     assert cat["items"]["returnedItemCount"] == 0
+  end
+
+  test "reject categories in same domain based on categoryURL" do
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => "http://www.ebay.com/"
+          }
+        ]
+      }
+    }
+
+    assigns = @assigns
+    |> put_in([:params, "domain"], "ebay.com")
+    result = EbayJsonTransformer.transform(data, assigns)
+
+    cats = result["categories"]["category"]
+    assert length(cats) == 0
   end
 
   test "reject offers in same domain based on productOffersURL" do
@@ -224,7 +242,7 @@ defmodule Apientry.EbayJsonTransformerTest do
               "item" => [
                 %{
                   "product" => %{
-                    "productOffersURL" => @offer_url
+                    "productOffersURL" => @ebay_offer_url
                   }
                 }
               ]
@@ -259,7 +277,7 @@ defmodule Apientry.EbayJsonTransformerTest do
                   "offer" => %{
                     "name" => "AF Lens",
                     "manufacturer" => "Nikon",
-                    "offerURL" => @offer_url,
+                    "offerURL" => @ebay_offer_url,
                     "used" => false,
                     "basePrice" => %{
                       "value" => "912.00",
@@ -377,7 +395,7 @@ defmodule Apientry.EbayJsonTransformerTest do
                   "offer" => %{
                     "name" => "AF Lens",
                     "manufacturer" => "Nikon",
-                    "offerURL" => @offer_url,
+                    "offerURL" => @ebay_offer_url,
                     "used" => false,
                     "basePrice" => %{
                       "value" => "912.00",
