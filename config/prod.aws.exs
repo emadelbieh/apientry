@@ -4,7 +4,7 @@ use Mix.Config
 config :apientry, Apientry.Endpoint,
   http: [port: 3000],
   url: [
-    host: "apientry.com",
+    host: "api.apientry.com",
     port: 80
   ],
   cache_static_manifest: "priv/static/manifest.json",
