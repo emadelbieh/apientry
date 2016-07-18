@@ -14,3 +14,10 @@ start:
 
 migrate:
 	./utils/migrate.sh
+
+console: keys
+	ssh deployer@52.207.238.14 -- /opt/app/apientry/apientry/bin/apientry remote_console
+
+keys:
+	chmod 600 ansible/keys/admin2.pem
+	ssh-add ansible/keys/admin2.pem
