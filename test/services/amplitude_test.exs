@@ -29,21 +29,26 @@ defmodule Apientry.AmplitudeTest do
         valid: true}
 
     expected = %{
-      user_id: params[:publisher_name],
-      event_type: "request",
-      ip: params[:params]["visitorIPAddress"],
-      user_properties: %{
-        ip_address: params[:params]["visitorIPAddress"],
-        country: params[:country],
-        is_mobile: params[:is_mobile],
-        link: params[:url],
-        keyword: params[:params]["keyword"],
-        user_agent: params[:params]["visitorUserAgent"],
-        request_domain: params[:params]["domain"],
+      event_properties: %{
+        "country_code" => "US",
+        "ip_address" => "8.8.8.8",
+        "is_mobile" => false,
+        "link" => "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=us-d&keyword=nikon&showOffersOnly=true&visitorIPAddress=8.8.8.8&visitorUserAgent=Chrome",
+        "request_domain" => "site.com",
+        "user_agent" => "Chrome",
+        "apiKey" => "us-d",
+        "domain" => "site.com",
+        "keyword" => "nikon",
+        "visitorIPAddress" => "8.8.8.8",
+        "visitorUserAgent" => "Chrome"
       },
+      event_type: "request",
       groups: %{
+        company_id: 1,
         company_name: "ebay"
-      }
+      },
+      ip: "8.8.8.8",
+      user_id: "Panda"
     }
 
     body = {:form, [api_key: "13368ee3449b1b5bffa9b7253b232e9e",
@@ -60,14 +65,20 @@ defmodule Apientry.AmplitudeTest do
   test_with_mock "track_redirect", %{url: url, headers: headers},
     HTTPoison, [], [post: fn _url, _body, _headers -> {:ok, "ok"} end] do
     params = %{
-      "link" => "www.example.com"
+      "event" => "CLICK_OFFER_URL",
+      "link" => "www.example.com",
+      "offer_name" => "Camera Lens"
     }
 
     expected = %{
       user_id: params["link"],
-      event_type: "redirect",
-      user_properties: params,
+      event_type: "CLICK_OFFER_URL",
+      event_properties: %{
+        "link" => "www.example.com",
+        "offer_name" => "Camera Lens"
+      },
       groups: %{
+        company_id: 1,
         company_name: "ebay"
       }
     }

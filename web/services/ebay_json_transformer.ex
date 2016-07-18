@@ -47,9 +47,10 @@ defmodule Apientry.EbayJsonTransformer do
 
   The following fields are added:
 
-  | Field           | Taken from    |
-  | -----           | ----------    |
-  | `category_name` | category.name |
+  | Field           | Taken from             |
+  | -----           | ----------             |
+  | `category_name` | `category.name`        |
+  | `event`         | `"CLICK_CATEGORY_URL"` |
 
   ## Offer
   `Offer` URL's cover:
@@ -66,6 +67,7 @@ defmodule Apientry.EbayJsonTransformer do
   | `price_value`    | `offer.basePrice.value`    |
   | `price_currency` | `offer.basePrice.currency` |
   | `stock_status`   | `offer.stockStatus`        |
+  | `event`          | `"CLICK_OFFER_URL"`        |
 
   ## ProductOffer
 
@@ -84,15 +86,17 @@ defmodule Apientry.EbayJsonTransformer do
   | `free_shipping`       | `product.freeShipping`     |
   | `minimum_price`       | `product.minPrice.value`   |
   | `maximum_price`       | `product.maxPrice.value`   |
+  | `event`               | `"CLICK_PRODUCT_URL"`      |
 
   ## Attribute URL
 
   - `categories.category[].attributes.attribute[].attributeURL
 
-  | Field            | Taken from       |
-  | -----            | ----------       |
-  | `category_name`  | `category.name`  |
-  | `attribute_name` | `attirbute.name` |
+  | Field            | Taken from              |
+  | -----            | ----------              |
+  | `category_name`  | `category.name`         |
+  | `attribute_name` | `attirbute.name`        |
+  | `event`          | `"CLICK_ATTRIBUTE_URL"` |
 
   ## Review URL
 
@@ -103,6 +107,7 @@ defmodule Apientry.EbayJsonTransformer do
   | `store`               | `store.name`               |
   | `trusted`             | `store.trusted`            |
   | `authorized_reseller` | `store.authorizedReseller` |
+  | `event`               | `"CLICK_REVIEW_URL"`       |
 
   ## AttributeValue URL
 
@@ -110,11 +115,12 @@ defmodule Apientry.EbayJsonTransformer do
 
   The following fields are added:
 
-  | Field                  | Taken from             |
-  | -----                  | ----------             |
-  | `category_name`        | `category.name`        |
-  | `attribute_name`       | `attirbute.name`       |
-  | `attribute_value_name` | `attirbute_value.name` |
+  | Field                  | Taken from                   |
+  | -----                  | ----------                   |
+  | `category_name`        | `category.name`              |
+  | `attribute_name`       | `attirbute.name`             |
+  | `attribute_value_name` | `attirbute_value.name`       |
+  | `event`                | `"CLICK_ATTRIBUTEVALUE_URL"` |
   """
 
   alias Apientry.DomainFilter
@@ -138,7 +144,9 @@ defmodule Apientry.EbayJsonTransformer do
   def map_category(cat, assigns) do
     cat
     |> Map.update("categoryURL", nil, fn url ->
-      build_url(url, assigns, category_name: cat["name"])
+      build_url(url, assigns,
+       event: "CLICK_CATEGORY_URL",
+       category_name: cat["name"])
     end)
     |> safe_update_in(["attributes", "attribute"], fn attributes ->
       attributes |> map(& map_attribute(&1, cat, assigns))
@@ -199,6 +207,7 @@ defmodule Apientry.EbayJsonTransformer do
     offer
     |> Map.update("offerURL", nil, fn url ->
       build_url(url, assigns,
+       event: "CLICK_OFFER_URL",
        offer_name: offer["name"],
        manufacturer: offer["manufacturer"],
        used: offer["used"],
@@ -228,6 +237,7 @@ defmodule Apientry.EbayJsonTransformer do
 
   def build_product_url(url, assigns, product, category) do
     build_url(url, assigns,
+     event: "CLICK_PRODUCT_URL",
      product_name: product["name"],
      category_name: category["name"],
      on_sale: product["onSale"],
@@ -245,6 +255,7 @@ defmodule Apientry.EbayJsonTransformer do
     store
     |> safe_update_in(["ratingInfo", "reviewURL"], fn url ->
       build_url(url, assigns,
+       event: "CLICK_REVIEW_URL",
        store: store["name"],
        trusted: store["trusted"],
        authorized_reseller: store["authorizedReseller"])
@@ -260,6 +271,7 @@ defmodule Apientry.EbayJsonTransformer do
     attribute
     |> Map.update("attributeURL", nil, fn url ->
       build_url(url, assigns,
+       event: "CLICK_ATTRIBUTE_URL",
        category_name: category["name"],
        attribute_name: attribute["name"])
     end)
@@ -277,6 +289,7 @@ defmodule Apientry.EbayJsonTransformer do
     attribute_value
     |> Map.update("attributeValueURL", nil, fn url ->
       build_url(url, assigns,
+       event: "CLICK_ATTRIBUTEVALUE_URL",
        category_name: category["name"],
        attribute_name: attribute["name"],
        attribute_value_name: attribute_value["name"])
