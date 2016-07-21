@@ -60,7 +60,8 @@ defmodule Apientry.ErrorReporter do
   """
   def track_ebay_response(
     conn, status,
-    %{"exceptions" => %{"exception" => [%{"message" => message}]}} = body,
+    %{"exceptions" => %{"exception" =>
+      [%{"message" => message, "type" => "error"}]}} = body,
     headers)
   do
     report(conn, %{
