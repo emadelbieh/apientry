@@ -2,7 +2,7 @@ defmodule Apientry.EbayTransformer do
   @moduledoc """
   Transforms JSON or XML.
 
-  See [Apientry.EbayJsonTransformer}.
+  See `Apientry.EbayJsonTransformer`.
   """
 
   alias Apientry.EbayJsonTransformer

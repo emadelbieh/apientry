@@ -1,6 +1,6 @@
 defmodule Apientry.DomainFilter do
   @moduledoc """
-  Domain filter used by [Apientry.EbayJsonTransformer].
+  Domain filter used by `Apientry.EbayJsonTransformer`.
 
       iex> Apientry.DomainFilter.matches?("ebay.com", "ebay.com")
       true
