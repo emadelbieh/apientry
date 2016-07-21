@@ -37,31 +37,35 @@
           h3= gettext "Try this"
           p Try pasting these to your terminal.
         .form
-          textarea.form-control(rows=3)
-            = "curl \""
-            = "#{@conn.scheme}://#{@conn.host}:#{@conn.port}"
-            = "/publisher"
-            = "?apiKey=#{@publisher.api_key}"
-            = "&keyword=nikon"
-            = "&visitorIPAddress=8.8.8.8"
-            = "&visitorUserAgent=Mozilla"
-            = "&domain=shopping.com"
-            = if @tracking_ids != [], do: "&trackingId=#{List.first(@tracking_ids).code}"
-            = "\""
+          div.try-this(role="try-this" data-apikey="#{@publisher.api_key}")
+            .try-this-header
+              .left
+                label
+                  input.form-control.-small[type="text" role="keyword" value="nikon" placeholder="#{gettext("Keyword")}..."]
+              .right
+                label
+                  span= gettext("Tracking ID") <> ":"
+                  select(role="trackingid")
+                    = for tracking_id <- @tracking_ids do
+                      option(value=tracking_id.code)= tracking_id.code
+                label
+                  select(role="ipaddress")
+                    option(value="8.8.8.8") US
+                    option(value="87.255.133.77") FR
+                    option(value="212.58.224.22") GB
+                    option(value="203.29.5.141") AU
+                label
+                  select(role="useragent")
+                    option(value="Mozilla OSX") Desktop
+                    option(value="Mozilla iPhone") Mobile
 
-          br
-          textarea.form-control(rows=4)
-            = "# Simulation mode (/dryrun)"
-            = "\n"
-            = "curl \""
-            = "#{@conn.scheme}://#{@conn.host}:#{@conn.port}"
-            = "/dryrun/publisher"
-            = "?apiKey=#{@publisher.api_key}"
-            = "&keyword=nikon"
-            = "&visitorIPAddress=8.8.8.8"
-            = "&visitorUserAgent=Mozilla"
-            = "&domain=shopping.com"
-            = if @tracking_ids != [], do: "&trackingId=#{List.first(@tracking_ids).code}"
-            = "\""
-            = " -u "
-            = Application.get_env(:apientry, :basic_auth)[:username]
+            .try-this-body
+              textarea.form-control(rows=6 role="text")
+
+              .tools
+                label
+                  span= gettext("View as") <> ":"
+                  select(role="as")
+                    option(value="url") Raw URL
+                    option(value="curl") cURL
+                    option(value="curl-dryrun") cURL (dryrun)

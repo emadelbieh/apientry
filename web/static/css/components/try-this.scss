@@ -1,0 +1,78 @@
+@import '../common';
+
+.try-this-header {
+  & {
+    @include clearfix;
+    background: rgba($primary, .2);
+    border: solid 1px rgba($primary, .4);
+    border-bottom: 0;
+    padding: 8px 16px 4px 16px;
+    line-height: 24px;
+
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+
+  > * > label {
+    font-weight: normal;
+    @include font-size(-1);
+  }
+
+  > .left > label {
+    margin-right: 16px;
+  }
+
+  > .right > label {
+    margin-left: 16px;
+  }
+
+  > .left {
+    float: left;
+  }
+
+  > .right {
+    float: right;
+  }
+
+  > * > label > span {
+    margin-right: 8px;
+    color: primary;
+  }
+
+  .form-control.-small {
+    @include font-size(-1);
+    padding: 0 12px;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 12px;
+  }
+}
+
+.try-this-body {
+  position: relative;
+
+  > .form-control {
+    resize: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding: 16px;
+    @include font-size(-1);
+    font-family: menlo, consolas, monospace;
+  }
+
+  > .tools {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  > .tools > label {
+    @include font-size(-1);
+    color: $primary;
+    font-weight: normal;
+  }
+
+  > .tools > label > select {
+    margin-left: 8px;
+  }
+}
