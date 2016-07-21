@@ -10,6 +10,7 @@ defmodule Apientry.SearchController do
   alias HTTPoison.Response
   alias Apientry.Searcher
   alias Apientry.EbayTransformer
+  alias Apientry.ErrorReporter
 
   plug :set_search_options when action in [:search, :dry_search]
 
@@ -31,9 +32,13 @@ defmodule Apientry.SearchController do
   def search(%{assigns: %{url: url, format: format}} = conn, _) do
     case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
+        body = Poison.decode!(body)
+        ErrorReporter.track_ebay_response(conn, status, body, headers)
+
         headers = Enum.into(headers, %{}) # convert to map
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
+        |> Poison.encode!()
 
         if get_req_header(conn, "x-apientry-dnt") == [] do
           Apientry.Amplitude.track_publisher(conn.assigns)
@@ -44,7 +49,8 @@ defmodule Apientry.SearchController do
         |> put_resp_content_type(headers["Content-Type"])
         |> render("index.xml", data: body)
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, %HTTPoison.Error{reason: reason} = error} ->
+        ErrorReporter.track_httpoison_error(conn, error)
         conn
         |> put_status(400)
         |> render(:error, data: %{error: reason})

@@ -1,5 +1,7 @@
 defmodule Apientry.Router do
   use Apientry.Web, :router
+  use Plug.ErrorHandler
+  alias Apientry.ErrorReporter
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -52,5 +54,9 @@ defmodule Apientry.Router do
     pipe_through :api
     pipe_through :secure
     get "/dryrun/publisher", SearchController, :dry_search
+  end
+
+  defp handle_errors(conn, details) do
+    ErrorReporter.report(conn, details)
   end
 end

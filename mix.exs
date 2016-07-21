@@ -25,7 +25,7 @@ defmodule Apientry.Mixfile do
        :phoenix, :phoenix_html, :cowboy, :logger, :gettext,
        :phoenix_ecto, :postgrex, :httpoison, :geolix,
        :phoenix_slime, :cors_plug, :phoenix_pubsub, :edeliver,
-       :basic_auth, :inets
+       :basic_auth, :inets, :rollbax
      ]]
   end
 
@@ -56,6 +56,7 @@ defmodule Apientry.Mixfile do
      {:basic_auth, "~> 1.0.0"},
      {:edeliver, "~> 1.2.9"},
      {:plug, "~> 1.2-rc", override: true}, # https://twitter.com/elixirlang/status/753171413821976577
+     {:rollbax, "~> 0.6"},
      {:earmark, "~> 0.1", only: :dev},
      {:ex_doc, "~> 0.11", only: :dev},
     ]
