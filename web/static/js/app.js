@@ -65,6 +65,9 @@ $(document).on('click', 'a[data-submit="parent"]', function (e) {
       + window.location.protocol
       + '//'
       + window.location.hostname
+      + (window.location.port
+        ? (':' + window.location.port)
+        : '')
 
     var query = queryString({
       apiKey: options.apiKey,
