@@ -31,3 +31,5 @@ config :apientry, :ebay_search_domain,
 config :rollbax,
   access_token: "fcbe67e9abd04a69b3581fd26062c928",
   environment: "sandbox"
+
+config :apientry, :rollbar_enabled, true

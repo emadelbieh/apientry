@@ -3,6 +3,8 @@ defmodule Apientry.ErrorReporter do
   Reports errors.
   """
 
+  @enabled Application.get_env(:apientry, :rollbar_enabled)
+
   @doc """
   Reports an error to `Rollbax.report`, but adds data from `conn` and `custom_data`.
 
@@ -18,7 +20,10 @@ defmodule Apientry.ErrorReporter do
 
   - https://rollbar.com/docs/api/items_post/
   """
-  def report(conn, %{kind: kind, reason: reason, stack: stacktrace}, custom_data \\ %{}) do
+  def report(conn, kind, custom_data \\ %{})
+  def report(_, _, _) when @enabled == false, do: true
+
+  def report(conn, %{kind: kind, reason: reason, stack: stacktrace}, custom_data) do
     conn = conn
     |> Plug.Conn.fetch_cookies()
     |> Plug.Conn.fetch_query_params()

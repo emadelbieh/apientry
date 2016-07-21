@@ -59,6 +59,8 @@ config :rollbax,
   access_token: "fcbe67e9abd04a69b3581fd26062c928",
   environment: "development"
 
+config :apientry, :rollbar_enabled, false
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 
