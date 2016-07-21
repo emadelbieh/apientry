@@ -11,6 +11,9 @@ config :apientry, Apientry.Endpoint,
   root: ".",
   server: true
 
+config :logger, backends: [Rollbax.Logger]
+config :logger, Rollbax.Logger, level: :error
+
 # Do not print debug messages in production
 config :logger, level: :error
 
@@ -35,3 +38,7 @@ config :apientry, :db_cache, interval: 30_000
 
 config :apientry, :ebay_search_domain,
   "http://api.ebaycommercenetwork.com"
+
+config :rollbax,
+  access_token: "fcbe67e9abd04a69b3581fd26062c928",
+  environment: "production"
