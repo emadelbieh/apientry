@@ -59,11 +59,11 @@ defmodule Apientry.ErrorReporter do
     headers)
   do
     report(conn, %{
-      kind: :throw,
-      reason: :"[eBay] #{message}",
+      kind: :error,
+      reason: RuntimeError.exception("[eBay] #{message}"),
       stack: System.stacktrace()
     }, %{
-      fingerprint: "eBay exception #{message}",
+      fingerprint: "eBay exception #{message} 1",
       custom: %{
         ebay_body: body,
         ebay_status: status,
@@ -75,11 +75,11 @@ defmodule Apientry.ErrorReporter do
   def track_ebay_response(conn, status, body, headers)
   when status < 200 or status > 399 do
     report(conn, %{
-      kind: :throw,
-      reason: :"[eBay] Status #{status}",
+      kind: :error,
+      reason: RuntimeError.exception("[eBay] Status #{status}"),
       stack: System.stacktrace()
     }, %{
-      fingerprint: "eBay status #{status}",
+      fingerprint: "eBay status #{status} 1",
       custom: %{
         ebay_body: body,
         ebay_status: status,
@@ -95,11 +95,11 @@ defmodule Apientry.ErrorReporter do
   """
   def track_httpoison_error(conn, %HTTPoison.Error{reason: reason} = err) do
     report(conn, %{
-     kind: :throw,
-     reason: :"[HTTP] #{reason}",
+     kind: :error,
+     reason: RuntimeError.exception("[HTTP] #{reason}"),
      stack: System.stacktrace()
    }, %{
-     fingerprint: "httpoison #{reason}",
+     fingerprint: "httpoison #{reason} 1",
      custom: %{err: err}
    })
   end
