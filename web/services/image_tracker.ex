@@ -6,7 +6,7 @@ defmodule Apientry.ImageTracker do
 
   def track_anomalies(json) do
     json
-    |> remove_keys(@unwanted_keys)
+    |> Map.drop(@unwanted_keys)
     |> Map.put(:apiKey, @apiKey)
     |> Map.put(:trackingId, @trackingId)
     |> URI.encode_query
@@ -14,17 +14,11 @@ defmodule Apientry.ImageTracker do
     |> http_get!
   end
 
-  def remove_keys(map, keys) do
-    keys |> Enum.reduce(map, fn(key, result) ->
-      Map.delete(result, key)
-    end)
-  end
-
-  def prepend_host_details(query_string) do
+  defp prepend_host_details(query_string) do
     @host_details <> "?" <> query_string
   end
 
-  def http_get!(url) do
+  defp http_get!(url) do
     HTTPoison.get! url
   end
 end
