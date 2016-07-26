@@ -19,6 +19,6 @@ defmodule Apientry.ImageTracker do
   end
 
   defp http_get!(url) do
-    HTTPoison.get! url
+    HTTPoison.get!(url)
   end
 end
