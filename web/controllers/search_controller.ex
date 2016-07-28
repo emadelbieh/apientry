@@ -20,6 +20,13 @@ defmodule Apientry.SearchController do
       GET /dryrun/publisher?keyword=nikon
   """
   def dry_search(%{assigns: assigns} = conn, _) do
+    # `params` is a keyword list, which you can't JSON-ify.
+    assigns = assigns
+    |> Map.update(:params, %{}, &(Enum.into(&1, %{})))
+    # |> Map.update(:params, %{}, fn params ->
+    #   params |> Enum.map(fn {key, value} -> %{key: key, value: value} end)
+    # end)
+
     conn
     |> json(assigns)
   end
@@ -73,7 +80,10 @@ defmodule Apientry.SearchController do
   Sets search options to be picked up by `search/2` (et al).
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
   """
-  def set_search_options(%{params: params} = conn, _) do
+  def set_search_options(%{params: _params, query_string: query_string} = conn, _) do
+    params = query_string
+    |> StringKeyword.from_query_string()
+
     format = get_format(conn)
     result = Searcher.search(format, params, conn)
     result

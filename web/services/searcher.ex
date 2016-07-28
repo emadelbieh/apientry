@@ -60,16 +60,24 @@ defmodule Apientry.Searcher do
   See `Apientry.Searcher` for details and examples.
   """
   def search(format, params, conn \\ nil) do
+    # Convert List to Map for easy access.
+    map_params = params |> Enum.into(%{})
+
+    # Convert Keyword list into a list with string keys.
+    raw_params = params |> Enum.into([])
+
     with \
-      :ok              <- validate_params(params),
-      {:ok, publisher} <- get_publisher(params),
-      {:ok, country}   <- get_country(params),
-      {:ok, is_mobile} <- get_is_mobile(params),
-      :ok              <- validate_tracking_code(params, publisher),
+      :ok              <- validate_params(map_params),
+      {:ok, publisher} <- get_publisher(map_params),
+      {:ok, country}   <- get_country(map_params),
+      {:ok, is_mobile} <- get_is_mobile(map_params),
+      :ok              <- validate_tracking_code(map_params, publisher),
       {:ok, feed}      <- get_feed(country, is_mobile)
     do
-      params = put_in(params["apiKey"], feed.api_key)
-      new_params = Map.delete(params, "domain")
+      new_params = raw_params
+      |> StringKeyword.put("apiKey", feed.api_key)
+      |> StringKeyword.delete("domain")
+
       url = EbaySearch.search(format, new_params)
       %{
         valid: true,
@@ -78,7 +86,7 @@ defmodule Apientry.Searcher do
         country: country,
         redirect_base: redirect_base_path(conn),
         publisher_name: publisher.name,
-        params: params,
+        params: map_params,
         url: url
       }
     else
