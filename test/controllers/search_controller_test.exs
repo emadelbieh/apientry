@@ -101,7 +101,6 @@ defmodule Apientry.SearchControllerTest do
       "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch"
       <> "?apiKey=us-d"
       <> "&keyword=nikon"
-      <> "&showOffersOnly=true"
       <> "&visitorIPAddress=8.8.8.8"
       <> "&visitorUserAgent=Chrome"
   end
