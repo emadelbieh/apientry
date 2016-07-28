@@ -15,12 +15,8 @@ defmodule EbaySearch do
   Generates Ebay Search URLs.
   Allowed options:
 
-  - `keyword` - required
   - `format` (:json or :xml) - defaults to :json
-  - `apiKey`
-  - `visitorUserAgent`
-  - `visitorIPAddress`
-  - `trackingId`
+  - `params` - can be either a `Map`, a `Keyword` list, or a `StringKeyword` list (a keyword list with string keys).
 
   Parameters are string keys, like Phoenix's `params`.
   """
