@@ -44,6 +44,18 @@ defmodule Apientry.SearchControllerTest do
   end
 
   @tag :capture_log
+  test "legit requests with repeating keys", %{conn: conn} do
+    MockEbay.mock_ok do
+      path = search_path(conn, :search, @valid_attrs)
+      <> "&attributeValue=apple"
+      <> "&attributeValue=banana"
+
+      conn = get build_conn(), path
+      assert conn.status == 200
+    end
+  end
+
+  @tag :capture_log
   test "other params", %{conn: conn} do
     MockEbay.mock_ok do
       conn = get build_conn(), search_path(conn, :search, @valid_attrs ++ [xxx: 111])
@@ -103,6 +115,28 @@ defmodule Apientry.SearchControllerTest do
       <> "&keyword=nikon"
       <> "&visitorIPAddress=8.8.8.8"
       <> "&visitorUserAgent=Chrome"
+  end
+
+  test "dry run of a request with repeating keys", %{conn: conn} do
+    path = search_path(conn, :dry_search, @valid_attrs)
+    <> "&attributeValue=apple"
+    <> "&attributeValue=banana"
+
+    conn = get conn, path
+    body = json_response(conn, 200)
+
+    assert body["valid"] == true
+    assert body["country"] == "US"
+    assert body["format"] == "json"
+    assert body["is_mobile"] == false
+    assert body["url"] ==
+      "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch"
+      <> "?apiKey=us-d"
+      <> "&keyword=nikon"
+      <> "&visitorIPAddress=8.8.8.8"
+      <> "&visitorUserAgent=Chrome"
+      <> "&attributeValue=apple"
+      <> "&attributeValue=banana"
   end
 
   test "dry run of an invalid request", %{conn: conn} do

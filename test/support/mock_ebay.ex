@@ -51,6 +51,10 @@ defmodule MockEbay do
     http_get_ok_json
   end
 
+  def http_get("http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=us-d&keyword=nikon&visitorIPAddress=8.8.8.8&visitorUserAgent=Chrome&attributeValue=apple&attributeValue=banana") do
+    http_get_ok_json
+  end
+
   def http_get("http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=us-d&keyword=nikon&visitorIPAddress=8.8.8.8&visitorUserAgent=Chrome&xxx=111") do
     http_get_ok_json
   end
