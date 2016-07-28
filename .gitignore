@@ -18,6 +18,3 @@ erl_crash.dump
 /.deliver/releases
 /config/*.override.exs
 /doc
-
-*.swp
-.*~
