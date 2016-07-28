@@ -18,19 +18,17 @@ defmodule Apientry.ImageTracker do
   end
 
   defp extract_items(categories) do
-    Enum.map(categories, fn category ->
+    Enum.flat_map(categories, fn category ->
       %{"items" => %{"item" => items}} = category
       items
     end)
-    |> List.flatten
   end
 
   defp extract_images(items) do
-    Enum.map(items, fn item ->
+    Enum.flat_map(items, fn item ->
       %{"offer" => %{"imageList" => %{"image" => images}}} = item
       images
     end)
-    |> List.flatten
   end
 
   defp extract_source_urls(images) do
@@ -38,6 +36,5 @@ defmodule Apientry.ImageTracker do
       %{"sourceURL" => url} = image
       url
     end)
-    |> List.flatten
   end
 end
