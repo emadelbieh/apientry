@@ -7,8 +7,9 @@ defmodule Apientry.ImageTracker do
     |> Enum.map(fn image -> image["sourceURL"] end)
   end
 
-  def track(image_urls) do
-    # TODO: implement me
+  def track_images(conn) do
+    # TODO: write test
+    Apientry.Amplitude.track_images(conn, image_urls)
   end
 
   defp extract_categories(body) do
@@ -24,6 +25,7 @@ defmodule Apientry.ImageTracker do
   end
 
   defp extract_images(items) do
+    # TODO: handle scenario when "offer" is not available
     Stream.flat_map(items, fn item ->
       %{"offer" => %{"imageList" => %{"image" => images}}} = item
       images

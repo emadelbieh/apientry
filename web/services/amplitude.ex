@@ -70,6 +70,17 @@ defmodule Apientry.Amplitude do
     send_request(params)
   end
 
+  def track_images(conn, image_urls) do
+    request_uri = "#{conn.scheme}://#{conn.host}#{conn.request_path}?#{conn.query_string}"
+    send_request(%{
+      event_type: "track_images",
+      event_properties: %{
+        request_uri: request_uri,
+        image_urls: image_urls
+      }
+    })
+  end
+
   def send_request(params) do
     headers = %{"Content-Type": "application/json"}
     data = {:form, [api_key: @amplitude.api_key, event: Poison.encode!(params)]}
