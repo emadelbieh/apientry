@@ -1,4 +1,13 @@
 defmodule StringKeyword do
+  @moduledoc """
+  Just like Keyword lists, but uses string keys.
+
+  In Apientry, weneed to support repeating keywords, hence the need for this.
+
+  Most of this code is taken from Elixir's own `Keyword` module, only adapted
+  to check using `is_binary/1` instead of `is_atom/1`.
+  """
+
   def delete(keywords, key, value) when is_list(keywords) and is_binary(key) do
     :lists.filter(fn {k, v} -> k != key or v != value end, keywords)
   end
@@ -22,8 +31,7 @@ defmodule StringKeyword do
   @doc """
   Turns a query string into a list of `{key, value}` tuples.
 
-  Compare this with `Plug.Conn.Query.decode/1`, which returns a Map. In
-  Apientry, weneed to support repeating keywords, hence the need for this.
+  Compare this with `Plug.Conn.Query.decode/1`, which returns a Map.
 
       iex> StringKeyword.from_query_string("domain=ebay.com&keyword=nikon+camera")
       [{"domain", "ebay.com"}, {"keyword", "nikon camera"}]

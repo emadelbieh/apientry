@@ -4,10 +4,10 @@ defmodule Apientry.Searcher do
   what the HTTP request to be performed.
 
       pry> params = %{
-      ...>   "apiKey" => "...",
-      ...>   "keyword" => "nikon",
-      ...>   "visitorIPAddress" => "203.168.4.23"
-      ...>   "visitorUserAgent" => "Mozilla/5.0 (iPhone; U)"
+      ...>   {"apiKey", "..."},
+      ...>   {"keyword", "nikon"},
+      ...>   {"visitorIPAddress", "203.168.4.23"},
+      ...>   {"visitorUserAgent", "Mozilla/5.0 (iPhone; U)"}
       ...> }
       pry> Searcher.search("json", params)
       %{
@@ -18,6 +18,8 @@ defmodule Apientry.Searcher do
         "publisher_name" => "Buzzfeed",
         "url" => "http://api.ebaycommercenetwork.com/publ..."
       }
+
+  `params` can either be a list of `{key, value}` string tuples or a map.
 
   `result["url"]` is the key here. The rest are only used for debugging purposes.
 
