@@ -34,7 +34,6 @@ defmodule Apientry.SearcherTest do
       <> URI.encode_query(%{
         "apiKey" => "us-d",
         "keyword" => "nikon",
-        "showOffersOnly" => "true",
         "visitorIPAddress" => @us_ip,
         "visitorUserAgent" => @chrome_user_agent
       })
@@ -94,7 +93,6 @@ defmodule Apientry.SearcherTest do
       <> URI.encode_query(%{
         "apiKey" => "gb-d",
         "keyword" => "nikon",
-        "showOffersOnly" => "true",
         "visitorIPAddress" => @gb_ip,
         "visitorUserAgent" => @chrome_user_agent
       })
@@ -119,7 +117,6 @@ defmodule Apientry.SearcherTest do
       <> URI.encode_query(%{
         "apiKey" => "us-d",
         "keyword" => "nikon",
-        "showOffersOnly" => "true",
         "visitorIPAddress" => @us_ip,
         "visitorUserAgent" => @chrome_user_agent,
         "trackingId" => "panda-a"
