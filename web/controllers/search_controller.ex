@@ -21,13 +21,6 @@ defmodule Apientry.SearchController do
       GET /dryrun/publisher?keyword=nikon
   """
   def dry_search(%{assigns: assigns} = conn, _) do
-    # `params` is a keyword list, which you can't JSON-ify.
-    assigns = assigns
-    |> Map.update(:params, %{}, &(Enum.into(&1, %{})))
-    # |> Map.update(:params, %{}, fn params ->
-    #   params |> Enum.map(fn {key, value} -> %{key: key, value: value} end)
-    # end)
-
     conn
     |> json(assigns)
   end
