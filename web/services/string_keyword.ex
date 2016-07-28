@@ -1,4 +1,4 @@
-defmodule StringKeyword do
+defmodule Apientry.StringKeyword do
   @moduledoc """
   Just like Keyword lists, but uses string keys.
 
@@ -31,9 +31,9 @@ defmodule StringKeyword do
   @doc """
   Turns a query string into a list of `{key, value}` tuples.
 
-  Compare this with `Plug.Conn.Query.decode/1`, which returns a Map.
+  Compare this with `Plug.Conn.Query.decode/1`, which returns a Map. This one supports repeating keywords.
 
-      iex> StringKeyword.from_query_string("domain=ebay.com&keyword=nikon+camera")
+      iex> Apientry.StringKeyword.from_query_string("domain=ebay.com&keyword=nikon%20camera")
       [{"domain", "ebay.com"}, {"keyword", "nikon camera"}]
   """
   def from_query_string(query_string) do

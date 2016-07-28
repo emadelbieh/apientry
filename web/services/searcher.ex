@@ -45,6 +45,7 @@ defmodule Apientry.Searcher do
   """
 
   alias Apientry.MobileDetection
+  alias Apientry.StringKeyword
   # alias Apientry.EbaySearch
   # alias Apientry.IpLookup
 

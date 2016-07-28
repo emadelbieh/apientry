@@ -11,6 +11,7 @@ defmodule Apientry.SearchController do
   alias Apientry.Searcher
   alias Apientry.EbayTransformer
   alias Apientry.ErrorReporter
+  alias Apientry.StringKeyword
 
   plug :set_search_options when action in [:search, :dry_search]
 
