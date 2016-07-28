@@ -8,7 +8,6 @@ defmodule Apientry.ImageTracker do
   end
 
   def track_images(conn, body) do
-    # TODO: write test
     Apientry.Amplitude.track_images(conn, get_image_urls(body))
   end
 
