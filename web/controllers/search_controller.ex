@@ -33,6 +33,9 @@ defmodule Apientry.SearchController do
     case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
+        Task.start(fn ->
+          Apientry.ImageTracker.track_images(conn, body)
+        end)
         ErrorReporter.track_ebay_response(conn, status, body, headers)
 
         headers = Enum.into(headers, %{}) # convert to map
