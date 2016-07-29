@@ -19,4 +19,40 @@ defmodule EbaySearchTest do
     assert url =~ ~r[aaa=1]
     assert url =~ ~r[bbb=2]
   end
+
+  test "keyword lists" do
+    url = EbaySearch.search("xml", keyword: "nikon")
+    assert url ==
+      "http://api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
+      <> "?keyword=nikon"
+  end
+
+  test "maps (string keys)" do
+    url = EbaySearch.search("xml", %{"keyword" => "nikon"})
+    assert url ==
+      "http://api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
+      <> "?keyword=nikon"
+  end
+
+  test "maps (atom keys)" do
+    url = EbaySearch.search("xml", %{keyword: "nikon"})
+    assert url ==
+      "http://api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
+      <> "?keyword=nikon"
+  end
+
+  test "stringkeyword lists" do
+    url = EbaySearch.search("xml", [{"keyword", "nikon"}])
+    assert url ==
+      "http://api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
+      <> "?keyword=nikon"
+  end
+
+  test "duplicate keys" do
+    url = EbaySearch.search("xml", keyword: "nikon", keyword: "camera")
+    assert url ==
+      "http://api.ebaycommercenetwork.com/publisher/3.0/rest/GeneralSearch"
+      <> "?keyword=nikon"
+      <> "&keyword=camera"
+  end
 end

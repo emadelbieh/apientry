@@ -21,23 +21,49 @@ defmodule Apientry.SearcherTest do
   end
 
   test "finding via apiKey" do
-    body = Searcher.search("json", %{
-      "apiKey" => @panda_key,
-      "keyword" => "nikon",
-      "visitorIPAddress" => @us_ip,
-      "visitorUserAgent" => @chrome_user_agent,
-      "domain" => "site.com"
-    })
+    body = Searcher.search("json", [
+      {"apiKey", @panda_key},
+      {"keyword", "nikon"},
+      {"visitorIPAddress", @us_ip},
+      {"visitorUserAgent", @chrome_user_agent},
+      {"domain", "site.com"}
+    ])
 
     expected =
       "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?"
       <> URI.encode_query(%{
         "apiKey" => "us-d",
         "keyword" => "nikon",
-        "showOffersOnly" => "true",
         "visitorIPAddress" => @us_ip,
         "visitorUserAgent" => @chrome_user_agent
       })
+
+    assert body[:format] == "json"
+    assert body[:country] == "US"
+    assert body[:url] == expected
+  end
+
+  test "support repeating attributes" do
+    body = Searcher.search("json", [
+      {"apiKey", @panda_key},
+      {"keyword", "nikon"},
+      {"visitorIPAddress", @us_ip},
+      {"visitorUserAgent", @chrome_user_agent},
+      {"domain", "site.com"},
+      {"attributeValue", "apple"},
+      {"attributeValue", "banana"},
+    ])
+
+    expected =
+      "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?"
+      <> URI.encode_query(%{
+        "apiKey" => "us-d",
+        "keyword" => "nikon",
+        "visitorIPAddress" => @us_ip,
+        "visitorUserAgent" => @chrome_user_agent
+      })
+      <> "&attributeValue=apple"
+      <> "&attributeValue=banana"
 
     assert body[:format] == "json"
     assert body[:country] == "US"
@@ -94,7 +120,6 @@ defmodule Apientry.SearcherTest do
       <> URI.encode_query(%{
         "apiKey" => "gb-d",
         "keyword" => "nikon",
-        "showOffersOnly" => "true",
         "visitorIPAddress" => @gb_ip,
         "visitorUserAgent" => @chrome_user_agent
       })
@@ -119,7 +144,6 @@ defmodule Apientry.SearcherTest do
       <> URI.encode_query(%{
         "apiKey" => "us-d",
         "keyword" => "nikon",
-        "showOffersOnly" => "true",
         "visitorIPAddress" => @us_ip,
         "visitorUserAgent" => @chrome_user_agent,
         "trackingId" => "panda-a"

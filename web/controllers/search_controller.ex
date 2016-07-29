@@ -11,6 +11,7 @@ defmodule Apientry.SearchController do
   alias Apientry.Searcher
   alias Apientry.EbayTransformer
   alias Apientry.ErrorReporter
+  alias Apientry.StringKeyword
 
   plug :set_search_options when action in [:search, :dry_search]
 
@@ -76,7 +77,10 @@ defmodule Apientry.SearchController do
   Sets search options to be picked up by `search/2` (et al).
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
   """
-  def set_search_options(%{params: params} = conn, _) do
+  def set_search_options(%{query_string: query_string} = conn, _) do
+    params = query_string
+    |> StringKeyword.from_query_string()
+
     format = get_format(conn)
     result = Searcher.search(format, params, conn)
     result
