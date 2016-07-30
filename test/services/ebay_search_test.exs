@@ -9,6 +9,11 @@ defmodule EbaySearchTest do
     assert url =~ ~r[apiKey=aoeu]
   end
 
+  test "custom endpoint" do
+    url = EbaySearch.search("xml", "CategoryTree", keyword: "nikon")
+    assert url =~ ~r[/publisher/3.0/rest/CategoryTree]
+  end
+
   test "xml" do
     url = EbaySearch.search("xml", keyword: "nikon")
     assert url =~ ~r[/publisher/3.0/rest/GeneralSearch]
