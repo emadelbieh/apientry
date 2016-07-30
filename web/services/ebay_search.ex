@@ -2,10 +2,10 @@ defmodule EbaySearch do
   @moduledoc """
   Generates Ebay Search URLs.
 
-      EbaySearch.search("html", keyword: "nikon")
+      EbaySearch.search("html", "GeneralSearch", keyword: "nikon")
       => "http://sandbox.api.ebay.../?keyword=nikon"
 
-      iex> EbaySearch.search("html", keyword: "nikon")
+      iex> EbaySearch.search("html", "GeneralSearch", keyword: "nikon")
       "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?keyword=nikon"
   """
 
@@ -20,10 +20,6 @@ defmodule EbaySearch do
 
   Parameters are string keys, like Phoenix's `params`.
   """
-  def search(format, params) do
-    search(format, "GeneralSearch", params)
-  end
-
   def search(format, endpoint, params) do
     search_base(format, endpoint) <> "?" <> URI.encode_query(params)
   end
