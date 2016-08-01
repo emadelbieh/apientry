@@ -37,6 +37,7 @@ defmodule Apientry.AmplitudeTest do
         "is_mobile" => false,
         "link" => "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=us-d&keyword=nikon&showOffersOnly=true&visitorIPAddress=8.8.8.8&visitorUserAgent=Chrome",
         "request_domain" => "site.com",
+        "endpoint" => "/",
         "user_agent" => "Chrome",
         "apiKey" => "us-d",
         "domain" => "site.com",
