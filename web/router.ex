@@ -36,6 +36,7 @@ defmodule Apientry.Router do
   scope "/", Apientry do
     pipe_through :api
     get "/publisher", SearchController, :search
+    get "/publisher/:endpoint", SearchController, :search
     get "/redirect/:fragment", RedirectController, :show
 
     options "/publisher", SearchController, :search # for cors

@@ -35,6 +35,7 @@ defmodule Apientry.Amplitude do
   def track_publisher(body) do
     new_properties = %{
       "request_domain" => body[:params]["domain"],
+      "endpoint" => body[:params]["endpoint"] || "/",
       "ip_address" => body[:params]["visitorIPAddress"],
       "user_agent" => body[:params]["visitorUserAgent"],
       "country_code" => body[:country],
