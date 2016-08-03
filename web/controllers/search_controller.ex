@@ -80,9 +80,11 @@ defmodule Apientry.SearchController do
   def set_search_options(%{query_string: query_string} = conn, _) do
     params = query_string
     |> StringKeyword.from_query_string()
+    |> StringKeyword.put("endpoint", conn.params["endpoint"])
 
     format = get_format(conn)
     result = Searcher.search(format, params, conn)
+
     result
     |> Enum.reduce(conn, fn {key, val}, conn -> assign(conn, key, val) end)
   end
