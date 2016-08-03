@@ -55,6 +55,7 @@ defmodule Apientry.Router do
     pipe_through :api
     pipe_through :secure
     get "/dryrun/publisher", SearchController, :dry_search
+    get "/dryrun/publisher/:endpoint", SearchController, :dry_search
   end
 
   defp handle_errors(conn, details) do
