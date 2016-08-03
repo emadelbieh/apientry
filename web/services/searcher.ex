@@ -80,8 +80,10 @@ defmodule Apientry.Searcher do
       new_params = raw_params
       |> StringKeyword.put("apiKey", feed.api_key)
       |> StringKeyword.delete("domain")
+      |> StringKeyword.delete("endpoint")
 
-      endpoint = Map.get(map_params, "endpoint", "GeneralSearch")
+      endpoint = Map.get(map_params, "endpoint") || "GeneralSearch"
+
       url = EbaySearch.search(format, endpoint, new_params)
       %{
         valid: true,
