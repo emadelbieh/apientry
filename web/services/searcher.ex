@@ -62,7 +62,7 @@ defmodule Apientry.Searcher do
 
   See `Apientry.Searcher` for details and examples.
   """
-  def search(format, params, conn \\ nil) do
+  def search(format, endpoint, params, conn \\ nil) do
     # Convert List to Map for easy access.
     map_params = params |> Enum.into(%{})
 
@@ -81,7 +81,6 @@ defmodule Apientry.Searcher do
       |> StringKeyword.put("apiKey", feed.api_key)
       |> StringKeyword.delete("domain")
 
-      endpoint = Map.get(map_params, "endpoint", "GeneralSearch")
       url = EbaySearch.search(format, endpoint, new_params)
       %{
         valid: true,

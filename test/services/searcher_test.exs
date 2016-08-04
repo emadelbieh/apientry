@@ -12,6 +12,7 @@ defmodule Apientry.SearcherTest do
   @chrome_user_agent "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36"
 
   @panda_key "panda-abc"
+  @default_endpoint "GeneralSearch"
 
   setup do
     Fixtures.mock_feeds
@@ -21,7 +22,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "finding via apiKey" do
-    body = Searcher.search("json", [
+    body = Searcher.search("json", @default_endpoint, [
       {"apiKey", @panda_key},
       {"keyword", "nikon"},
       {"visitorIPAddress", @us_ip},
@@ -44,7 +45,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "support repeating attributes" do
-    body = Searcher.search("json", [
+    body = Searcher.search("json", @default_endpoint, [
       {"apiKey", @panda_key},
       {"keyword", "nikon"},
       {"visitorIPAddress", @us_ip},
@@ -73,7 +74,7 @@ defmodule Apientry.SearcherTest do
   test "setting redirect_base (conn)", %{conn: conn} do
     conn = get conn, "/"
 
-    body = Searcher.search("json", %{
+    body = Searcher.search("json", @default_endpoint, %{
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
@@ -85,7 +86,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "mobile check" do
-    body = Searcher.search("json", %{
+    body = Searcher.search("json", @default_endpoint, %{
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
@@ -96,7 +97,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "desktop check" do
-    body = Searcher.search("json", %{
+    body = Searcher.search("json", @default_endpoint, %{
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
@@ -107,7 +108,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "finding via apiKey (GB)" do
-    body = Searcher.search("json", %{
+    body = Searcher.search("json", @default_endpoint, %{
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @gb_ip,
@@ -130,7 +131,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "validating tracking ID" do
-    body = Searcher.search("json", %{
+    body = Searcher.search("json", @default_endpoint, %{
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "visitorIPAddress" => @us_ip,
@@ -155,7 +156,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "validating tracking ID (invalid)" do
-    body = Searcher.search("json", %{
+    body = Searcher.search("json", @default_endpoint, %{
       "apiKey" => @panda_key,
       "keyword" => "nikon",
       "trackingId" => "avant-a", # not our tracking ID!
@@ -169,7 +170,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "validating params" do
-    body = Searcher.search("json", %{ })
+    body = Searcher.search("json", @default_endpoint, %{ })
 
     assert body[:valid] == false
     assert body[:error] == :missing_parameters
@@ -180,7 +181,7 @@ defmodule Apientry.SearcherTest do
   end
 
   test "validating params (2)" do
-    body = Searcher.search("json", %{"apiKey" => ""})
+    body = Searcher.search("json", @default_endpoint, %{"apiKey" => ""})
 
     assert body[:valid] == false
     assert body[:error] == :missing_parameters

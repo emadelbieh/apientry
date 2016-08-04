@@ -5,6 +5,8 @@ defmodule Apientry.SearchController do
       GET /publisher?keyword=nikon
   """
 
+  @default_endpoint "GeneralSearch"
+
   use Apientry.Web, :controller
 
   alias HTTPoison.Response
@@ -82,7 +84,9 @@ defmodule Apientry.SearchController do
     |> StringKeyword.from_query_string()
 
     format = get_format(conn)
-    result = Searcher.search(format, params, conn)
+    endpoint = conn.params["endpoint"] || @default_endpoint
+    result = Searcher.search(format, endpoint, params, conn)
+
     result
     |> Enum.reduce(conn, fn {key, val}, conn -> assign(conn, key, val) end)
   end
