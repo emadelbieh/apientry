@@ -8,22 +8,34 @@ defmodule Apientry.ImageTracker do
   end
 
   def track_images(conn, body) do
-    Apientry.Amplitude.track_images(conn, get_image_urls(body))
+    case get_image_urls(body) do
+      {:ok, images} ->
+        Apientry.Amplitude.track_images(conn, images)
+        {:ok, images}
+      _ ->
+        :error
+    end
   end
 
-  defp extract_categories(body) do
-    %{"categories" => %{"category" => categories}} = body
-    categories
+  defp extract_categories(%{"exceptions" => _}) do
+    :error
+  end
+  defp extract_categories(%{"categories" => %{"category" => categories}}) do
+    {:ok, categories}
   end
 
-  defp extract_items(categories) do
-    Stream.flat_map(categories, fn category ->
+  defp extract_items({:ok, categories}) do
+    items = Stream.flat_map(categories, fn category ->
       %{"items" => %{"item" => items}} = category
       items
     end)
+    {:ok, items}
+  end
+  defp extract_items(_) do
+    :error
   end
 
-  defp extract_images(items) do
+  defp extract_images({:ok, items}) do
     Stream.flat_map(items, fn item ->
       cond do
         item["offer"] ->
@@ -33,5 +45,8 @@ defmodule Apientry.ImageTracker do
           []
       end
     end)
+  end
+  defp extract_images(_) do
+    []
   end
 end
