@@ -17,11 +17,11 @@ defmodule Apientry.ImageTracker do
     end
   end
 
-  defp extract_categories(%{"exceptions" => _}) do
-    :error
-  end
   defp extract_categories(%{"categories" => %{"category" => categories}}) do
     {:ok, categories}
+  end
+  defp extract_categories(_) do
+    :error
   end
 
   defp extract_items({:ok, categories}) do
