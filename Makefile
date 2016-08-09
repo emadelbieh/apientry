@@ -11,6 +11,8 @@ deploy_release:
 	mix edeliver deploy release to production -V --version="${VERSION}"
 
 start:
+	ssh deployer@52.207.238.14 -- ${bin} restart
+	ssh deployer@54.84.208.240 -- ${bin} restart
 	ssh deployer@52.207.238.14 -- ${bin} start
 	ssh deployer@54.84.208.240 -- ${bin} start
 
