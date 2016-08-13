@@ -58,6 +58,26 @@ defmodule Apientry.ErrorReporter do
   @doc """
   Tracks an eBay response, and reports it if it's problematic.
   """
+  def track_ebay_response(
+    conn, status,
+    %{"exceptions" => %{"exception" =>
+      [%{"message" => message, "type" => "error"}]}} = body,
+    headers)
+  do
+    report(conn, %{
+      kind: :error,
+      reason: RuntimeError.exception("[eBay] #{message}"),
+      stack: System.stacktrace()
+    }, %{
+      fingerprint: "eBay exception #{message} 1",
+      custom: %{
+        ebay_body: body,
+        ebay_status: status,
+        ebay_headers: Enum.into(headers, %{})
+      }
+    })
+  end
+
   def track_ebay_response(conn, status, body, headers)
   when status < 200 or status > 399 do
     report(conn, %{
