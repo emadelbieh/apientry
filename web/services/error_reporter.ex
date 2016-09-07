@@ -96,6 +96,11 @@ defmodule Apientry.ErrorReporter do
 
   def track_ebay_response(_conn, _status, _body, _headers), do: true
 
+  @doc """
+  Tracks either of the following;
+    - an image without content
+    - an image that does not resolve to a 200ish status code
+  """
   def track_anomalous_image(conn, %{status_code: status, headers: headers}) do
     headers = headers |> Enum.into(%{})
     content_length = headers["Content-Length"] || headers["content-length"]
