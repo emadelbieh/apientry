@@ -7,21 +7,26 @@ defmodule Apientry.ImageTracker do
     |> Enum.map(fn image -> image["sourceURL"] end)
   end
 
+  @doc """
+  Gets image urls from the result of the query and list them on Amplitude.
+  Images that are anomalous gets listed to Rollbar.
+  """
   def track_images(conn, body) do
     case get_image_urls(body) do
       {:ok, images} ->
         Apientry.Amplitude.track_images(conn, images)
+        track_anomalous_images(conn, images)
         {:ok, images}
       _ ->
         :error
     end
   end
 
-  def track_anomalous_images(conn, image_urls) do
+  defp track_anomalous_images(conn, image_urls) do
     for image_url <- image_urls do
       Task.start(fn ->
         {:ok, metadata} = HTTPoison.get(image_url)
-        Apientry.ErrorReporter.track_anomalous_image(conn, metadata)
+        Apientry.ErrorReporter.track_anomalous_image(conn, metadata, image_url)
       end)
     end
   end

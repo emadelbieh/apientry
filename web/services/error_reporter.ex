@@ -101,15 +101,14 @@ defmodule Apientry.ErrorReporter do
     - an image without content
     - an image that does not resolve to a 200ish status code
   """
-  def track_anomalous_image(conn, %{status_code: status, headers: headers}) do
+  def track_anomalous_image(conn, %{status_code: status, headers: headers}, image_url) do
     headers = headers |> Enum.into(%{})
     content_length = headers["Content-Length"] || headers["content-length"]
 
     unless status in 200..299 && content_length != "0" do
-      reason = "Status not 200ish and/or content length < 1"
       report(conn, %{
-        kind: :message,
-        reason: reason,
+        kind: :error,
+        reason: RuntimeError.exception("Anomalous image: #{image_url}"),
         stack: System.stacktrace()}, %{})
     end
   end
