@@ -39,3 +39,8 @@ config :apientry, Apientry.Repo,
   url: System.get_env("DATABASE_URL") ||
     "postgres://postgres:postgres@localhost:5432/apientry_dev",
   pool_size: 10
+
+config :apientry, :amplitude,
+  api_key: "c8353e008b3d15a7e584db46a9e44e51"
+
+config :apientry, :rollbar_enabled, true

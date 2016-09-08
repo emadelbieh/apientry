@@ -74,6 +74,7 @@ defmodule Apientry.Amplitude do
   def track_images(conn, image_urls) do
     request_uri = "#{conn.scheme}://#{conn.host}#{conn.request_path}?#{conn.query_string}"
     send_request(%{
+      user_id: "system",
       event_type: "track_images",
       event_properties: %{
         request_uri: request_uri,

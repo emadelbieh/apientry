@@ -97,6 +97,23 @@ defmodule Apientry.ErrorReporter do
   def track_ebay_response(_conn, _status, _body, _headers), do: true
 
   @doc """
+  Tracks either of the following;
+    - an image without content
+    - an image that does not resolve to a 200ish status code
+  """
+  def track_anomalous_image(conn, %{status_code: status, headers: headers}, image_url) do
+    headers = headers |> Enum.into(%{})
+    content_length = headers["Content-Length"] || headers["content-length"]
+
+    unless status in 200..299 && content_length != "0" do
+      report(conn, %{
+        kind: :error,
+        reason: RuntimeError.exception("Anomalous image: #{image_url}"),
+        stack: System.stacktrace()}, %{})
+    end
+  end
+
+  @doc """
   Tracks HTTPoison errors
   """
   def track_httpoison_error(conn, %HTTPoison.Error{reason: reason} = err) do
