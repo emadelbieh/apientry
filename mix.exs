@@ -59,6 +59,7 @@ defmodule Apientry.Mixfile do
      {:rollbax, "~> 0.6"},
      {:earmark, "~> 0.1", only: :dev},
      {:ex_doc, "~> 0.11", only: :dev},
+     {:xml_builder, "~> 0.0.6"},
     ]
   end
 
