@@ -41,10 +41,8 @@ defmodule Apientry.SearchController do
         end)
         ErrorReporter.track_ebay_response(conn, status, body, headers)
 
-        headers = Enum.into(headers, %{}) # convert to map
-        body = body
-        |> EbayTransformer.transform(conn.assigns, format)
-        |> Poison.encode!()
+        request_format = conn.assigns.params["format"] || format
+        body = transform_by_format(conn, body, request_format)
 
         if get_req_header(conn, "x-apientry-dnt") == [] do
           Apientry.Amplitude.track_publisher(conn.assigns)
@@ -52,7 +50,7 @@ defmodule Apientry.SearchController do
 
         conn
         |> put_status(status)
-        |> put_resp_content_type(headers["Content-Type"])
+        |> put_resp_content_type("text/#{request_format}")
         |> render("index.xml", data: body)
 
       {:error, %HTTPoison.Error{reason: reason} = error} ->
@@ -60,6 +58,20 @@ defmodule Apientry.SearchController do
         conn
         |> put_status(400)
         |> render(:error, data: %{error: reason})
+    end
+  end
+
+  defp transform_by_format(conn, body, format) do
+    case format do
+      "json" ->
+        body
+        |> EbayTransformer.transform(conn.assigns, format)
+        |> Poison.encode!()
+      "xml" ->
+        body = body
+        |> EbayTransformer.transform(conn.assigns, format)
+        |> XmlBuilder.generate
+        "<?xml version='1.0' encoding='UTF-8' ?>" <> body
     end
   end
 
