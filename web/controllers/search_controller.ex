@@ -50,7 +50,7 @@ defmodule Apientry.SearchController do
 
         conn
         |> put_status(status)
-        |> put_resp_content_type("text/#{request_format}")
+        |> put_resp_content_type("application/#{request_format}")
         |> render("index.xml", data: body)
 
       {:error, %HTTPoison.Error{reason: reason} = error} ->
