@@ -41,7 +41,12 @@ defmodule Apientry.SearchController do
         end)
         ErrorReporter.track_ebay_response(conn, status, body, headers)
 
-        request_format = conn.assigns.params["format"] || format
+        content_type = case StringKeyword.fetch(conn.req_headers, "content-type") do
+          {:ok, content_type} -> content_type
+          :error -> "application/json"
+        end
+
+        request_format = String.split(content_type, "/") |> Enum.at(1)
         body = transform_by_format(conn, body, request_format)
 
         if get_req_header(conn, "x-apientry-dnt") == [] do
@@ -50,7 +55,7 @@ defmodule Apientry.SearchController do
 
         conn
         |> put_status(status)
-        |> put_resp_content_type("application/#{request_format}")
+        |> put_resp_content_type(content_type)
         |> render("index.xml", data: body)
 
       {:error, %HTTPoison.Error{reason: reason} = error} ->
@@ -71,7 +76,7 @@ defmodule Apientry.SearchController do
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
         |> XmlBuilder.generate
-        "<?xml version='1.0' encoding='UTF-8' ?>" <> body
+        "<?xml version='1.0' encoding='UTF-8' ?>\n" <> body
     end
   end
 
