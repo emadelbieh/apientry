@@ -1,7 +1,7 @@
 defmodule Apientry.Account do
   use Apientry.Web, :model
 
-  schema "account" do
+  schema "accounts" do
     field :name, :string
     belongs_to :geo, Apientry.Geo
 
