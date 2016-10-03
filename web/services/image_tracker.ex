@@ -12,14 +12,9 @@ defmodule Apientry.ImageTracker do
   Images that are anomalous gets listed to Rollbar.
   """
   def track_images(conn, body) do
-    case get_image_urls(body) do
-      {:ok, images} ->
-        Apientry.Amplitude.track_images(conn, images)
-        track_anomalous_images(conn, images)
-        {:ok, images}
-      _ ->
-        :error
-    end
+    images = get_image_urls(body)
+    Apientry.Amplitude.track_images(conn, images)
+    track_anomalous_images(conn, images)
   end
 
   defp track_anomalous_images(conn, image_urls) do
@@ -31,36 +26,22 @@ defmodule Apientry.ImageTracker do
     end
   end
 
-  defp extract_categories(%{"categories" => %{"category" => categories}}) do
-    {:ok, categories}
-  end
-  defp extract_categories(_) do
-    :error
+  defp extract_categories(body) do
+    %{"categories" => %{"category" => categories}} = body
+    categories
   end
 
-  defp extract_items({:ok, categories}) do
-    items = Stream.flat_map(categories, fn category ->
+  defp extract_items(categories) do
+    Enum.flat_map(categories, fn category ->
       %{"items" => %{"item" => items}} = category
       items
     end)
-    {:ok, items}
-  end
-  defp extract_items(_) do
-    :error
   end
 
-  defp extract_images({:ok, items}) do
-    Stream.flat_map(items, fn item ->
-      cond do
-        item["offer"] ->
-          %{"offer" => %{"imageList" => %{"image" => images}}} = item
-          images
-        true ->
-          []
-      end
+  defp extract_images(items) do
+    Enum.flat_map(items, fn item ->
+      %{"product" => %{"images" => %{"image" => images}}} = item
+      images
     end)
-  end
-  defp extract_images(_) do
-    []
   end
 end
