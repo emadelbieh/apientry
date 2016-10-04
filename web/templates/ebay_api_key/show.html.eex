@@ -1,0 +1,18 @@
+<h2>Show ebay api key</h2>
+
+<ul>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @ebay_api_key.value %>
+  </li>
+
+  <li>
+    <strong>Account:</strong>
+    <%= @ebay_api_key.account_id %>
+  </li>
+
+</ul>
+
+<%= link "Edit", to: ebay_api_key_path(@conn, :edit, @ebay_api_key) %>
+<%= link "Back", to: ebay_api_key_path(@conn, :index) %>

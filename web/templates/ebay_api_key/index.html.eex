@@ -1,0 +1,28 @@
+<h2>Listing ebay api keys</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Account</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for ebay_api_key <- @ebay_api_keys do %>
+    <tr>
+      <td><%= ebay_api_key.value %></td>
+      <td><%= ebay_api_key.account_id %></td>
+
+      <td class="text-right">
+        <%= link "Show", to: ebay_api_key_path(@conn, :show, ebay_api_key), class: "btn btn-default btn-xs" %>
+        <%= link "Edit", to: ebay_api_key_path(@conn, :edit, ebay_api_key), class: "btn btn-default btn-xs" %>
+        <%= link "Delete", to: ebay_api_key_path(@conn, :delete, ebay_api_key), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<%= link "New ebay api key", to: ebay_api_key_path(@conn, :new) %>

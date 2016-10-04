@@ -3,7 +3,7 @@ defmodule Apientry.EbayApiKeyTest do
 
   alias Apientry.EbayApiKey
 
-  @valid_attrs %{value: "some content"}
+  @valid_attrs %{value: "12345", account_id: "12"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
