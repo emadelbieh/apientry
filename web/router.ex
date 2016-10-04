@@ -25,8 +25,6 @@ defmodule Apientry.Router do
     pipe_through :secure
     get "/", PageController, :index
 
-    resources "/geos", GeoController
-    resources "/accounts", AccountController
     resources "/feeds", FeedController
 
     put "/publishers/:id/regenerate_key", PublisherController, :regenerate
