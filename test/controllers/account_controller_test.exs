@@ -1,11 +1,17 @@
 defmodule Apientry.AccountControllerTest do
   use Apientry.ConnCase
-
-  alias Apientry.Account
   use Apientry.MockBasicAuth
+
+  alias Apientry.Geo
+  alias Apientry.Account
 
   @valid_attrs %{name: "BlackSwan Ebay 001"}
   @invalid_attrs %{}
+
+  setup do
+    geo = Repo.insert! %Geo{name: "US"}
+    {:ok, geo: geo}
+  end
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, account_path(conn, :index)
@@ -17,15 +23,20 @@ defmodule Apientry.AccountControllerTest do
     assert html_response(conn, 200) =~ "New account"
   end
 
-  test "creates resource and redirects when data is valid", %{conn: conn} do
-    conn = post conn, account_path(conn, :create), account: @valid_attrs
+  test "creates resource and redirects when data is valid", %{conn: conn, geo: geo} do
+    conn = post conn, account_path(conn, :create), account: %{geo_id: geo.id, name: "Blackswan"}
     assert redirected_to(conn) == account_path(conn, :index)
-    assert Repo.get_by(Account, @valid_attrs)
+    assert Repo.get_by(Account, %{geo_id: geo.id, name: "Blackswan"})
   end
 
-  test "does not create resource with duplicate name", %{conn: conn} do
-    post conn, account_path(conn, :create), account: @valid_attrs
-    conn = post conn, account_path(conn, :create), account: @valid_attrs
+  test "does not create resource with non-existent geo", %{conn: conn, geo: geo} do
+    conn = post conn, account_path(conn, :create), account: %{geo_id: geo.id+1, name: "Blackswan"}
+    assert html_response(conn, 200) =~ "errors"
+  end
+
+  test "does not create resource with duplicate name", %{conn: conn, geo: geo} do
+    post conn, account_path(conn, :create), account: %{geo_id: geo.id, name: "Blackswan"}
+    conn = post conn, account_path(conn, :create), account: %{geo_id: geo.id, name: "Blackswan"}
     assert html_response(conn, 200) =~ "has already been taken"
   end
 
@@ -52,11 +63,11 @@ defmodule Apientry.AccountControllerTest do
     assert html_response(conn, 200) =~ "Edit account"
   end
 
-  test "updates chosen resource and redirects when data is valid", %{conn: conn} do
+  test "updates chosen resource and redirects when data is valid", %{conn: conn, geo: geo} do
     account = Repo.insert! %Account{}
-    conn = put conn, account_path(conn, :update, account), account: @valid_attrs
+    conn = put conn, account_path(conn, :update, account), account: %{geo_id: geo.id, name: "Blackswan"}
     assert redirected_to(conn) == account_path(conn, :show, account)
-    assert Repo.get_by(Account, @valid_attrs)
+    assert Repo.get_by(Account, %{geo_id: geo.id, name: "Blackswan"})
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do

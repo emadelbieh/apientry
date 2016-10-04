@@ -13,8 +13,9 @@ defmodule Apientry.Account do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, [:name, :geo_id])
+    |> validate_required([:name, :geo_id])
     |> unique_constraint(:name)
+    |> foreign_key_constraint(:geo_id)
   end
 end
