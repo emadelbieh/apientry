@@ -1,0 +1,26 @@
+<h2>Listing geos</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for geo <- @geos do %>
+    <tr>
+      <td><%= geo.name %></td>
+
+      <td class="text-right">
+        <%= link "Show", to: geo_path(@conn, :show, geo), class: "btn btn-default btn-xs" %>
+        <%= link "Edit", to: geo_path(@conn, :edit, geo), class: "btn btn-default btn-xs" %>
+        <%= link "Delete", to: geo_path(@conn, :delete, geo), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<%= link "New geo", to: geo_path(@conn, :new) %>
