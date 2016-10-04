@@ -79,14 +79,19 @@ defmodule Apientry.Amplitude do
     send_request(%{
       user_id: "image_tracker",
       event_type: "track_images",
-      event_properties: %{
+      event_properties: Map.merge(urls_to_properties(anomalous_urls), %{
         request_uri: request_uri,
-        image_urls: image_urls,
-        anomalous_urls: anomalous_urls,
-        image_count: image_count,
-        anomalous_count: anomalous_count
-      }
+        total_image_count: image_count,
+        anomalous_image_count: anomalous_count,
+        country_code: conn.assigns[:country]
+      })
     })
+  end
+
+  defp urls_to_properties(urls) do
+    Enum.with_index(urls, 1)
+    |> Enum.map(fn {url, index} -> {"anomalous#{index}", url} end)
+    |> Enum.into(%{})
   end
 
   def send_request(params) do
