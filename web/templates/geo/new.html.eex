@@ -1,6 +1,0 @@
-<h2>New geo</h2>
-
-<%= render "form.html", changeset: @changeset,
-                        action: geo_path(@conn, :create) %>
-
-<%= link "Back", to: geo_path(@conn, :index) %>
