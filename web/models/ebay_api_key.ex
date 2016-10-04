@@ -13,7 +13,9 @@ defmodule Apientry.EbayApiKey do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:value])
-    |> validate_required([:value])
+    |> cast(params, [:value, :account_id])
+    |> validate_required([:value, :account_id])
+    |> unique_constraint(:value)
+    |> foreign_key_constraint(:account_id)
   end
 end

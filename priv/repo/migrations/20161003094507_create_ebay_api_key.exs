@@ -9,6 +9,6 @@ defmodule Apientry.Repo.Migrations.CreateEbayApiKey do
       timestamps()
     end
     create index(:ebay_api_keys, [:account_id])
-
+    create unique_index(:ebay_api_keys, [:value])
   end
 end
