@@ -15,5 +15,6 @@ defmodule Apientry.Account do
     struct
     |> cast(params, [:name])
     |> validate_required([:name])
+    |> unique_constraint(:name)
   end
 end

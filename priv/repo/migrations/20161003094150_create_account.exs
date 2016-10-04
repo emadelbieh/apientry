@@ -9,6 +9,6 @@ defmodule Apientry.Repo.Migrations.CreateAccount do
       timestamps()
     end
     create index(:accounts, [:geo_id])
-
+    create unique_index(:accounts, [:name])
   end
 end
