@@ -71,14 +71,20 @@ defmodule Apientry.Amplitude do
     send_request(params)
   end
 
-  def track_images(conn, image_urls) do
+  def track_images(conn, image_urls, anomalous_urls) do
+    image_count = Enum.count(image_urls)
+    anomalous_count = Enum.count(anomalous_urls)
+
     request_uri = "#{conn.scheme}://#{conn.host}#{conn.request_path}?#{conn.query_string}"
     send_request(%{
-      user_id: "system",
+      user_id: "image_tracker",
       event_type: "track_images",
       event_properties: %{
         request_uri: request_uri,
-        image_urls: image_urls
+        image_urls: image_urls,
+        anomalous_urls: anomalous_urls,
+        image_count: image_count,
+        anomalous_count: anomalous_count
       }
     })
   end
