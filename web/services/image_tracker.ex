@@ -18,7 +18,7 @@ defmodule Apientry.ImageTracker do
   end
 
   defp track_anomalous_images(image_urls) do
-    Enum.map(image_urls, fn image_url ->
+    Stream.map(image_urls, fn image_url ->
       case HTTPoison.get(image_url) do
         {:ok, metadata} ->
           track_anomalous_image(metadata, image_url)
@@ -38,22 +38,32 @@ defmodule Apientry.ImageTracker do
     end
   end
 
-  defp extract_categories(body) do
-    %{"categories" => %{"category" => categories}} = body
-    categories
+  defp extract_categories(%{"categories" => %{"category" => categories}}) do
+    {:ok, categories}
+  end
+  defp extract_categories(_) do
+    :error
   end
 
-  defp extract_items(categories) do
-    Enum.flat_map(categories, fn category ->
+
+  defp extract_items({:ok, categories}) do
+    items = Enum.flat_map(categories, fn category ->
       %{"items" => %{"item" => items}} = category
       items
     end)
+    {:ok, items}
+  end
+  defp extract_items(_) do
+    :error
   end
 
-  defp extract_images(items) do
+  defp extract_images({:ok, items}) do
     Enum.flat_map(items, fn item ->
       %{"product" => %{"images" => %{"image" => images}}} = item
       images
     end)
+  end
+  defp extract_images(_) do
+    []
   end
 end
