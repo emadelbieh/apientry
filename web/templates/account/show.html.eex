@@ -1,0 +1,18 @@
+<h2>Show account</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @account.name %>
+  </li>
+
+  <li>
+    <strong>Geo:</strong>
+    <%= @account.geo_id %>
+  </li>
+
+</ul>
+
+<%= link "Edit", to: account_path(@conn, :edit, @account) %>
+<%= link "Back", to: account_path(@conn, :index) %>

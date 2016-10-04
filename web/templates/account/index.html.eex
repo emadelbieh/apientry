@@ -1,0 +1,28 @@
+<h2>Listing account</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Geo</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for account <- @account do %>
+    <tr>
+      <td><%= account.name %></td>
+      <td><%= account.geo_id %></td>
+
+      <td class="text-right">
+        <%= link "Show", to: account_path(@conn, :show, account), class: "btn btn-default btn-xs" %>
+        <%= link "Edit", to: account_path(@conn, :edit, account), class: "btn btn-default btn-xs" %>
+        <%= link "Delete", to: account_path(@conn, :delete, account), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<%= link "New account", to: account_path(@conn, :new) %>
