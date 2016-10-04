@@ -8,5 +8,6 @@ defmodule Apientry.Repo.Migrations.CreateGeo do
       timestamps()
     end
 
+    create unique_index(:geos, [:name])
   end
 end
