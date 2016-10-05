@@ -59,8 +59,16 @@ defmodule Apientry.ImageTracker do
 
   defp extract_images({:ok, items}) do
     Enum.flat_map(items, fn item ->
-      %{"product" => %{"images" => %{"image" => images}}} = item
-      images
+      cond do
+        item["product"] ->
+          %{"product" => %{"images" => %{"image" => images}}} = item
+          images
+        item["offer"] ->
+          %{"offer" => %{"imageList" => %{"image" => images}}} = item
+          images
+        true ->
+          []
+      end
     end)
   end
   defp extract_images(_) do
