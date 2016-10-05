@@ -9,6 +9,6 @@ defmodule Apientry.Repo.Migrations.CreatePublisherApiKey do
       timestamps()
     end
     create index(:publisher_api_keys, [:publisher_id])
-
+    create unique_index(:publisher_api_keys, [:value])
   end
 end

@@ -15,5 +15,6 @@ defmodule Apientry.PublisherApiKey do
     struct
     |> cast(params, [:value])
     |> validate_required([:value])
+    |> unique_constraint(:value)
   end
 end
