@@ -18,14 +18,14 @@ defmodule Apientry.AccountControllerTest do
     assert html_response(conn, 200) =~ "#{geo.name} Accounts"
   end
 
-  test "renders form for new resources", %{conn: conn} do
-    conn = get conn, account_path(conn, :new)
+  test "renders form for new resources", %{conn: conn, geo: geo} do
+    conn = get conn, account_path(conn, :new, geo_id: geo.id)
     assert html_response(conn, 200) =~ "New account"
   end
 
   test "creates resource and redirects when data is valid", %{conn: conn, geo: geo} do
     conn = post conn, account_path(conn, :create), account: %{geo_id: geo.id, name: "Blackswan"}
-    assert redirected_to(conn) == account_path(conn, :index)
+    assert redirected_to(conn) == account_path(conn, :index, geo_id: geo.id)
     assert Repo.get_by(Account, %{geo_id: geo.id, name: "Blackswan"})
   end
 

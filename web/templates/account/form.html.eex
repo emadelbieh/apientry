@@ -5,6 +5,8 @@
     </div>
   <% end %>
 
+  <%= hidden_input f, :geo_id, class: "form-control" %>
+
   <div class="form-group">
     <%= label f, :name, class: "control-label" %>
     <%= text_input f, :name, class: "form-control" %>

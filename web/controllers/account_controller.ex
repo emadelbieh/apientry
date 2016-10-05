@@ -10,8 +10,8 @@ defmodule Apientry.AccountController do
     render(conn, "index.html", accounts: accounts, geo: geo)
   end
 
-  def new(conn, _params) do
-    changeset = Account.changeset(%Account{})
+  def new(conn, %{"geo_id" => geo_id}) do
+    changeset = Account.changeset(%Account{geo_id: geo_id})
     render(conn, "new.html", changeset: changeset)
   end
 
@@ -22,7 +22,7 @@ defmodule Apientry.AccountController do
       {:ok, _account} ->
         conn
         |> put_flash(:info, "Account created successfully.")
-        |> redirect(to: account_path(conn, :index))
+        |> redirect(to: account_path(conn, :index, geo_id: account_params["geo_id"]))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
