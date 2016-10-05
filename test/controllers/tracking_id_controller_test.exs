@@ -4,6 +4,7 @@ defmodule Apientry.TrackingIdControllerTest do
 
   alias Apientry.Geo
   alias Apientry.Account
+  alias Apientry.EbayApiKey
   alias Apientry.{TrackingId, Publisher}
 
   @valid_attrs %{code: "valid"}
@@ -12,9 +13,10 @@ defmodule Apientry.TrackingIdControllerTest do
   setup do
     geo = Repo.insert! %Geo{name: "US"}
     account = Repo.insert! %Account{name: "Blackswan 001"}
+    ebay_api_key = Repo.insert! %EbayApiKey{value: "12345", account_id: account.id}
     publisher = Repo.insert! %Publisher{}
 
-    {:ok, publisher: publisher, account: account}
+    {:ok, publisher: publisher, ebay_api_key: ebay_api_key}
   end
 
   test "renders form for new resources", %{conn: conn, publisher: publisher} do
@@ -22,8 +24,8 @@ defmodule Apientry.TrackingIdControllerTest do
     assert html_response(conn, 200) =~ "New Tracking ID"
   end
 
-  test "creates resource and redirects when data is valid", %{conn: conn, publisher: publisher, account: account} do
-    conn = post conn, publisher_tracking_id_path(conn, :create, publisher), tracking_id: %{code: "valid", account_id: account.id}
+  test "creates resource and redirects when data is valid", %{conn: conn, publisher: publisher, ebay_api_key: ebay_api_key} do
+    conn = post conn, publisher_tracking_id_path(conn, :create, publisher), tracking_id: %{code: "valid", ebay_api_key_id: ebay_api_key.id}
     assert redirected_to(conn) == publisher_tracking_id_path(conn, :index, publisher)
     assert Repo.get_by(TrackingId, @valid_attrs)
   end
@@ -45,8 +47,8 @@ defmodule Apientry.TrackingIdControllerTest do
     assert html_response(conn, 200) =~ "Edit"
   end
 
-  test "updates chosen resource and redirects when data is valid", %{conn: conn, publisher: publisher, account: account} do
-    tracking_id = Repo.insert! %TrackingId{code: "update me", publisher_id: publisher.id, account_id: account.id}
+  test "updates chosen resource and redirects when data is valid", %{conn: conn, publisher: publisher, ebay_api_key: ebay_api_key} do
+    tracking_id = Repo.insert! %TrackingId{code: "update me", publisher_id: publisher.id, ebay_api_key_id: ebay_api_key.id}
     conn = put conn, publisher_tracking_id_path(conn, :update, publisher, tracking_id), tracking_id: @valid_attrs
     assert redirected_to(conn) == publisher_tracking_id_path(conn, :index, publisher)
     assert Repo.get_by(TrackingId, @valid_attrs)
