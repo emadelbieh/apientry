@@ -1,0 +1,28 @@
+<h2>Listing publisher api keys</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Publisher</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for publisher_api_key <- @publisher_api_keys do %>
+    <tr>
+      <td><%= publisher_api_key.value %></td>
+      <td><%= publisher_api_key.publisher_id %></td>
+
+      <td class="text-right">
+        <%= link "Show", to: publisher_api_key_path(@conn, :show, publisher_api_key), class: "btn btn-default btn-xs" %>
+        <%= link "Edit", to: publisher_api_key_path(@conn, :edit, publisher_api_key), class: "btn btn-default btn-xs" %>
+        <%= link "Delete", to: publisher_api_key_path(@conn, :delete, publisher_api_key), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<%= link "New publisher api key", to: publisher_api_key_path(@conn, :new) %>

@@ -28,6 +28,7 @@ defmodule Apientry.Router do
     resources "/geos", GeoController
     resources "/accounts", AccountController
     resources "/ebay_api_keys", EbayApiKeyController
+    resources "/publisher_api_keys", PublisherApiKeyController
     resources "/feeds", FeedController
 
     put "/publishers/:id/regenerate_key", PublisherController, :regenerate

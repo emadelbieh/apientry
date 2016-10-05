@@ -1,0 +1,18 @@
+<h2>Show publisher api key</h2>
+
+<ul>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @publisher_api_key.value %>
+  </li>
+
+  <li>
+    <strong>Publisher:</strong>
+    <%= @publisher_api_key.publisher_id %>
+  </li>
+
+</ul>
+
+<%= link "Edit", to: publisher_api_key_path(@conn, :edit, @publisher_api_key) %>
+<%= link "Back", to: publisher_api_key_path(@conn, :index) %>
