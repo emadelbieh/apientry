@@ -13,9 +13,9 @@ defmodule Apientry.AccountControllerTest do
     {:ok, geo: geo}
   end
 
-  test "lists all entries on index", %{conn: conn} do
-    conn = get conn, account_path(conn, :index)
-    assert html_response(conn, 200) =~ "Listing account"
+  test "lists all entries on index", %{conn: conn, geo: geo} do
+    conn = get conn, account_path(conn, :index, geo_id: geo.id)
+    assert html_response(conn, 200) =~ "#{geo.name} Accounts"
   end
 
   test "renders form for new resources", %{conn: conn} do

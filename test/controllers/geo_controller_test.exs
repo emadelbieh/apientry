@@ -9,12 +9,12 @@ defmodule Apientry.GeoControllerTest do
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, geo_path(conn, :index)
-    assert html_response(conn, 200) =~ "Listing geos"
+    assert html_response(conn, 200) =~ "Available Geos"
   end
 
   test "renders form for new resources", %{conn: conn} do
     conn = get conn, geo_path(conn, :new)
-    assert html_response(conn, 200) =~ "New geo"
+    assert html_response(conn, 200) =~ "Add new"
   end
 
   test "creates resource and redirects when data is valid", %{conn: conn} do
@@ -31,7 +31,7 @@ defmodule Apientry.GeoControllerTest do
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
     conn = post conn, geo_path(conn, :create), geo: @invalid_attrs
-    assert html_response(conn, 200) =~ "New geo"
+    assert html_response(conn, 200) =~ "Add new"
   end
 
   test "shows chosen resource", %{conn: conn} do
