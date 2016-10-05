@@ -1,0 +1,6 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [publishers: true], title: [title: "Accounts", subtitle: "Add new"]
+
+.body
+  .container
+    = render "form.html", changeset: @changeset, action: account_path(@conn, :create, geo_id: @geo_id), mode: :create

@@ -12,7 +12,7 @@ defmodule Apientry.AccountController do
 
   def new(conn, %{"geo_id" => geo_id}) do
     changeset = Account.changeset(%Account{geo_id: geo_id})
-    render(conn, "new.html", changeset: changeset)
+    render(conn, "new.html", changeset: changeset, geo_id: geo_id)
   end
 
   def create(conn, %{"account" => account_params}) do
