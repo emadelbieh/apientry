@@ -13,8 +13,8 @@ defmodule Apientry.PublisherApiKey do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:value])
-    |> validate_required([:value])
+    |> cast(params, [:value, :publisher_id])
+    |> validate_required([:value, :publisher_id])
     |> unique_constraint(:value)
   end
 end
