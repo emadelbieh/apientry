@@ -16,5 +16,6 @@ defmodule Apientry.PublisherApiKey do
     |> cast(params, [:value, :publisher_id])
     |> validate_required([:value, :publisher_id])
     |> unique_constraint(:value)
+    |> foreign_key_constraint(:publisher_id)
   end
 end
