@@ -3,12 +3,13 @@ defmodule Apientry.TrackingId do
 
   schema "tracking_ids" do
     field :code, :string
+    belongs_to :account, Apientry.Account
     belongs_to :publisher, Apientry.Publisher
 
     timestamps
   end
 
-  @fields [:code, :publisher_id]
+  @fields [:code, :account_id]
 
   @doc """
   Creates a changeset based on the `model` and `params`.
