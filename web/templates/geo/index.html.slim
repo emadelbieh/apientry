@@ -1,0 +1,27 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, action: {geo_path(@conn, :new), "New Geo"}, title: [title: gettext("Feeds")]
+
+.body.inset-bg
+  .container
+    .panel-heading
+      h2 Available Geos
+      .action
+        a.btn.btn-sm.btn-highlight[href="#{geo_path(@conn, :new)}"]
+          = gettext "New geo"
+    table.crud-table
+      tbody
+        = for geo <- @geos do
+          tr
+            td.icon
+              span.default-image.-size64
+                = geo.name |> String.slice(0..0) |> String.upcase
+            td.name
+              = link geo.name, to: geo_path(@conn, :edit, geo)
+            td.actions.crud-actions
+              = link "Edit", to: geo_path(@conn, :edit, geo), class: "btn btn-sm btn-default"
+              .dropdown.more-actions
+                button.toggle(data-toggle="dropdown" title="More actions...")
+                ul.dropdown-menu
+                  li= link "Show", to: geo_path(@conn, :show, geo)
+                  li= link "Edit", to: geo_path(@conn, :edit, geo)
+                  li= link "Delete", to: geo_path(@conn, :delete, geo), method: :delete, data: [confirm: "Are you sure?"]
