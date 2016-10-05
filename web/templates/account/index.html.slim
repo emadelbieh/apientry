@@ -1,0 +1,27 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, action: {account_path(@conn, :new, geo_id: @geo.id), "New Account"}, title: [title: gettext("Accounts")]
+
+.body.inset-bg
+  .container
+    .panel-heading
+      h2 #{@geo.name} Accounts
+      .action
+        a.btn.btn-sm.btn-highlight[href="#{account_path(@conn, :new, geo_id: @geo.id)}"]
+          = gettext "New account"
+    table.crud-table
+      tbody
+        = for account <- @accounts do
+          tr
+            td.icon
+              span.default-image.-size64
+                = account.name |> String.slice(0..0) |> String.upcase
+            td.name
+              = link account.name, to: ebay_api_key_path(@conn, :index, account_id: account.id)
+            td.actions.crud-actions
+              = link "Edit", to: account_path(@conn, :edit, account), class: "btn btn-sm btn-default"
+              .dropdown.more-actions
+                button.toggle(data-toggle="dropdown" title="More actions...")
+                ul.dropdown-menu
+                  li= link "Show", to: account_path(@conn, :show, account)
+                  li= link "Edit", to: account_path(@conn, :edit, account)
+                  li= link "Delete", to: account_path(@conn, :delete, account), method: :delete, data: [confirm: "Are you sure?"]

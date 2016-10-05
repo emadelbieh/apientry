@@ -1,11 +1,13 @@
 defmodule Apientry.AccountController do
   use Apientry.Web, :controller
 
+  alias Apientry.Geo
   alias Apientry.Account
 
-  def index(conn, _params) do
-    account = Repo.all(Account)
-    render(conn, "index.html", account: account)
+  def index(conn, %{"geo_id" => geo_id}) do
+    geo = Repo.get(Geo, geo_id)
+    accounts= Repo.all(from a in Account, where: a.geo_id == ^geo.id)
+    render(conn, "index.html", accounts: accounts, geo: geo)
   end
 
   def new(conn, _params) do

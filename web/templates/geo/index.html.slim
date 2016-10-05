@@ -16,7 +16,7 @@
               span.default-image.-size64
                 = geo.name |> String.slice(0..0) |> String.upcase
             td.name
-              = link geo.name, to: geo_path(@conn, :edit, geo)
+              = link geo.name, to: account_path(@conn, :index, geo_id: geo.id)
             td.actions.crud-actions
               = link "Edit", to: geo_path(@conn, :edit, geo), class: "btn btn-sm btn-default"
               .dropdown.more-actions
