@@ -1,11 +1,13 @@
 defmodule Apientry.EbayApiKeyController do
   use Apientry.Web, :controller
 
+  alias Apientry.Account
   alias Apientry.EbayApiKey
 
-  def index(conn, _params) do
-    ebay_api_keys = Repo.all(EbayApiKey)
-    render(conn, "index.html", ebay_api_keys: ebay_api_keys)
+  def index(conn, %{"account_id" => account_id}) do
+    account = Repo.get(Account, account_id)
+    ebay_api_keys = Repo.all(from e in EbayApiKey, where: e.account_id == ^account_id)
+    render(conn, "index.html", ebay_api_keys: ebay_api_keys, account: account)
   end
 
   def new(conn, _params) do
