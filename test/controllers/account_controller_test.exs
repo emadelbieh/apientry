@@ -37,7 +37,7 @@ defmodule Apientry.AccountControllerTest do
   test "does not create resource with duplicate name", %{conn: conn, geo: geo} do
     post conn, account_path(conn, :create), account: %{geo_id: geo.id, name: "Blackswan"}
     conn = post conn, account_path(conn, :create), account: %{geo_id: geo.id, name: "Blackswan"}
-    assert html_response(conn, 200) =~ "has already been taken"
+    assert html_response(conn, 200) =~ "error"
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

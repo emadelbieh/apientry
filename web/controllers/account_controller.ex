@@ -24,7 +24,7 @@ defmodule Apientry.AccountController do
         |> put_flash(:info, "Account created successfully.")
         |> redirect(to: account_path(conn, :index, geo_id: account_params["geo_id"]))
       {:error, changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        render(conn, "new.html", changeset: changeset, geo_id: account_params["geo_id"])
     end
   end
 

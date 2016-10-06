@@ -12,7 +12,7 @@ defmodule Apientry.Router do
   end
 
   pipeline :secure do
-    plug BasicAuth, Application.get_env(:apientry, :basic_auth)
+    #plug BasicAuth, Application.get_env(:apientry, :basic_auth)
   end
 
   pipeline :api do

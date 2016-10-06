@@ -15,9 +15,9 @@ defmodule Apientry.EbayApiKeyControllerTest do
     {:ok, account: account}
   end
 
-  test "lists all entries on index", %{conn: conn} do
-    conn = get conn, ebay_api_key_path(conn, :index)
-    assert html_response(conn, 200) =~ "Listing ebay api keys"
+  test "lists all entries on index", %{conn: conn, account: account} do
+    conn = get conn, ebay_api_key_path(conn, :index, account_id: account.id)
+    assert html_response(conn, 200) =~ "API keys for #{account.name}"
   end
 
   test "renders form for new resources", %{conn: conn} do

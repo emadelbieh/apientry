@@ -26,7 +26,7 @@ defmodule Apientry.GeoControllerTest do
   test "does not create resource with duplicate name", %{conn: conn} do
     post conn, geo_path(conn, :create), geo: @valid_attrs
     conn = post conn, geo_path(conn, :create), geo: @valid_attrs
-    assert html_response(conn, 200) =~ "has already been taken"
+    assert html_response(conn, 200) =~ "error"
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
