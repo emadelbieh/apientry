@@ -7,6 +7,10 @@
         = gettext "Enter a new tracking ID."
     .form
       .form-group
+        = label f, :ebay_api_key_id, class: "control-label"
+        = select f, :ebay_api_key_id, @ebay_api_keys, class: "form-control"
+        = error_tag f, :ebay_api_key_id
+      .form-group
         = label f, :code
         = text_input f, :code, class: "form-control", autofocus: true
         = error_tag f, :code

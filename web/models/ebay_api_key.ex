@@ -4,6 +4,7 @@ defmodule Apientry.EbayApiKey do
   schema "ebay_api_keys" do
     field :value, :string
     belongs_to :account, Apientry.Account
+    has_many :tracking_ids, Apientry.TrackingId
 
     timestamps()
   end
@@ -18,4 +19,13 @@ defmodule Apientry.EbayApiKey do
     |> unique_constraint(:value)
     |> foreign_key_constraint(:account_id)
   end
+
+  def sorted(query) do
+    from e in query, order_by: e.value
+  end
+
+  def values_and_ids(query) do
+    from e in query, select: {e.value, e.id}
+  end
+
 end

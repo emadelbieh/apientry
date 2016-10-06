@@ -4,6 +4,7 @@ defmodule Apientry.Account do
   schema "accounts" do
     field :name, :string
     belongs_to :geo, Apientry.Geo
+    has_many :ebay_api_keys, Apientry.EbayApiKey
 
     timestamps()
   end

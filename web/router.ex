@@ -30,6 +30,7 @@ defmodule Apientry.Router do
     resources "/ebay_api_keys", EbayApiKeyController
     resources "/publisher_api_keys", PublisherApiKeyController
     resources "/feeds", FeedController
+    resources "/tracking_ids", TrackingIdController
 
     put "/publishers/:id/regenerate_key", PublisherController, :regenerate
     resources "/publishers", PublisherController do

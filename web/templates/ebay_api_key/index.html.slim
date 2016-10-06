@@ -31,5 +31,22 @@
     .panel-heading
       h2 Tracking IDs for #{@account.name}
       .action
-        a.btn.btn-sm.btn-highlight[href="#{ebay_api_key_path(@conn, :new, account_id: @account.id)}"]
+        a.btn.btn-sm.btn-highlight[href="#{tracking_id_path(@conn, :new, account_id: @account.id)}"]
           = gettext "New tracking id"
+    table.crud-table
+      tbody
+        = for tracking_id <- @tracking_ids do
+          tr
+            td.icon
+              span.default-image.-size64
+                = tracking_id.code |> String.slice(0..0) |> String.upcase
+            td.name
+              = link tracking_id.code, to: "#"
+            td.actions.crud-actions
+              = link "Edit", to: tracking_id_path(@conn, :edit, tracking_id), class: "btn btn-sm btn-default"
+              .dropdown.more-actions
+                button.toggle(data-toggle="dropdown" title="More actions...")
+                ul.dropdown-menu
+                  li= link "Show", to: tracking_id_path(@conn, :show, tracking_id)
+                  li= link "Edit", to: tracking_id_path(@conn, :edit, tracking_id)
+                  li= link "Delete", to: tracking_id_path(@conn, :delete, tracking_id), method: :delete, data: [confirm: "Are you sure?"]

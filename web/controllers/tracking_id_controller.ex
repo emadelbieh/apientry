@@ -2,16 +2,22 @@ defmodule Apientry.TrackingIdController do
   use Apientry.Web, :controller
 
   alias Apientry.{
+    Account,
+    EbayApiKey,
     TrackingId,
     Publisher
   }
 
   plug :scrub_params, "tracking_id" when action in [:create, :update]
 
-  def new(conn, %{"publisher_id" => pub_id}) do
+  def new(conn, %{"account_id" => account_id}) do
+    account = Repo.get(Account, account_id)
+    ebay_api_keys = assoc(account, :ebay_api_keys)
+                    |> EbayApiKey.values_and_ids
+                    |> EbayApiKey.sorted
+                    |> Repo.all
     changeset = TrackingId.changeset(%TrackingId{})
-    publisher = Repo.get! Publisher, pub_id
-    render(conn, "new.html", changeset: changeset, publisher: publisher)
+    render(conn, "new.html", changeset: changeset, account: account, ebay_api_keys: ebay_api_keys)
   end
 
   def index(conn, %{"publisher_id" => pub_id}) do
@@ -22,8 +28,7 @@ defmodule Apientry.TrackingIdController do
     render(conn, "index.html", publisher: publisher, tracking_ids: tracking_ids)
   end
 
-  def create(conn, %{"publisher_id" => pub_id, "tracking_id" => tracking_id_params}) do
-    tracking_id_params = Map.put tracking_id_params, "publisher_id", pub_id
+  def create(conn, %{"tracking_id" => tracking_id_params, "account_id" => account_id}) do
     changeset = TrackingId.changeset(%TrackingId{}, tracking_id_params)
 
     case Repo.insert(changeset) do
@@ -31,10 +36,14 @@ defmodule Apientry.TrackingIdController do
         DbCache.update(:tracking_id)
         conn
         |> put_flash(:info, "Tracking created successfully.")
-        |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
+        |> redirect(to: ebay_api_key_path(conn, :index, account_id: account_id))
       {:error, changeset} ->
-        publisher = Repo.get! Publisher, pub_id
-        render(conn, "new.html", changeset: changeset, publisher: publisher)
+        account = Repo.get(Account, account_id)
+        ebay_api_keys = assoc(account, :ebay_api_keys)
+                        |> EbayApiKey.values_and_ids
+                        |> EbayApiKey.sorted
+                        |> Repo.all
+        render(conn, "new.html", changeset: changeset, account: account, ebay_api_keys: ebay_api_keys)
     end
   end
 
