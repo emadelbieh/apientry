@@ -128,6 +128,7 @@ defmodule Apientry.EbayJsonTransformer do
   """
 
   alias Apientry.DomainFilter
+  alias Apientry.StoreFilter
 
   @doc """
   Transforms JSON data.
@@ -169,6 +170,7 @@ defmodule Apientry.EbayJsonTransformer do
       items
       |> Stream.filter(&filter_item(&1, assigns, ["offer", "offerURL"]))
       |> Stream.filter(&filter_item(&1, assigns, ["product", "productOffersURL"]))
+      |> Stream.filter(&filter_store(&1, assigns, ["offer", "store"]))
       |> Enum.map(&map_item(&1, cat, assigns))
     end)
     |> safe_update_in(["items"], fn items ->
@@ -176,6 +178,22 @@ defmodule Apientry.EbayJsonTransformer do
       items
       |> Map.put("returnedItemCount", count)
     end)
+  end
+
+  @doc """
+  Can filter out the ff:
+    items.item[].offer.store
+    attributes.attribute[].attributeValues.attributeValue.id prefixed w/ store_
+  """
+  def filter_store(item, %{params: %{"domain" => domain}} = _assigns, access) do
+    case get_in(item, access) do
+      nil -> true
+      store ->
+        case access do
+          ["id"] ->  ! StoreFilter.matches_id?(domain, store)
+          _ -> ! StoreFilter.matches?(domain, store["name"])
+        end
+    end
   end
 
   @doc """
@@ -283,6 +301,7 @@ defmodule Apientry.EbayJsonTransformer do
     |> safe_update_in(["attributeValues", "attributeValue"], fn items ->
       items
       |> Stream.filter(&filter_item(&1, assigns, ["attributeValueURL"]))
+      |> Stream.filter(&filter_store(&1, assigns, ["id"]))
       |> Enum.map(& map_attribute_value(&1, attribute, category, assigns))
     end)
   end
