@@ -6,7 +6,7 @@
     .panel-heading
       h2 eBay API keys for #{@account.name}
       .action
-        a.btn.btn-sm.btn-highlight[href="#{account_path(@conn, :new, account_id: @account.id)}"]
+        a.btn.btn-sm.btn-highlight[href="#{ebay_api_key_path(@conn, :new, account_id: @account.id)}"]
           = gettext "New ebay api key"
     table.crud-table
       tbody
@@ -31,5 +31,5 @@
     .panel-heading
       h2 Tracking IDs for #{@account.name}
       .action
-        a.btn.btn-sm.btn-highlight[href="#{account_path(@conn, :new, account_id: @account.id)}"]
+        a.btn.btn-sm.btn-highlight[href="#{ebay_api_key_path(@conn, :new, account_id: @account.id)}"]
           = gettext "New tracking id"
