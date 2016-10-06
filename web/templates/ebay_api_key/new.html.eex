@@ -1,6 +1,0 @@
-<h2>New ebay api key</h2>
-
-<%= render "form.html", changeset: @changeset,
-                        action: ebay_api_key_path(@conn, :create) %>
-
-<%= link "Back", to: ebay_api_key_path(@conn, :index) %>

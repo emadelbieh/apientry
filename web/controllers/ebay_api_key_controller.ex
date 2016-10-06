@@ -10,9 +10,10 @@ defmodule Apientry.EbayApiKeyController do
     render(conn, "index.html", ebay_api_keys: ebay_api_keys, account: account)
   end
 
-  def new(conn, _params) do
-    changeset = EbayApiKey.changeset(%EbayApiKey{})
-    render(conn, "new.html", changeset: changeset)
+  def new(conn, %{"account_id" => account_id}) do
+    account = Repo.get(Account, account_id)
+    changeset = EbayApiKey.changeset(%EbayApiKey{}, %{account_id: account_id})
+    render(conn, "new.html", changeset: changeset, account: account)
   end
 
   def create(conn, %{"ebay_api_key" => ebay_api_key_params}) do
@@ -22,7 +23,7 @@ defmodule Apientry.EbayApiKeyController do
       {:ok, _ebay_api_key} ->
         conn
         |> put_flash(:info, "Ebay api key created successfully.")
-        |> redirect(to: ebay_api_key_path(conn, :index))
+        |> redirect(to: ebay_api_key_path(conn, :index, account_id: ebay_api_key_params["account_id"]))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

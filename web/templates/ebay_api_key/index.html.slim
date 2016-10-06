@@ -14,9 +14,9 @@
           tr
             td.icon
               span.default-image.-size64
-                = ebay_api_key.name |> String.slice(0..0) |> String.upcase
+                = ebay_api_key.value |> String.slice(0..0) |> String.upcase
             td.name
-              = link ebay_api_key.name, to: "#"
+              = link ebay_api_key.value, to: "#"
             td.actions.crud-actions
               = link "Edit", to: ebay_api_key_path(@conn, :edit, ebay_api_key), class: "btn btn-sm btn-default"
               .dropdown.more-actions

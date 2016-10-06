@@ -1,0 +1,21 @@
+.basic-panel
+  = form_for @changeset, @action, fn f ->
+    = if @changeset.action do
+      .alert.alert-danger
+        p Oops, something went wrong! Please check the errors below.
+    .form-fieldset
+      .info
+        = if assigns[:mode] == :create do
+          h2 New eBay API Key
+        - else
+          h2 Edit eBay API key
+
+      .form
+        .form-group
+          = label f, :value
+          = text_input f, :value, class: "form-control", autofocus: true
+          = hidden_input f, :account_id, class: "form-control"
+
+    .form-fieldset
+      .form
+        = submit "Submit", class: "btn btn-primary"
