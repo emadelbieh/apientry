@@ -17,6 +17,7 @@ defmodule Apientry.EbayApiKeyController do
   end
 
   def create(conn, %{"ebay_api_key" => ebay_api_key_params}) do
+    account = Repo.get(Account, ebay_api_key_params["account_id"])
     changeset = EbayApiKey.changeset(%EbayApiKey{}, ebay_api_key_params)
 
     case Repo.insert(changeset) do
@@ -25,7 +26,7 @@ defmodule Apientry.EbayApiKeyController do
         |> put_flash(:info, "Ebay api key created successfully.")
         |> redirect(to: ebay_api_key_path(conn, :index, account_id: ebay_api_key_params["account_id"]))
       {:error, changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        render(conn, "new.html", changeset: changeset, account: account)
     end
   end
 
