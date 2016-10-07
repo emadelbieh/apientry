@@ -6,7 +6,7 @@ defmodule Apientry.AccountController do
 
   def index(conn, %{"geo_id" => geo_id}) do
     geo = Repo.get(Geo, geo_id)
-    accounts= Repo.all(from a in Account, where: a.geo_id == ^geo.id)
+    accounts = assoc(geo, :accounts) |> Repo.all
     render(conn, "index.html", accounts: accounts, geo: geo)
   end
 

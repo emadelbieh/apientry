@@ -14,14 +14,14 @@
           tr
             td.icon
               span.default-image.-size64
-                = account.name |> String.slice(0..0) |> String.upcase
+                = @geo.name
             td.name
               = link account.name, to: ebay_api_key_path(@conn, :index, account_id: account.id)
             td.actions.crud-actions
-              = link "Edit", to: account_path(@conn, :edit, account), class: "btn btn-sm btn-default"
-              .dropdown.more-actions
-                button.toggle(data-toggle="dropdown" title="More actions...")
-                ul.dropdown-menu
-                  li= link "Show", to: account_path(@conn, :show, account)
-                  li= link "Edit", to: account_path(@conn, :edit, account)
-                  li= link "Delete", to: account_path(@conn, :delete, account), method: :delete, data: [confirm: "Are you sure?"]
+              = link "View eBay API keys", to: ebay_api_key_path(@conn, :index, account_id: account.id), class: "btn btn-sm btn-default"
+            /  .dropdown.more-actions
+            /    button.toggle(data-toggle="dropdown" title="More actions...")
+            /    ul.dropdown-menu
+            /      li= link "Show", to: account_path(@conn, :show, account)
+            /      li= link "Edit", to: account_path(@conn, :edit, account)
+            /      li= link "Delete", to: account_path(@conn, :delete, account), method: :delete, data: [confirm: "Are you sure?"]
