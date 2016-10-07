@@ -14,17 +14,17 @@
           tr
             td.icon
               span.default-image.-size64
-                = ebay_api_key.value |> String.slice(0..0) |> String.upcase
+                = @geo.name
             td.name
-              = link ebay_api_key.value, to: "#"
+              = link ebay_api_key.value, to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
             td.actions.crud-actions
               = link "Edit", to: ebay_api_key_path(@conn, :edit, ebay_api_key), class: "btn btn-sm btn-default"
-              .dropdown.more-actions
-                button.toggle(data-toggle="dropdown" title="More actions...")
-                ul.dropdown-menu
-                  li= link "Show", to: ebay_api_key_path(@conn, :show, ebay_api_key)
-                  li= link "Edit", to: ebay_api_key_path(@conn, :edit, ebay_api_key)
-                  li= link "Delete", to: ebay_api_key_path(@conn, :delete, ebay_api_key), method: :delete, data: [confirm: "Are you sure?"]
+              /.dropdown.more-actions
+              /  button.toggle(data-toggle="dropdown" title="More actions...")
+              /  ul.dropdown-menu
+              /    li= link "Show", to: ebay_api_key_path(@conn, :show, ebay_api_key)
+              /    li= link "Edit", to: ebay_api_key_path(@conn, :edit, ebay_api_key)
+              /    li= link "Delete", to: ebay_api_key_path(@conn, :delete, ebay_api_key), method: :delete, data: [confirm: "Are you sure?"]
 
 .body.inset-bg
   .container
@@ -39,14 +39,17 @@
           tr
             td.icon
               span.default-image.-size64
-                = tracking_id.code |> String.slice(0..0) |> String.upcase
+                = @geo.name
             td.name
-              = link tracking_id.code, to: "#"
+              = tracking_id.code
             td.actions.crud-actions
-              = link "Edit", to: tracking_id_path(@conn, :edit, tracking_id), class: "btn btn-sm btn-default"
-              .dropdown.more-actions
-                button.toggle(data-toggle="dropdown" title="More actions...")
-                ul.dropdown-menu
-                  li= link "Show", to: tracking_id_path(@conn, :show, tracking_id)
-                  li= link "Edit", to: tracking_id_path(@conn, :edit, tracking_id)
-                  li= link "Delete", to: tracking_id_path(@conn, :delete, tracking_id), method: :delete, data: [confirm: "Are you sure?"]
+              p
+                ' eBay API Key:
+                = tracking_id.ebay_api_key.value
+              /= link "Edit", to: tracking_id_path(@conn, :edit, tracking_id), class: "btn btn-sm btn-default"
+              /.dropdown.more-actions
+              /  button.toggle(data-toggle="dropdown" title="More actions...")
+              /  ul.dropdown-menu
+              /    li= link "Show", to: tracking_id_path(@conn, :show, tracking_id)
+              /    li= link "Edit", to: tracking_id_path(@conn, :edit, tracking_id)
+              /    li= link "Delete", to: tracking_id_path(@conn, :delete, tracking_id), method: :delete, data: [confirm: "Are you sure?"]

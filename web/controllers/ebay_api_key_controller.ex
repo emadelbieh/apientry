@@ -6,10 +6,14 @@ defmodule Apientry.EbayApiKeyController do
   alias Apientry.EbayApiKey
 
   def index(conn, %{"account_id" => account_id}) do
-    account = Repo.get(Account, account_id)
-    ebay_api_keys = Repo.all(from e in EbayApiKey, where: e.account_id == ^account_id)
-    tracking_ids = assoc(ebay_api_keys, :tracking_ids) |> Repo.all
-    render(conn, "index.html", ebay_api_keys: ebay_api_keys, account: account, tracking_ids: tracking_ids)
+    account = Repo.get(Account, account_id) |> Repo.preload(:geo)
+    ebay_api_keys = assoc(account, :ebay_api_keys) |> Repo.all
+    tracking_ids = if ebay_api_keys == [] do
+      []
+    else
+      assoc(ebay_api_keys, :tracking_ids) |> Repo.all |> Repo.preload(:ebay_api_key)
+    end
+    render(conn, "index.html", ebay_api_keys: ebay_api_keys, account: account, geo: account.geo, tracking_ids: tracking_ids)
   end
 
   def new(conn, %{"account_id" => account_id}) do
