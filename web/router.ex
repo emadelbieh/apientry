@@ -32,6 +32,7 @@ defmodule Apientry.Router do
     resources "/feeds", FeedController
 
     get "/tracking_ids/assign", TrackingIdController, :assign
+    post "/tracking_ids/assign", TrackingIdController, :assign
     resources "/tracking_ids", TrackingIdController
 
 

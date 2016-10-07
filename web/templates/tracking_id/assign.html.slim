@@ -4,7 +4,7 @@
 .body
   .container
     .basic-panel
-      = form_for @changeset, "", fn f ->
+      = form_for @changeset, nil, fn f ->
         = if @changeset.action do
           .alert.alert-danger
             p Oops, something went wrong! Please check the errors below.
@@ -18,7 +18,26 @@
             .form-group
               = label f, :publisher_api_key_id
               = select f, :publisher_api_key_id, @api_keys, class: "form-control"
+
+        .form-fieldset
+          .info
+            h2 Tracking Id
+          .form
+            .form-group
+              = label f, :account_id
+              select name="tracking_id[ebay_api_key_id]" class="form-control"
+                = for geo <- @geos do
+                  optgroup label=geo.name
+                  = for account <- geo.accounts do
+                    option value=account.id =account.name
+            = if @tracking_ids != nil do
+              .form-group
+                = label f, :tracking_id
+                = select f, :tracking_id, @tracking_ids, class: "form-control"
     
         .form-fieldset
           .form
-            = submit "Submit", class: "btn btn-primary"
+            = if @tracking_ids == nil do
+              = submit "Get Available Tracking Ids", class: "btn btn-primary"
+            - else
+              submit "Submit", class: "btn btn-primary"
