@@ -17,11 +17,14 @@
 
       .form-fieldset
         .info
-          h3= gettext "API key"
-          p This is the API key that the user will pass onto Blackswan's API endpoint.
+          h3= gettext "Publisher API Keys"
+          p The API keys used by publishers to query the Blackswan API.
         .form
-          pre= @publisher.api_key
-          = link "Regenerate API key", to: publisher_path(@conn, :regenerate, @publisher), class: "btn btn-sm btn-accent", method: :put, data: [confirm: "Are you sure? This will revoke access to the key."]
+          table.table
+            tbody
+              = for api_key <- @api_keys do
+                tr
+                  td api_key.value
 
       .form-fieldset
         .info
