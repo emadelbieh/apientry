@@ -22,8 +22,8 @@ defmodule Apientry.TrackingId do
   """
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @fields)
-    |> validate_required(@fields)
+    |> cast(params, [:code, :ebay_api_key_id, :publisher_api_key_id])
+    |> validate_required([:code, :ebay_api_key_id])
     |> unique_constraint(:code, name: :tracking_ids_code_index)
   end
 end
