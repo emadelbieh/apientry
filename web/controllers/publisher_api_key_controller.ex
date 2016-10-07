@@ -1,11 +1,13 @@
 defmodule Apientry.PublisherApiKeyController do
   use Apientry.Web, :controller
 
+  alias Apientry.Publisher
   alias Apientry.PublisherApiKey
 
-  def index(conn, _params) do
+  def index(conn, %{"publisher_id" => publisher_id}) do
+    publisher = Repo.get(Publisher, publisher_id)
     publisher_api_keys = Repo.all(PublisherApiKey)
-    render(conn, "index.html", publisher_api_keys: publisher_api_keys)
+    render(conn, "index.html", publisher_api_keys: publisher_api_keys, publisher: publisher)
   end
 
   def new(conn, _params) do
