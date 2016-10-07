@@ -1,6 +1,7 @@
 defmodule Apientry.EbayApiKeyController do
   use Apientry.Web, :controller
 
+  alias Apientry.Geo
   alias Apientry.Account
   alias Apientry.EbayApiKey
 
@@ -31,9 +32,12 @@ defmodule Apientry.EbayApiKeyController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id, "account_id" => account_id}) do
+    account = Repo.get(Account, account_id)
+    geo = Repo.get(Geo, account.geo_id)
     ebay_api_key = Repo.get!(EbayApiKey, id)
-    render(conn, "show.html", ebay_api_key: ebay_api_key)
+    # TODO: query publishers that use this ebay api key
+    render(conn, "show.html", ebay_api_key: ebay_api_key, account: account, geo: geo)
   end
 
   def edit(conn, %{"id" => id}) do
