@@ -19,4 +19,12 @@ defmodule Apientry.PublisherApiKey do
     |> unique_constraint(:value)
     |> foreign_key_constraint(:publisher_id)
   end
+
+  def sorted(query) do
+    from p in query, order_by: p.value
+  end
+
+  def values_and_ids(query) do
+    from p in query, select: {p.value, p.id}
+  end
 end

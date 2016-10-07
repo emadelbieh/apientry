@@ -3,6 +3,7 @@ defmodule Apientry.Geo do
 
   schema "geos" do
     field :name, :string
+    has_many :accounts, Apientry.Account
 
     timestamps()
   end
