@@ -6,12 +6,12 @@ defmodule Apientry.PublisherApiKeyController do
 
   def index(conn, %{"publisher_id" => publisher_id}) do
     publisher = Repo.get(Publisher, publisher_id)
-    publisher_api_keys = Repo.all(PublisherApiKey)
+    publisher_api_keys = Repo.all(assoc(publisher, :api_keys))
     render(conn, "index.html", publisher_api_keys: publisher_api_keys, publisher: publisher)
   end
 
-  def new(conn, _params) do
-    changeset = PublisherApiKey.changeset(%PublisherApiKey{})
+  def new(conn, %{"publisher_id" => publisher_id}) do
+    changeset = PublisherApiKey.changeset(%PublisherApiKey{}, %{publisher_id: publisher_id})
     render(conn, "new.html", changeset: changeset)
   end
 
@@ -22,7 +22,7 @@ defmodule Apientry.PublisherApiKeyController do
       {:ok, _publisher_api_key} ->
         conn
         |> put_flash(:info, "Publisher api key created successfully.")
-        |> redirect(to: publisher_api_key_path(conn, :index))
+        |> redirect(to: publisher_api_key_path(conn, :index, publisher_id: publisher_api_key_params["publisher_id"]))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

@@ -1,6 +1,0 @@
-<h2>New publisher api key</h2>
-
-<%= render "form.html", changeset: @changeset,
-                        action: publisher_api_key_path(@conn, :create) %>
-
-<%= link "Back", to: publisher_api_key_path(@conn, :index) %>

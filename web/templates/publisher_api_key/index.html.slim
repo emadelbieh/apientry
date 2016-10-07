@@ -1,12 +1,12 @@
 .top
-  = render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_api_key_path(@conn, :new), "New publisher api key"}, title: [title: gettext("Publisher API Keys")]
+  = render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_api_key_path(@conn, :new, publisher_id: @publisher.id), "New publisher api key"}, title: [title: gettext("Publisher API Keys")]
 
 .body.inset-bg
   .container
     .panel-heading
       h2 Publisher API Keys for #{@publisher.name}
       .action
-        a.btn.btn-sm.btn-highlight[href="#{publisher_api_key_path(@conn, :new)}"]
+        a.btn.btn-sm.btn-highlight[href="#{publisher_api_key_path(@conn, :new, publisher_id: @publisher.id)}"]
           = gettext "Add new"
     table.crud-table
       tbody
