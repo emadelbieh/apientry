@@ -4,6 +4,9 @@ defmodule Apientry.TrackingId do
   schema "tracking_ids" do
     field :code, :string
     belongs_to :ebay_api_key, Apientry.EbayApiKey
+    belongs_to :publisher_api_key, Apientry.PublisherApiKey
+
+    # TODO: kept for legacy data
     belongs_to :publisher, Apientry.Publisher
 
     timestamps

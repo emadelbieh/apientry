@@ -4,6 +4,7 @@ defmodule Apientry.PublisherApiKey do
   schema "publisher_api_keys" do
     field :value, :string
     belongs_to :publisher, Apientry.Publisher
+    has_many :tracking_ids, Apientry.TrackingId
 
     timestamps()
   end
