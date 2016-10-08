@@ -12,36 +12,20 @@ defmodule Apientry.TrackingIdController do
 
   plug :scrub_params, "tracking_id" when action in [:create, :update]
 
-  def assign(conn, %{"publisher_id" => publisher_id} = params) do
-    publisher = Repo.get(Publisher, publisher_id)
-    api_keys = get_api_keys(publisher)
-    geos = get_geos
-    changeset = TrackingId.changeset(%TrackingId{})
-    tracking_ids = get_tracking_ids(get_in(params, ["tracking_id", "ebay_publisher_key_id"]))
-    render(conn, "assign.html", changeset: changeset, publisher: publisher,
-      api_keys: api_keys, geos: geos, tracking_ids: tracking_ids)
-  end
+  #def assign(conn, %{"publisher_id" => publisher_id} = params) do
+  #  publisher = Repo.get(Publisher, publisher_id)
+  #  api_keys = get_api_keys(publisher)
+  #  changeset = TrackingId.changeset(%TrackingId{})
+  #  tracking_ids = get_tracking_ids(get_in(params, ["tracking_id", "ebay_publisher_key_id"]))
+  #  render(conn, "assign.html", changeset: changeset, publisher: publisher,
+  #    api_keys: api_keys, geos: geos, tracking_ids: tracking_ids)
+  #end
 
   defp get_api_keys(publisher) do
     assoc(publisher, :api_keys)
     |> PublisherApiKey.values_and_ids
     |> PublisherApiKey.sorted
     |> Repo.all
-  end
-
-  def get_tracking_ids(ebay_api_key_id) do
-    case ebay_api_key_id do
-      nil -> nil
-      key -> 
-        ebay_api_key = Repo.get(EbayApiKey, key)
-        query = assoc(ebay_api_key, :tracking_ids)
-        (from t in query, where: t.publisher_api_key==^nil, select: {t.code, t.id})
-        |> Repo.all
-    end
-  end
-
-  defp get_geos do
-    Repo.all(Geo) |> Repo.preload(:accounts)
   end
 
   def new(conn, %{"account_id" => account_id}) do

@@ -31,10 +31,10 @@ defmodule Apientry.Router do
     resources "/publisher_api_keys", PublisherApiKeyController
     resources "/feeds", FeedController
 
-    get "/tracking_ids/assign", TrackingIdController, :assign
-    post "/tracking_ids/assign", TrackingIdController, :assign
+    get  "/assign/step1", AssignmentController, :step1
+    post "/assign/step2", AssignmentController, :step2
+    post "/assign/step3", AssignmentController, :step3
     resources "/tracking_ids", TrackingIdController
-
 
     put "/publishers/:id/regenerate_key", PublisherController, :regenerate
     resources "/publishers", PublisherController do
