@@ -6,7 +6,15 @@ defmodule Apientry.StoreFilter do
   """
 
   def matches?(domain, store_name) do
-    String.downcase(store_name) =~ String.downcase(domain)
+    split = String.downcase(domain) |> String.split(".")
+
+    string = if length(split)==2 do
+      hd(split)
+    else
+      hd(tl(split))
+    end
+
+    String.downcase(storename) =~ string
   end
 
   @doc """
