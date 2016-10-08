@@ -12,15 +12,6 @@ defmodule Apientry.TrackingIdController do
 
   plug :scrub_params, "tracking_id" when action in [:create, :update]
 
-  #def assign(conn, %{"publisher_id" => publisher_id} = params) do
-  #  publisher = Repo.get(Publisher, publisher_id)
-  #  api_keys = get_api_keys(publisher)
-  #  changeset = TrackingId.changeset(%TrackingId{})
-  #  tracking_ids = get_tracking_ids(get_in(params, ["tracking_id", "ebay_publisher_key_id"]))
-  #  render(conn, "assign.html", changeset: changeset, publisher: publisher,
-  #    api_keys: api_keys, geos: geos, tracking_ids: tracking_ids)
-  #end
-
   defp get_api_keys(publisher) do
     assoc(publisher, :api_keys)
     |> PublisherApiKey.values_and_ids
@@ -41,7 +32,7 @@ defmodule Apientry.TrackingIdController do
   def index(conn, %{"publisher_id" => pub_id}) do
     publisher    = Repo.get!(Publisher, pub_id)
     api_keys     = Repo.all(assoc(publisher, :api_keys))
-    tracking_ids = Repo.all(assoc(api_keys, :tracking_ids))
+    tracking_ids = Repo.all(assoc(api_keys, :tracking_ids))|> Repo.preload([:publisher_api_key, :ebay_api_key])
     render(conn, "index.html", publisher: publisher, tracking_ids: tracking_ids)
   end
 

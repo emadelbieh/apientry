@@ -9,7 +9,7 @@ defmodule Apientry.PublisherController do
     publishers =
       from(p in Publisher,
         order_by: p.inserted_at,
-        preload: :tracking_ids)
+        preload: :api_keys)
       |> Repo.all
 
     render(conn, "index.html", publishers: publishers)

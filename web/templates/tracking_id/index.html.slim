@@ -7,7 +7,7 @@
     .panel-heading
       h2 Tracking ID's for publisher
       .action
-        a.btn.btn-sm.btn-highlight[href="#{publisher_tracking_id_path(@conn, :new, @publisher)}"]
+        a.btn.btn-sm.btn-highlight[href="#{assignment_path(@conn, :step1, publisher_id: @publisher.id)}"]
           = gettext "Add new"
     table.crud-table
       tbody
@@ -18,10 +18,14 @@
                 = tracking_id.code |> String.slice(0..0) |> String.upcase
             td.name
               = tracking_id.code
+              span.info
+                ' Publisher API Key: #{tracking_id.publisher_api_key.value}
             td.actions.crud-actions
-              = link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id), class: "btn btn-sm btn-default"
-              .dropdown.more-actions
-                button.toggle(data-toggle="dropdown" title="More actions...")
-                ul.dropdown-menu
-                  li= link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id)
-                  li= link "Delete", to: publisher_tracking_id_path(@conn, :delete, @publisher, tracking_id), method: :delete, data: [confirm: "Are you sure?"]
+              span.info
+                ' Ebay API Key: #{tracking_id.ebay_api_key.value}
+            /  = link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id), class: "btn btn-sm btn-default"
+            /  .dropdown.more-actions
+            /    button.toggle(data-toggle="dropdown" title="More actions...")
+            /    ul.dropdown-menu
+            /      li= link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id)
+            /      li= link "Delete", to: publisher_tracking_id_path(@conn, :delete, @publisher, tracking_id), method: :delete, data: [confirm: "Are you sure?"]
