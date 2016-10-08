@@ -31,7 +31,11 @@
               = text_input f, :account, class: "form-control", value: @account.name, disabled: true
             .form-group
               = label f, :ebay_api_key_id
-              = select f, :ebay_api_key_id, @ebay_api_key_ids, class: "form-control"
+              = text_input f, :ebay_api_key_id, value: @ebay_api_key.value, class: "form-control", disabled: true
+
+            .form-group
+              = label f, :tracking_id_id
+              = select f, :tracking_id_id, @tracking_ids, class: "form-control"
     
         .form-fieldset
           .form

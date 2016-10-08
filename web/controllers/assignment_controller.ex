@@ -22,7 +22,6 @@ defmodule Apientry.AssignmentController do
 
   def step2(conn, %{"tracking_id" => %{"account_id" => account_id,
                                        "publisher_api_key_id" => publisher_api_key_id}} = params) do
-
     account = Repo.get(Account, account_id) |> Repo.preload(:ebay_api_keys)
     ebay_api_key_ids = get_ebay_api_key_ids(account)
     geo = account.geo
@@ -33,6 +32,21 @@ defmodule Apientry.AssignmentController do
     changeset = TrackingId.changeset(%TrackingId{}, %{})
 
     render(conn, "step2.html", geo: geo, account: account, publisher: publisher, publisher_api_key: publisher_api_key, changeset: changeset, action: assignment_path(conn, :step3), ebay_api_key_ids: ebay_api_key_ids)
+  end
+
+  def step3(conn, %{"tracking_id" => %{"ebay_api_key_id" => ebay_api_key_id,
+                                       "publisher_api_key_id" => publisher_api_key_id}}) do
+
+    ebay_api_key = Repo.get(EbayApiKey, ebay_api_key_id) |> Repo.preload(:account)
+    account = ebay_api_key.account
+    tracking_ids = get_tracking_ids(ebay_api_key)
+
+    publisher_api_key = Repo.get(PublisherApiKey, publisher_api_key_id) |> Repo.preload(:publisher)
+    publisher = publisher_api_key.publisher
+
+    changeset = TrackingId.changeset(%TrackingId{}, %{})
+
+    render(conn, "step3.html", changeset: changeset, action: "", ebay_api_key: ebay_api_key, tracking_ids: tracking_ids, publisher: publisher, account: account, publisher_api_key: publisher_api_key)
   end
 
   defp get_geos do
