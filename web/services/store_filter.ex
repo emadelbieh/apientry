@@ -14,7 +14,7 @@ defmodule Apientry.StoreFilter do
       hd(tl(split))
     end
 
-    String.downcase(storename) =~ string
+    String.downcase(store_name) =~ string
   end
 
   @doc """
