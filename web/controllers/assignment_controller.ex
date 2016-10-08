@@ -46,7 +46,20 @@ defmodule Apientry.AssignmentController do
 
     changeset = TrackingId.changeset(%TrackingId{}, %{})
 
-    render(conn, "step3.html", changeset: changeset, action: "", ebay_api_key: ebay_api_key, tracking_ids: tracking_ids, publisher: publisher, account: account, publisher_api_key: publisher_api_key)
+    render(conn, "step3.html", changeset: changeset, action: assignment_path(conn, :assign), ebay_api_key: ebay_api_key, tracking_ids: tracking_ids, publisher: publisher, account: account, publisher_api_key: publisher_api_key)
+  end
+
+  def assign(conn, %{"tracking_id" => %{"tracking_id_id" => id, "publisher_api_key_id" => publisher_api_key_id}}) do
+    tracking_id = Repo.get!(TrackingId, id)
+    changeset = TrackingId.changeset(tracking_id, %{publisher_api_key_id: publisher_api_key_id})
+
+    Repo.update!(changeset)
+
+    publisher_api_key = Repo.get!(PublisherApiKey, publisher_api_key_id) |> Repo.preload(:publisher)
+
+    conn
+    |> put_flash(:info, "Tracking ID successfully assigned")
+    |> redirect(to: publisher_tracking_id_path(conn, :index, publisher_api_key.publisher))
   end
 
   defp get_geos do
