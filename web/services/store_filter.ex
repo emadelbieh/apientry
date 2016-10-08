@@ -3,6 +3,9 @@ defmodule Apientry.StoreFilter do
   Exposes two functions:
     matches? - for dealing with simple store names
     matches_id? - for dealing with store_ids, e.g. store_walmart_com
+
+  Warning:
+    what about shoppingshadow.com vs shopping.com, shopping will match shoppingshadow
   """
 
   def matches?(domain, store_name) do
@@ -23,7 +26,7 @@ defmodule Apientry.StoreFilter do
   """
   def matches_id?(domain, store_id) do
     if is_store?(store_id) do
-      store_id =~ to_underscore(domain)
+      strip_underscore(store_id) =~ domain_without_tld(domain)
     else
       false
     end
@@ -39,10 +42,8 @@ defmodule Apientry.StoreFilter do
     end
   end
 
-  defp to_underscore(domain) do
-    domain
-    |> String.downcase
-    |> String.replace(".", "_")
+  defp strip_underscore(store_id) do
+    store_id |> String.replace("_", "")
   end
 
   # checks if the given attribute satisfies our convention for stores
