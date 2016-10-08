@@ -72,6 +72,9 @@ defmodule Apientry.LayoutView do
   def active_top_link(Apientry.TrackingIdView, _, _),
     do: :publishers
 
+  def active_top_link(Apientry.GeoView, _, _),
+    do: :geos
+
   def active_top_link(_, _, _),
     do: nil
 end
