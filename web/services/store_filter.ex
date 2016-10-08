@@ -6,15 +6,7 @@ defmodule Apientry.StoreFilter do
   """
 
   def matches?(domain, store_name) do
-    split = String.downcase(domain) |> String.split(".")
-
-    string = if length(split)==2 do
-      hd(split)
-    else
-      hd(tl(split))
-    end
-
-    String.downcase(store_name) =~ string
+    String.downcase(store_name) =~ domain_without_tld(domain)
   end
 
   @doc """
@@ -34,6 +26,16 @@ defmodule Apientry.StoreFilter do
       store_id =~ to_underscore(domain)
     else
       false
+    end
+  end
+
+  defp domain_without_tld(domain) do
+    split = String.downcase(domain) |> String.split(".")
+
+    string = if length(split)==2 do
+      hd(split)
+    else
+      hd(tl(split))
     end
   end
 
