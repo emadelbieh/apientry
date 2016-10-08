@@ -139,12 +139,10 @@ defmodule Apientry.EbayJsonTransformer do
     data
     |> safe_update_in(["categories", "category"], fn cats ->
       cats
-      |> Stream.filter(&filter_item(&1, assigns, ["categoryURL"]))
       |> Enum.map(&map_category(&1, assigns))
     end)
     |> safe_update_in(["searchHistory", "categorySelection"], fn cats ->
       cats
-      |> Stream.filter(&filter_item(&1, assigns, ["categoryURL"]))
       |> Enum.map(& map_category(&1, assigns))
     end)
   end
@@ -163,13 +161,10 @@ defmodule Apientry.EbayJsonTransformer do
     end)
     |> safe_update_in(["attributes", "attribute"], fn attributes ->
       attributes
-      |> Stream.filter(&filter_item(&1, assigns, ["attributeURL"]))
       |> Enum.map(&map_attribute(&1, cat, assigns))
     end)
     |> safe_update_in(["items", "item"], fn items ->
       items
-      |> Stream.filter(&filter_item(&1, assigns, ["offer", "offerURL"]))
-      |> Stream.filter(&filter_item(&1, assigns, ["product", "productOffersURL"]))
       |> Stream.filter(&filter_store(&1, assigns, ["offer", "store"]))
       |> Enum.map(&map_item(&1, cat, assigns))
     end)
@@ -300,7 +295,6 @@ defmodule Apientry.EbayJsonTransformer do
     end)
     |> safe_update_in(["attributeValues", "attributeValue"], fn items ->
       items
-      |> Stream.filter(&filter_item(&1, assigns, ["attributeValueURL"]))
       |> Stream.filter(&filter_store(&1, assigns, ["id"]))
       |> Enum.map(& map_attribute_value(&1, attribute, category, assigns))
     end)
