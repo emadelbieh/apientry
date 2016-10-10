@@ -5,7 +5,7 @@ defmodule Apientry.StoreFilterTest do
 
   test "shopping.com matches both Ebay and Shopping" do
     assert StoreFilter.matches?("shopping.com", "Ebay") &&
-      StoreFilter.matches?("shopping.com", "Ebay")
+      StoreFilter.matches?("shopping.com", "Shopping.com")
   end
 
   test "ebay.com matches both Shopping and Ebay" do
