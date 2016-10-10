@@ -15,7 +15,7 @@
           .form
             .form-group
               = label f, :publisher_id
-              = text_input f, :publisher_id, disabled: true, class: "form-control", value: @tracking_id.publisher_id
+              = text_input f, :publisher_id, class: "form-control"
             .form-group
               = label f, :ebay_api_key_id, class: "control-label"
               = select f, :ebay_api_key_id, @ebay_api_keys, class: "form-control"

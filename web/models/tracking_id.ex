@@ -26,4 +26,11 @@ defmodule Apientry.TrackingId do
     |> validate_required([:code, :ebay_api_key_id])
     |> unique_constraint(:code, name: :tracking_ids_code_index)
   end
+
+  def legacy_changeset(model, params \\ %{}) do
+    model
+    |> cast(params, [:code, :ebay_api_key_id, :publisher_api_key_id, :publisher_id])
+    |> validate_required([:code, :ebay_api_key_id])
+    |> unique_constraint(:code, name: :tracking_ids_code_index)
+  end
 end
