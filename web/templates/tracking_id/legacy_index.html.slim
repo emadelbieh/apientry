@@ -1,0 +1,18 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn
+
+.body.clear-bg
+  .container
+    .panel-heading
+      h2 Tracking ID's for publisher
+    table.crud-table
+      tbody
+        = for tracking_id <- @tracking_ids do
+          tr
+            td.icon
+              span.default-image.-size64[class="-v#{:erlang.phash2(tracking_id.code, 10)}"]
+                = tracking_id.code |> String.slice(0..0) |> String.upcase
+            td.name
+              = tracking_id.code
+            td.actions.crud-actions
+              = link "Edit", to: tracking_id_path(@conn, :edit, tracking_id), class: "btn btn-sm btn-default"

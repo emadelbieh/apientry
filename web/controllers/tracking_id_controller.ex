@@ -36,6 +36,11 @@ defmodule Apientry.TrackingIdController do
     render(conn, "index.html", publisher: publisher, tracking_ids: tracking_ids)
   end
 
+  def index(conn, _) do
+    tracking_ids = Repo.all(TrackingId)
+    render(conn, "legacy_index.html", tracking_ids: tracking_ids)
+  end
+
   def create(conn, %{"tracking_id" => tracking_id_params, "account_id" => account_id}) do
     changeset = TrackingId.changeset(%TrackingId{}, tracking_id_params)
 
