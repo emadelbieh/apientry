@@ -22,7 +22,7 @@
               = error_tag f, :ebay_api_key_id
             .form-group
               = label f, :publisher_api_key_id, class: "control-label"
-              = select f, :publisher_api_key_id, @publisher_api_keys, class: "form-control"
+              = select f, :publisher_api_key_id, @publisher_api_keys, class: "form-control", prompt: "-- Select publisher api key --"
               = error_tag f, :publisher_api_key_id
             .form-group
               = label f, :code

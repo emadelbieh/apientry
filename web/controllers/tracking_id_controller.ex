@@ -104,7 +104,7 @@ defmodule Apientry.TrackingIdController do
     tracking_id = Repo.get(TrackingId, id)
     changeset = TrackingId.legacy_changeset(tracking_id)
     ebay_api_keys = EbayApiKey |> EbayApiKey.values_and_ids |> Repo.all
-    publisher_api_keys = PublisherApiKey |> EbayApiKey.values_and_ids |> Repo.all
+    publisher_api_keys = PublisherApiKey |> PublisherApiKey.values_and_ids |> Repo.all
     render(conn, "legacy_edit.html", changeset: changeset, ebay_api_keys: ebay_api_keys, tracking_id: tracking_id, publisher_api_keys: publisher_api_keys,
                                      action: tracking_id_path(conn, :update, tracking_id))
   end
