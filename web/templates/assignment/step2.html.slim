@@ -18,7 +18,7 @@
               = text_input f, :publisher_name, class: "form-control", value: @publisher.name, disabled: true
             .form-group
               = label f, :publisher_api_key
-              = text_input f, :publisher_api_key, class: "form-control", value: @publisher_api_key.value, disabled: true
+              = text_input f, :publisher_api_key, class: "form-control", value: @publisher_api_key.title, disabled: true
               = hidden_input f, :publisher_api_key_id, value: @publisher_api_key.id
 
         .form-fieldset

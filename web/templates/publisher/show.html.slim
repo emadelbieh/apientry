@@ -21,7 +21,10 @@
           p The API keys used by publishers to query the Blackswan API.
         .form
           = for api_key <- @api_keys do
-            p= api_key.value
+            p
+              = api_key.value
+              | &nbsp;&nbsp;&nbsp;
+              | (#{api_key.title})
           a.btn.btn-accent.btn-sm[href="#{publisher_api_key_path(@conn, :index, publisher_id: @publisher.id)}"] Manage Publisher API Keys
 
       .form-fieldset
