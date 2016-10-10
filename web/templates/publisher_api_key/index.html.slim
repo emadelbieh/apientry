@@ -17,6 +17,8 @@
                 = publisher_api_key.value |> String.slice(0..0) |> String.upcase
             td.name
               = link publisher_api_key.value, to: publisher_api_key_path(@conn, :show, publisher_api_key)
+              span.info
+                = publisher_api_key.title
             td.actions.crud-actions
               = link "Edit", to: publisher_api_key_path(@conn, :edit, publisher_api_key, publisher_id: @publisher.id), class: "btn btn-sm btn-default"
               .dropdown.more-actions

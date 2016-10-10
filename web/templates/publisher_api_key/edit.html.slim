@@ -24,6 +24,13 @@ h2 Edit publisher api key
 
       .form
         .form-group.-horiz
+          = label f, :title, class: "control-label"
+          = text_input f, :title, class: "form-control"
+          = error_tag f, :title
+
+
+      .form
+        .form-group.-horiz
           = label f, :value, class: "control-label"
           = text_input f, :value, class: "form-control"
           = error_tag f, :value
