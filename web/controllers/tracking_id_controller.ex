@@ -36,11 +36,6 @@ defmodule Apientry.TrackingIdController do
     render(conn, "index.html", publisher: publisher, tracking_ids: tracking_ids)
   end
 
-  def index(conn, _) do
-    tracking_ids = Repo.all(TrackingId)
-    render(conn, "legacy_index.html", tracking_ids: tracking_ids)
-  end
-
   def create(conn, %{"tracking_id" => tracking_id_params, "account_id" => account_id}) do
     changeset = TrackingId.changeset(%TrackingId{}, tracking_id_params)
 
@@ -94,5 +89,34 @@ defmodule Apientry.TrackingIdController do
     conn
     |> put_flash(:info, "Tracking deleted successfully.")
     |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
+  end
+
+
+
+  # Legacy actions for dealing with old data
+
+  def index(conn, _) do
+    tracking_ids = Repo.all(TrackingId)
+    render(conn, "legacy_index.html", tracking_ids: tracking_ids)
+  end
+
+  def edit(conn, %{"id" => id}) do
+    tracking_id = Repo.get(TrackingId, id)
+    changeset = TrackingId.changeset(tracking_id)
+    ebay_api_keys = EbayApiKey |> EbayApiKey.values_and_ids |> Repo.all
+    publisher_api_keys = PublisherApiKey |> EbayApiKey.values_and_ids |> Repo.all
+    render(conn, "legacy_edit.html", changeset: changeset, ebay_api_keys: ebay_api_keys, tracking_id: tracking_id, publisher_api_keys: publisher_api_keys,
+                                     action: tracking_id_path(conn, :update, tracking_id))
+  end
+
+  def update(conn, %{"id" => id, "tracking_id" => tracking_id_params}) do
+    tracking_id = Repo.get(TrackingId, id)
+    changeset = TrackingId.changeset(tracking_id, tracking_id_params)
+
+    Repo.update!(changeset)
+
+    conn
+    |> put_flash(:info, "Tracking ID updated successfully")
+    |> redirect(to: tracking_id_path(conn, :index))
   end
 end

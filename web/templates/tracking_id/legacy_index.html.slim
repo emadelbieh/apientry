@@ -1,10 +1,11 @@
 .top
   = render Apientry.SharedView, "nav.html", conn: @conn
 
+
 .body.clear-bg
   .container
     .panel-heading
-      h2 Tracking ID's for publisher
+      h2 Warning: This page exists for the sole reason of migrating data from old model to new
     table.crud-table
       tbody
         = for tracking_id <- @tracking_ids do
@@ -14,5 +15,16 @@
                 = tracking_id.code |> String.slice(0..0) |> String.upcase
             td.name
               = tracking_id.code
+              span.info
+                = "pid: "
+                = tracking_id.publisher_id
+                ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              span.info
+                = "eakid: "
+                = tracking_id.ebay_api_key_id
+                ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              span.info
+                = "pakid: "
+                = tracking_id.publisher_api_key_id
             td.actions.crud-actions
               = link "Edit", to: tracking_id_path(@conn, :edit, tracking_id), class: "btn btn-sm btn-default"
