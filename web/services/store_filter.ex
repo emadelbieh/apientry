@@ -7,8 +7,21 @@ defmodule Apientry.StoreFilter do
   Warning:
     what about shoppingshadow.com vs shopping.com, shopping will match shoppingshadow
   """
+  def matches?("ebay.com", store_name) do
+    domain_matches?("ebay.com", store_name) ||
+    domain_matches?("shopping.com", store_name)
+  end
+
+  def matches?("shopping.com", store_name) do
+    domain_matches?("ebay.com", store_name) ||
+    domain_matches?("shopping.com", store_name)
+  end
 
   def matches?(domain, store_name) do
+    domain_matches?(domain, store_name)
+  end
+
+  defp domain_matches?(domain, store_name) do
     String.downcase(store_name) =~ domain_without_tld(domain)
   end
 
