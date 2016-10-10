@@ -12,3 +12,8 @@ ul.back-crumbs
     li.crumb.-publishers
       a[href="#{publisher_path(@conn, :index)}"]
         = gettext "Publishers"
+
+  = if assigns[:geos] || assigns[:geo] do
+    li.crumb.-feeds
+      a[href="#{geo_path(@conn, :index)}"]
+        = gettext "Geos"

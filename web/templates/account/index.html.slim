@@ -1,5 +1,5 @@
 .top
-  = render Apientry.SharedView, "nav.html", conn: @conn, action: {account_path(@conn, :new, geo_id: @geo.id), "New Account"}, title: [title: gettext("Accounts")]
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [geos: true], title: [geo: @geo]
 
 .body.inset-bg
   .container
