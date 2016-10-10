@@ -27,4 +27,8 @@ defmodule Apientry.PublisherApiKey do
   def values_and_ids(query) do
     from p in query, select: {p.value, p.id}
   end
+
+  def names_and_ids(query) do
+    from p in query, select: {p.name, p.id}
+  end
 end

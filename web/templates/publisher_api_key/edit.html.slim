@@ -1,0 +1,36 @@
+h2 Edit publisher api key
+
+/= render "form.html", changeset: @changeset,
+                        action: publisher_api_key_path(@conn, :update, @publisher_api_key)
+
+.basic-panel
+  = form_for @changeset, publisher_api_key_path(@conn, :update, @publisher_api_key), fn f ->
+    = if @changeset.action do
+      .alert.alert-danger
+        p Oops, something went wrong! Please check the errors below.
+
+    .form-fieldset
+      .info
+        = if assigns[:mode] == :create do
+          h2 New Publisher API Key
+        - else
+          h2 Edit Publisher API Key
+
+      .form
+        .form-group.-horiz
+          = label f, :publisher_id, class: "control-label"
+          = select f, :publisher_id, @publishers, class: "form-control"
+          = error_tag f, :publisher_id
+
+      .form
+        .form-group.-horiz
+          = label f, :value, class: "control-label"
+          = text_input f, :value, class: "form-control"
+          = error_tag f, :value
+
+    .form-fieldset
+      .form
+        .form-group
+          = submit "Submit", class: "btn btn-primary"
+
+= link "Back", to: publisher_api_key_path(@conn, :index)

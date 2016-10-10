@@ -35,8 +35,9 @@ defmodule Apientry.PublisherApiKeyController do
 
   def edit(conn, %{"id" => id}) do
     publisher_api_key = Repo.get!(PublisherApiKey, id)
+    publishers = Publisher |> PublisherApiKey.names_and_ids |> Repo.all
     changeset = PublisherApiKey.changeset(publisher_api_key)
-    render(conn, "edit.html", publisher_api_key: publisher_api_key, changeset: changeset)
+    render(conn, "edit.html", publisher_api_key: publisher_api_key, publishers: publishers, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "publisher_api_key" => publisher_api_key_params}) do
@@ -63,5 +64,11 @@ defmodule Apientry.PublisherApiKeyController do
     conn
     |> put_flash(:info, "Publisher api key deleted successfully.")
     |> redirect(to: publisher_api_key_path(conn, :index))
+  end
+
+  # Legacy actions for dealing with legacy data
+  def index(conn, _) do
+    publisher_api_keys = Repo.all(PublisherApiKey)
+    render conn, "legacy_index.html", publisher_api_keys: publisher_api_keys
   end
 end
