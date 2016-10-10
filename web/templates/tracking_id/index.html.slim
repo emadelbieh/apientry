@@ -19,7 +19,7 @@
             td.name
               = tracking_id.code
               span.info
-                ' Publisher API Key: #{tracking_id.publisher_api_key.value}
+                = tracking_id.publisher_api_key.title
             td.actions.crud-actions
               span.info
                 ' Ebay API Key: #{tracking_id.ebay_api_key.value}
