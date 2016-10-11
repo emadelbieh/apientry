@@ -62,6 +62,16 @@ defmodule Apientry.AssignmentController do
     |> redirect(to: publisher_tracking_id_path(conn, :index, publisher_api_key.publisher))
   end
 
+  def unassign(conn, %{"id" => id, "publisher_id" => pub_id}) do
+    tracking_id = Repo.get!(TrackingId, id)
+    changeset = TrackingId.changeset(tracking_id, %{publisher_api_key_id: nil})
+    Repo.update!(changeset)
+
+    conn
+    |> put_flash(:info, "Tracking ID has been successfully unassigned")
+    |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
+  end
+
   defp get_geos do
     Repo.all(Geo) |> Repo.preload(:accounts)
   end

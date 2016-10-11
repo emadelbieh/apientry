@@ -23,9 +23,5 @@
                 ' #{tracking_id.ebay_api_key.title}
               span.info
                 ' #{tracking_id.publisher_api_key.title}
-            /  = link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id), class: "btn btn-sm btn-default"
-            /  .dropdown.more-actions
-            /    button.toggle(data-toggle="dropdown" title="More actions...")
-            /    ul.dropdown-menu
-            /      li= link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id)
-            /      li= link "Delete", to: publisher_tracking_id_path(@conn, :delete, @publisher, tracking_id), method: :delete, data: [confirm: "Are you sure?"]
+              ' &nbsp;
+              = link "Unassign", to: assignment_path(@conn, :unassign, tracking_id, publisher_id: @publisher.id), class: "btn btn-sm btn-default", method: :patch, data: [confirm: "Are you sure?"]

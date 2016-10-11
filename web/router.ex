@@ -36,6 +36,7 @@ defmodule Apientry.Router do
     post "/assign/step2", AssignmentController, :step2
     post "/assign/step3", AssignmentController, :step3
     post "/assign/assign", AssignmentController, :assign
+    patch "/assign/:id/unassign", AssignmentController, :unassign
 
     put "/publishers/:id/regenerate_key", PublisherController, :regenerate
     resources "/publishers", PublisherController do
