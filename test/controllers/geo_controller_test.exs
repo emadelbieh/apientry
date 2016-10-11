@@ -43,7 +43,7 @@ defmodule Apientry.GeoControllerTest do
   test "updates chosen resource and redirects when data is valid", %{conn: conn} do
     geo = Repo.insert! %Geo{}
     conn = put conn, geo_path(conn, :update, geo), geo: @valid_attrs
-    assert redirected_to(conn) == geo_path(conn, :show, geo)
+    assert redirected_to(conn) == geo_path(conn, :index)
     assert Repo.get_by(Geo, @valid_attrs)
   end
 
