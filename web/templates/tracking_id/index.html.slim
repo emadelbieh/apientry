@@ -1,5 +1,5 @@
 .top
-  = render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_tracking_id_path(@conn, :new, @publisher), "New feed"}, crumbs: [publishers: true], title: [publisher: @publisher, subtitle: gettext("Tracking IDs")]
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [publishers: true], title: [publisher: @publisher, subtitle: gettext("Tracking IDs")]
   = render Apientry.PublisherView, "nav.html", conn: @conn, publisher: @publisher, active: :tracking_ids
 
 .body.clear-bg
@@ -8,7 +8,7 @@
       h2 Tracking ID's for publisher
       .action
         a.btn.btn-sm.btn-highlight[href="#{assignment_path(@conn, :step1, publisher_id: @publisher.id)}"]
-          = gettext "Add new"
+          = gettext "Assign tracking ID"
     table.crud-table
       tbody
         = for tracking_id <- @tracking_ids do
@@ -18,11 +18,11 @@
                 = tracking_id.code |> String.slice(0..0) |> String.upcase
             td.name
               = tracking_id.code
-              span.info
-                = tracking_id.publisher_api_key.title
             td.actions.crud-actions
               span.info
-                ' Ebay API Key: #{tracking_id.ebay_api_key.value}
+                ' #{tracking_id.ebay_api_key.title}
+              span.info
+                ' #{tracking_id.publisher_api_key.title}
             /  = link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id), class: "btn btn-sm btn-default"
             /  .dropdown.more-actions
             /    button.toggle(data-toggle="dropdown" title="More actions...")
