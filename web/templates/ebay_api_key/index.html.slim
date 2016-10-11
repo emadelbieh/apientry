@@ -49,9 +49,8 @@
                 ' eBay API Key:
                 = tracking_id.ebay_api_key.title
               = link "Edit", to: tracking_id_path(@conn, :edit, tracking_id, account_id: @account.id), class: "btn btn-sm btn-default"
-              /.dropdown.more-actions
-              /  button.toggle(data-toggle="dropdown" title="More actions...")
-              /  ul.dropdown-menu
-              /    li= link "Show", to: tracking_id_path(@conn, :show, tracking_id)
-              /    li= link "Edit", to: tracking_id_path(@conn, :edit, tracking_id)
-              /    li= link "Delete", to: tracking_id_path(@conn, :delete, tracking_id), method: :delete, data: [confirm: "Are you sure?"]
+              .dropdown.more-actions
+                button.toggle(data-toggle="dropdown" title="More actions...")
+                ul.dropdown-menu
+                  li= link "Edit", to: tracking_id_path(@conn, :edit, tracking_id, account_id: @account.id)
+                  li= link "Delete", to: tracking_id_path(@conn, :delete, tracking_id, account_id: @account.id), method: :delete, data: [confirm: "Are you sure?"]

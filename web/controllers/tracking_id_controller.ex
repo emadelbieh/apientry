@@ -78,7 +78,7 @@ defmodule Apientry.TrackingIdController do
     end
   end
 
-  def delete(conn, %{"publisher_id" => pub_id, "id" => id}) do
+  def delete(conn, %{"account_id" => account_id, "id" => id}) do
     tracking_id = Repo.get!(TrackingId, id)
 
     # Here we use delete! (with a bang) because we expect
@@ -88,7 +88,7 @@ defmodule Apientry.TrackingIdController do
 
     conn
     |> put_flash(:info, "Tracking deleted successfully.")
-    |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
+    |> redirect(to: ebay_api_key_path(conn, :index, account_id: account_id))
   end
 
 
