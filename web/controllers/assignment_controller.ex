@@ -75,7 +75,7 @@ defmodule Apientry.AssignmentController do
 
   def get_ebay_api_key_ids(account) do
     query = assoc(account, :ebay_api_keys)
-    (from e in query, select: {e.value, e.id})
+    |> EbayApiKey.values_and_ids
     |> Repo.all
   end
 

@@ -27,7 +27,7 @@ defmodule Apientry.EbayApiKey do
   end
 
   def values_and_ids(query) do
-    from e in query, select: {e.value, e.id}
+    from e in query, select: {e.title, e.id}
   end
 
 end
