@@ -13,7 +13,7 @@
         = for geo <- @geos do
           tr
             td.icon
-              span.default-image.-size64
+              span.default-image.-size64[class="-v#{:erlang.phash2(geo.id, 10)}"]
                 = geo.name |> String.slice(0..0) |> String.upcase
             td.name
               = link geo.name, to: account_path(@conn, :index, geo_id: geo.id)
