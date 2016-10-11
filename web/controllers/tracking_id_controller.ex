@@ -74,7 +74,9 @@ defmodule Apientry.TrackingIdController do
         |> put_flash(:info, "Tracking updated successfully.")
         |> redirect(to: ebay_api_key_path(conn, :index, account_id: account_id))
       {:error, changeset} ->
-        render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset)
+        account = Repo.get!(Account, account_id)
+        ebay_api_keys = assoc(account, :ebay_api_keys) |> EbayApiKey.values_and_ids |> Repo.all
+        render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, account: account, ebay_api_keys: ebay_api_keys)
     end
   end
 

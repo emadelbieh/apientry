@@ -45,7 +45,8 @@ defmodule Apientry.PublisherApiKeyController do
         |> put_flash(:info, "Publisher api key updated successfully.")
         |> redirect(to: publisher_api_key_path(conn, :index))
       {:error, changeset} ->
-        render(conn, "edit.html", publisher_api_key: publisher_api_key, changeset: changeset)
+        publishers = Publisher |> PublisherApiKey.names_and_ids |> Repo.all
+        render(conn, "edit.html", publisher_api_key: publisher_api_key, changeset: changeset, publishers: publishers)
     end
   end
 

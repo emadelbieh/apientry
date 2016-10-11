@@ -17,8 +17,8 @@ defmodule Apientry.TrackingIdControllerTest do
     {:ok, publisher: publisher, ebay_api_key: ebay_api_key, account: account}
   end
 
-  test "renders form for new resources", %{conn: conn, publisher: publisher} do
-    conn = get conn, publisher_tracking_id_path(conn, :new, publisher)
+  test "renders form for new resources", %{conn: conn, account: account} do
+    conn = get conn, tracking_id_path(conn, :new, account_id: account.id)
     assert html_response(conn, 200) =~ "New Tracking ID"
   end
 
@@ -28,8 +28,8 @@ defmodule Apientry.TrackingIdControllerTest do
     assert Repo.get_by(TrackingId, @valid_attrs)
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn, publisher: publisher} do
-    conn = post conn, publisher_tracking_id_path(conn, :create, publisher), tracking_id: @invalid_attrs
+  test "does not create resource and renders errors when data is invalid", %{conn: conn, account: account} do
+    conn = post conn, tracking_id_path(conn, :create, account_id: account.id), tracking_id: @invalid_attrs
     assert html_response(conn, 200) =~ "New Tracking ID"
   end
 
@@ -39,10 +39,10 @@ defmodule Apientry.TrackingIdControllerTest do
     assert html_response(conn, 200) =~ "Edit"
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, ebay_api_key: ebay_api_key} do
+  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, ebay_api_key: ebay_api_key, account: account} do
     tracking_id = Repo.insert! %TrackingId{ebay_api_key_id: ebay_api_key.id, code: "12345"}
-    conn = put conn, tracking_id_path(conn, :update, tracking_id, ebay_api_key_id: ebay_api_key.id), tracking_id: %{ebay_api_key_id: 0}
-    assert html_response(conn, 200) =~ "Edit tracking id"
+    conn = put conn, tracking_id_path(conn, :update, tracking_id, account_id: account.id), tracking_id: %{code: ""}
+    assert html_response(conn, 200) =~ "Modify tracking ID"
   end
 
   test "deletes chosen resource", %{conn: conn, ebay_api_key: ebay_api_key, account: account} do
