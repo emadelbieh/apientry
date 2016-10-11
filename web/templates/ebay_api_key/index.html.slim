@@ -16,7 +16,7 @@
               span.default-image.-size64
                 = @geo.name
             td.name
-              = link ebay_api_key.title, to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
+              = link (ebay_api_key.title || ""), to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
               span.info
                 = link ebay_api_key.value, to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
             td.actions.crud-actions
