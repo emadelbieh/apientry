@@ -45,10 +45,10 @@
             td.name
               = tracking_id.code
             td.actions.crud-actions
-              p
+              span.info
                 ' eBay API Key:
-                = tracking_id.ebay_api_key.value
-              /= link "Edit", to: tracking_id_path(@conn, :edit, tracking_id), class: "btn btn-sm btn-default"
+                = tracking_id.ebay_api_key.title
+              = link "Edit", to: tracking_id_path(@conn, :edit, tracking_id, account_id: @account.id), class: "btn btn-sm btn-default"
               /.dropdown.more-actions
               /  button.toggle(data-toggle="dropdown" title="More actions...")
               /  ul.dropdown-menu

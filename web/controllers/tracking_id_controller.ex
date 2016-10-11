@@ -55,26 +55,26 @@ defmodule Apientry.TrackingIdController do
     end
   end
 
-  def edit(conn, %{"publisher_id" => pub_id, "id" => id}) do
+  def edit(conn, %{"account_id" => account_id, "id" => id}) do
     tracking_id = Repo.get!(TrackingId, id)
-    publisher = Repo.get!(Publisher, pub_id)
+    account = Repo.get!(Account, account_id)
+    ebay_api_keys = assoc(account, :ebay_api_keys) |> EbayApiKey.values_and_ids |> Repo.all
     changeset = TrackingId.changeset(tracking_id)
-    render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, publisher: publisher)
+    render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, ebay_api_keys: ebay_api_keys, account: account)
   end
 
-  def update(conn, %{"publisher_id" => pub_id, "id" => id, "tracking_id" => tracking_id_params}) do
+  def update(conn, %{"account_id" => account_id, "id" => id, "tracking_id" => tracking_id_params}) do
     tracking_id = Repo.get!(TrackingId, id)
     changeset = TrackingId.changeset(tracking_id, tracking_id_params)
-    publisher = Repo.get!(Publisher, pub_id)
 
     case Repo.update(changeset) do
       {:ok, _tracking_id} ->
         DbCache.update(:tracking_id)
         conn
         |> put_flash(:info, "Tracking updated successfully.")
-        |> redirect(to: publisher_tracking_id_path(conn, :index, pub_id))
+        |> redirect(to: ebay_api_key_path(conn, :index, account_id: account_id))
       {:error, changeset} ->
-        render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset, publisher: publisher)
+        render(conn, "edit.html", tracking_id: tracking_id, changeset: changeset)
     end
   end
 
