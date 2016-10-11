@@ -19,12 +19,11 @@
               = publisher_api_key.value
               span.info
                 = publisher_api_key.title
-            /td.actions.crud-actions
+            td.actions.crud-actions
             /  = link "Edit", to: publisher_api_key_path(@conn, :edit, publisher_api_key, publisher_id: @publisher.id), class: "btn btn-sm btn-default"
             /  .dropdown.more-actions
             /    button.toggle(data-toggle="dropdown" title="More actions...")
             /    ul.dropdown-menu
-            /      li= link "Show", to: publisher_api_key_path(@conn, :show, publisher_api_key)
             /      li= link "Edit", to: publisher_api_key_path(@conn, :edit, publisher_api_key)
             /      li= link "Delete", to: publisher_api_key_path(@conn, :delete, publisher_api_key), method: :delete, data: [confirm: "Are you sure?"]
 

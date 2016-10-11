@@ -12,25 +12,25 @@ defmodule Apientry.PublisherApiKeyControllerTest do
     {:ok, publisher: publisher}
   end
 
-  test "lists all entries on index", %{conn: conn} do
-    conn = get conn, publisher_api_key_path(conn, :index)
-    assert html_response(conn, 200) =~ "Listing publisher api keys"
+  test "lists all entries on index", %{conn: conn, publisher: publisher} do
+    conn = get conn, publisher_api_key_path(conn, :index, publisher_id: publisher.id)
+    assert html_response(conn, 200) =~ "Publisher API Keys"
   end
 
-  test "renders form for new resources", %{conn: conn} do
-    conn = get conn, publisher_api_key_path(conn, :new)
-    assert html_response(conn, 200) =~ "New publisher api key"
+  test "renders form for new resources", %{conn: conn, publisher: publisher} do
+    conn = get conn, publisher_api_key_path(conn, :new, publisher_id: publisher.id)
+    assert html_response(conn, 200) =~ "New Publisher API Key"
   end
 
   test "creates resource and redirects when data is valid", %{conn: conn, publisher: publisher} do
-    conn = post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, value: "12345"}
-    assert redirected_to(conn) == publisher_api_key_path(conn, :index)
-    assert Repo.get_by(PublisherApiKey, %{publisher_id: publisher.id, value: "12345"})
+    conn = post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, title: "Key 1", value: "12345"}
+    assert redirected_to(conn) == publisher_api_key_path(conn, :index, publisher_id: publisher.id)
+    assert Repo.get_by(PublisherApiKey, %{publisher_id: publisher.id, value: "12345", title: "Key 1"})
   end
 
   test "does not create resource when value already exists", %{conn: conn, publisher: publisher} do
-    post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, value: "12345"}
-    conn = post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, value: "12345"}
+    post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, title: "Key1", value: "12345"}
+    conn = post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, title: "Key2", value: "12345"}
     assert html_response(conn, 200) =~ "has already been taken"
   end
 
@@ -39,21 +39,9 @@ defmodule Apientry.PublisherApiKeyControllerTest do
     assert html_response(conn, 200) =~ "check the errors"
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
+  test "does not create resource and renders errors when data is invalid", %{conn: conn, publisher: publisher} do
     conn = post conn, publisher_api_key_path(conn, :create), publisher_api_key: @invalid_attrs
-    assert html_response(conn, 200) =~ "New publisher api key"
-  end
-
-  test "shows chosen resource", %{conn: conn} do
-    publisher_api_key = Repo.insert! %PublisherApiKey{}
-    conn = get conn, publisher_api_key_path(conn, :show, publisher_api_key)
-    assert html_response(conn, 200) =~ "Show publisher api key"
-  end
-
-  test "renders page not found when id is nonexistent", %{conn: conn} do
-    assert_error_sent 404, fn ->
-      get conn, publisher_api_key_path(conn, :show, -1)
-    end
+    assert html_response(conn, 200) =~ "New Publisher API Key"
   end
 
   test "renders form for editing chosen resource", %{conn: conn} do
@@ -63,15 +51,15 @@ defmodule Apientry.PublisherApiKeyControllerTest do
   end
 
   test "updates chosen resource and redirects when data is valid", %{conn: conn, publisher: publisher} do
-    publisher_api_key = Repo.insert! %PublisherApiKey{}
-    conn = put conn, publisher_api_key_path(conn, :update, publisher_api_key), publisher_api_key: %{publisher_id: publisher.id, value: "12345"}
-    assert redirected_to(conn) == publisher_api_key_path(conn, :show, publisher_api_key)
-    assert Repo.get_by(PublisherApiKey, %{publisher_id: publisher.id, value: "12345"})
+    publisher_api_key = Repo.insert! PublisherApiKey.changeset(%PublisherApiKey{}, %{title: "Pub1", publisher_id: publisher.id, value: "12345"})
+    conn = put conn, publisher_api_key_path(conn, :update, publisher_api_key, publisher_id: publisher.id), publisher_api_key: %{title: "Publisher1", publisher_id: publisher.id, value: "12345"}
+    assert redirected_to(conn) == publisher_api_key_path(conn, :index)
+    assert Repo.get_by(PublisherApiKey, %{publisher_id: publisher.id, value: "12345", title: "Publisher1"})
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
+  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, publisher: publisher} do
     publisher_api_key = Repo.insert! %PublisherApiKey{}
-    conn = put conn, publisher_api_key_path(conn, :update, publisher_api_key), publisher_api_key: @invalid_attrs
+    conn = put conn, publisher_api_key_path(conn, :update, publisher_api_key, publisher_id: publisher.id), publisher_api_key: @invalid_attrs
     assert html_response(conn, 200) =~ "Edit publisher api key"
   end
 

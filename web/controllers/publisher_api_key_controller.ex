@@ -28,11 +28,6 @@ defmodule Apientry.PublisherApiKeyController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    publisher_api_key = Repo.get!(PublisherApiKey, id)
-    render(conn, "show.html", publisher_api_key: publisher_api_key)
-  end
-
   def edit(conn, %{"id" => id}) do
     publisher_api_key = Repo.get!(PublisherApiKey, id)
     publishers = Publisher |> PublisherApiKey.names_and_ids |> Repo.all
@@ -40,7 +35,7 @@ defmodule Apientry.PublisherApiKeyController do
     render(conn, "edit.html", publisher_api_key: publisher_api_key, publishers: publishers, changeset: changeset)
   end
 
-  def update(conn, %{"id" => id, "publisher_api_key" => publisher_api_key_params}) do
+  def update(conn, %{"publisher_id" => publisher_id, "id" => id, "publisher_api_key" => publisher_api_key_params}) do
     publisher_api_key = Repo.get!(PublisherApiKey, id)
     changeset = PublisherApiKey.changeset(publisher_api_key, publisher_api_key_params)
 
@@ -48,7 +43,7 @@ defmodule Apientry.PublisherApiKeyController do
       {:ok, publisher_api_key} ->
         conn
         |> put_flash(:info, "Publisher api key updated successfully.")
-        |> redirect(to: publisher_api_key_path(conn, :show, publisher_api_key))
+        |> redirect(to: publisher_api_key_path(conn, :index))
       {:error, changeset} ->
         render(conn, "edit.html", publisher_api_key: publisher_api_key, changeset: changeset)
     end
