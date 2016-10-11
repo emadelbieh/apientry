@@ -39,7 +39,7 @@ defmodule Apientry.PublisherApiKeyControllerTest do
     assert html_response(conn, 200) =~ "check the errors"
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn, publisher: publisher} do
+  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
     conn = post conn, publisher_api_key_path(conn, :create), publisher_api_key: @invalid_attrs
     assert html_response(conn, 200) =~ "New Publisher API Key"
   end
