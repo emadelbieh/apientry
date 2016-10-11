@@ -12,8 +12,13 @@
 
       .form
         .form-group
+          = label f, :title
+          = text_input f, :title, class: "form-control", autofocus: true
+
+      .form
+        .form-group
           = label f, :value
-          = text_input f, :value, class: "form-control", autofocus: true
+          = text_input f, :value, class: "form-control"
           = hidden_input f, :account_id, class: "form-control"
 
     .form-fieldset
