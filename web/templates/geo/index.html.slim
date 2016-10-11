@@ -22,6 +22,5 @@
               .dropdown.more-actions
                 button.toggle(data-toggle="dropdown" title="More actions...")
                 ul.dropdown-menu
-                  li= link "Show", to: geo_path(@conn, :show, geo)
                   li= link "Edit", to: geo_path(@conn, :edit, geo)
                   li= link "Delete", to: geo_path(@conn, :delete, geo), method: :delete, data: [confirm: "Are you sure?"]

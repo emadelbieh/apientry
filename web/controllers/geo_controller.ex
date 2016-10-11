@@ -4,7 +4,7 @@ defmodule Apientry.GeoController do
   alias Apientry.Geo
 
   def index(conn, _params) do
-    geos = Repo.all(Geo)
+    geos = (from g in Geo, order_by: ^[asc: :inserted_at]) |> Repo.all
     render(conn, "index.html", geos: geos)
   end
 
@@ -26,11 +26,6 @@ defmodule Apientry.GeoController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    geo = Repo.get!(Geo, id)
-    render(conn, "show.html", geo: geo)
-  end
-
   def edit(conn, %{"id" => id}) do
     geo = Repo.get!(Geo, id)
     changeset = Geo.changeset(geo)
@@ -45,7 +40,7 @@ defmodule Apientry.GeoController do
       {:ok, geo} ->
         conn
         |> put_flash(:info, "Geo updated successfully.")
-        |> redirect(to: geo_path(conn, :show, geo))
+        |> redirect(to: geo_path(conn, :index))
       {:error, changeset} ->
         render(conn, "edit.html", geo: geo, changeset: changeset)
     end

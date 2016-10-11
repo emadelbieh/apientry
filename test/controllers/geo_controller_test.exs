@@ -34,18 +34,6 @@ defmodule Apientry.GeoControllerTest do
     assert html_response(conn, 200) =~ "Add new"
   end
 
-  test "shows chosen resource", %{conn: conn} do
-    geo = Repo.insert! %Geo{}
-    conn = get conn, geo_path(conn, :show, geo)
-    assert html_response(conn, 200) =~ "Show geo"
-  end
-
-  test "renders page not found when id is nonexistent", %{conn: conn} do
-    assert_error_sent 404, fn ->
-      get conn, geo_path(conn, :show, -1)
-    end
-  end
-
   test "renders form for editing chosen resource", %{conn: conn} do
     geo = Repo.insert! %Geo{}
     conn = get conn, geo_path(conn, :edit, geo)
