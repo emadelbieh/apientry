@@ -2,7 +2,9 @@ defmodule Apientry.EbayApiKey do
   use Apientry.Web, :model
 
   schema "ebay_api_keys" do
+    field :title, :string
     field :value, :string
+
     belongs_to :account, Apientry.Account
     has_many :tracking_ids, Apientry.TrackingId
 
@@ -14,8 +16,8 @@ defmodule Apientry.EbayApiKey do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:value, :account_id])
-    |> validate_required([:value, :account_id])
+    |> cast(params, [:title, :value, :account_id])
+    |> validate_required([:title, :value, :account_id])
     |> unique_constraint(:value)
     |> foreign_key_constraint(:account_id)
   end

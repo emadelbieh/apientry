@@ -58,7 +58,7 @@ defmodule Apientry.EbayApiKeyController do
       {:ok, ebay_api_key} ->
         conn
         |> put_flash(:info, "Ebay api key updated successfully.")
-        |> redirect(to: ebay_api_key_path(conn, :show, ebay_api_key))
+        |> redirect(to: ebay_api_key_path(conn, :index, account_id: ebay_api_key.account_id))
       {:error, changeset} ->
         render(conn, "edit.html", ebay_api_key: ebay_api_key, changeset: changeset)
     end
