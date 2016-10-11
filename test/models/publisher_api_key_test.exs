@@ -3,7 +3,7 @@ defmodule Apientry.PublisherApiKeyTest do
 
   alias Apientry.PublisherApiKey
 
-  @valid_attrs %{value: "12345", publisher_id: "1"}
+  @valid_attrs %{title: "Key 1", value: "12345", publisher_id: "1"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
