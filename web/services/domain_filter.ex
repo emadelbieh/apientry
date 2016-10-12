@@ -20,9 +20,6 @@ defmodule Apientry.DomainFilter do
 
       iex> Apientry.DomainFilter.matches?("ebay.com", "notebay.com")
       false
-
-      iex> Apientry.DomainFilter.matches?("amazon.com", "aws.amazon.com")
-      true
   """
 
   @doc """
@@ -39,8 +36,10 @@ defmodule Apientry.DomainFilter do
     domain_match?("shopping.com", host)
   end
 
-  def matches?(domain, host) do
-    domain_match?(domain, host)
+  def matches?(_domain, _host) do
+    # Don't handle anything that's not ebay.com or shopping.com.
+    # https://github.com/blackswan-ventures/apientry/issues/96
+    false
   end
 
   defp domain_match?(domain, host) when domain == host, do: true
