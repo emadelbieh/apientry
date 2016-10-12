@@ -48,10 +48,15 @@
                   input.form-control.-small[type="text" role="keyword" value="nikon" placeholder="#{gettext("Keyword")}..."]
               .right
                 label
+                  span= gettext("API Key") <> ":"
+                  select(role="apikey")
+                    = for publisher_api_key <- @api_keys do
+                      option(value=publisher_api_key.value)= publisher_api_key.title
+                label
                   span= gettext("Tracking ID") <> ":"
                   select(role="trackingid")
                     = for tracking_id <- @tracking_ids do
-                      option(value=tracking_id.code)= tracking_id.code
+                      option(value=tracking_id.code data-apikey="#{tracking_id.publisher_api_key.value}")= tracking_id.code
                 label
                   select(role="ipaddress")
                     option(value="8.8.8.8") US
