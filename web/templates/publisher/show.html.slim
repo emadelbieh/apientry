@@ -56,7 +56,7 @@
                   span= gettext("Tracking ID") <> ":"
                   select(role="trackingid")
                     = for tracking_id <- @tracking_ids do
-                      option(value=tracking_id.code data-apikey="#{tracking_id.publisher_api_key.value}")= tracking_id.code
+                      option(value=tracking_id.code)= tracking_id.code
                 label
                   select(role="ipaddress")
                     option(value="8.8.8.8") US
