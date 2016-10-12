@@ -58,6 +58,10 @@ defmodule Apientry.Router do
     get "/dryrun/publisher/:endpoint", SearchController, :dry_search
   end
 
+  scope "/", Apientry do
+    get "/loaderio-ed96d28cb6cb372defb0748d98689a27", LoaderIoController, :index
+  end
+
   defp handle_errors(conn, details) do
     ErrorReporter.report(conn, details)
   end
