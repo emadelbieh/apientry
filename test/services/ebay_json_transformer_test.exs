@@ -171,7 +171,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert url_data["maximum_price"] == "922.00"
   end
 
-  test "reject offers in same domain based on offerURL" do
+  test "reject offers in same domain based on store name" do
     data = %{
       "categories" => %{
         "category" => [
@@ -182,15 +182,10 @@ defmodule Apientry.EbayJsonTransformerTest do
               "item" => [
                 %{
                   "offer" => %{
-                    "name" => "AF Lens",
-                    "manufacturer" => "Nikon",
-                    "offerURL" => @ebay_offer_url,
-                    "used" => false,
-                    "basePrice" => %{
-                      "value" => "912.00",
-                      "currency" => "USD"
+                    "store" => %{
+                      "trusted" => false,
+                      "name" => "Walmart.com"
                     },
-                    "stockStatus" => "in-stock"
                   }
                 }
               ]
@@ -201,7 +196,7 @@ defmodule Apientry.EbayJsonTransformerTest do
     }
 
     assigns = @assigns
-    |> put_in([:params, "domain"], "ebay.com")
+    |> put_in([:params, "domain"], "www.walmart.com")
     result = EbayJsonTransformer.transform(data, assigns)
 
     cat = Enum.at(result["categories"]["category"], 0)
@@ -211,99 +206,99 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert cat["items"]["returnedItemCount"] == 0
   end
 
-  test "reject categories in same domain based on categoryURL" do
-    data = %{
-      "categories" => %{
-        "category" => [
-          %{
-            "name" => "Camera Lenses",
-            "categoryURL" => "http://www.ebay.com/"
-          }
-        ]
-      }
-    }
+  #test "reject categories in same domain based on categoryURL" do
+  #  data = %{
+  #    "categories" => %{
+  #      "category" => [
+  #        %{
+  #          "name" => "Camera Lenses",
+  #          "categoryURL" => "http://www.ebay.com/"
+  #        }
+  #      ]
+  #    }
+  #  }
 
-    assigns = @assigns
-    |> put_in([:params, "domain"], "ebay.com")
-    result = EbayJsonTransformer.transform(data, assigns)
+  #  assigns = @assigns
+  #  |> put_in([:params, "domain"], "ebay.com")
+  #  result = EbayJsonTransformer.transform(data, assigns)
 
-    cats = result["categories"]["category"]
-    assert length(cats) == 0
-  end
+  #  cats = result["categories"]["category"]
+  #  assert length(cats) == 0
+  #end
 
-  test "reject offers in same domain based on productOffersURL" do
-    data = %{
-      "categories" => %{
-        "category" => [
-          %{
-            "name" => "Camera Lenses",
-            "categoryURL" => @category_url,
-            "items" => %{
-              "item" => [
-                %{
-                  "product" => %{
-                    "productOffersURL" => @ebay_offer_url
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
+  #test "reject offers in same domain based on productOffersURL" do
+  #  data = %{
+  #    "categories" => %{
+  #      "category" => [
+  #        %{
+  #          "name" => "Camera Lenses",
+  #          "categoryURL" => @category_url,
+  #          "items" => %{
+  #            "item" => [
+  #              %{
+  #                "product" => %{
+  #                  "productOffersURL" => @ebay_offer_url
+  #                }
+  #              }
+  #            ]
+  #          }
+  #        }
+  #      ]
+  #    }
+  #  }
 
-    assigns = @assigns
-    |> Map.update!(:params, fn params ->
-      params
-      |> Map.put("domain", "ebay.com")
-    end)
-    result = EbayJsonTransformer.transform(data, assigns)
+  #  assigns = @assigns
+  #  |> Map.update!(:params, fn params ->
+  #    params
+  #    |> Map.put("domain", "ebay.com")
+  #  end)
+  #  result = EbayJsonTransformer.transform(data, assigns)
 
-    cat = Enum.at(result["categories"]["category"], 0)
-    item = Enum.at(cat["items"]["item"], 0)
-    assert !item
-  end
+  #  cat = Enum.at(result["categories"]["category"], 0)
+  #  item = Enum.at(cat["items"]["item"], 0)
+  #  assert !item
+  #end
 
-  test "reject offers in same domain (passing the root domain)" do
-    data = %{
-      "categories" => %{
-        "category" => [
-          %{
-            "name" => "Camera Lenses",
-            "categoryURL" => @category_url,
-            "items" => %{
-              "item" => [
-                %{
-                  "offer" => %{
-                    "name" => "AF Lens",
-                    "manufacturer" => "Nikon",
-                    "offerURL" => @ebay_offer_url,
-                    "used" => false,
-                    "basePrice" => %{
-                      "value" => "912.00",
-                      "currency" => "USD"
-                    },
-                    "stockStatus" => "in-stock"
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
+  #test "reject offers in same domain (passing the root domain)" do
+  #  data = %{
+  #    "categories" => %{
+  #      "category" => [
+  #        %{
+  #          "name" => "Camera Lenses",
+  #          "categoryURL" => @category_url,
+  #          "items" => %{
+  #            "item" => [
+  #              %{
+  #                "offer" => %{
+  #                  "name" => "AF Lens",
+  #                  "manufacturer" => "Nikon",
+  #                  "offerURL" => @ebay_offer_url,
+  #                  "used" => false,
+  #                  "basePrice" => %{
+  #                    "value" => "912.00",
+  #                    "currency" => "USD"
+  #                  },
+  #                  "stockStatus" => "in-stock"
+  #                }
+  #              }
+  #            ]
+  #          }
+  #        }
+  #      ]
+  #    }
+  #  }
 
-    assigns = @assigns
-    |> Map.update!(:params, fn params ->
-      params
-      |> Map.put("domain", "ebay.com")
-    end)
-    result = EbayJsonTransformer.transform(data, assigns)
+  #  assigns = @assigns
+  #  |> Map.update!(:params, fn params ->
+  #    params
+  #    |> Map.put("domain", "ebay.com")
+  #  end)
+  #  result = EbayJsonTransformer.transform(data, assigns)
 
-    cat = Enum.at(result["categories"]["category"], 0)
-    item = Enum.at(cat["items"]["item"], 0)
-    assert !item
-  end
+  #  cat = Enum.at(result["categories"]["category"], 0)
+  #  item = Enum.at(cat["items"]["item"], 0)
+  #  assert !item
+  #end
 
   test "transform attributeURL" do
     attribute_url = "http://www.shopping.com/camera-lenses/nikon/products?oq=nikon&linkin_id=8094918"
