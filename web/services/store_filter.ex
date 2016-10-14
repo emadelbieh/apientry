@@ -22,7 +22,11 @@ defmodule Apientry.StoreFilter do
   end
 
   defp domain_matches?(domain, store_name) do
-    String.downcase(store_name) =~ domain_without_tld(domain)
+    normalized = store_name
+                  |> remove_special_characters
+                  |> String.downcase
+
+    normalized =~ domain_without_tld(domain)
   end
 
   @doc """
@@ -53,6 +57,11 @@ defmodule Apientry.StoreFilter do
     else
       hd(tl(split))
     end
+  end
+
+  def remove_special_characters(store_name) do
+    store_name
+    |> String.replace(~r/[^a-zA-Z0-9]/, "")
   end
 
   defp strip_underscore(store_id) do
