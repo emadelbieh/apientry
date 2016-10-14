@@ -7,6 +7,7 @@ defmodule Apientry.EbayJsonTransformerTest do
   @category_url "http://www.xyz.com/camera-lenses/nikon/products?oq=nikon&linkin_id=8094918"
   @ebay_category_url "http://www.shopping.com/camera-lenses/nikon/products?oq=nikon&linkin_id=8094918"
   @ebay_offer_url "http://rover.ebay.com/rover/13/0/19/DealFrame/DealFrame.cmp?bm=222&BEFID=96323&aon=%5E1&MerchantID=6201&crawler_id=6201&dealId=I5GqWCz_Dxeyilo9jj06YQ%3D%3D&url=https%3A%2F%2Fwww.42photo.com%2FProduct%2Fnikon-70-200mm-f-2-8g-af-s-ed-vr-ii-zoom-lens-77mm%2F92703&linkin_id=8094918&Issdt=160711052619&searchID=p24.ea21531013086131c1d6&DealName=Nikon+70-200mm+f%2F2.8G+AF-S+ED+VR+II+Zoom+Lens+%2877mm%29&dlprc=1949.0&AR=1&NG=1&NDP=5&PN=1&ST=7&FPT=DSP&NDS=&NMS=&MRS=&PD=95870214&brnId=14763&IsFtr=0&IsSmart=0&op=&CM=&RR=1&IsLps=0&code=&acode=153&category=&HasLink=&ND=&MN=&GR=&lnkId=&SKU=JAA807DA&IID=&MEID="
+  @walmart_offer_url "http://www.walmart.com/rover/13/0/19/DealFrame/DealFrame.cmp?bm=222&BEFID=96323&aon=%5E1&MerchantID=6201&crawler_id=6201&dealId=I5GqWCz_Dxeyilo9jj06YQ%3D%3D&url=https%3A%2F%2Fwww.42photo.com%2FProduct%2Fnikon-70-200mm-f-2-8g-af-s-ed-vr-ii-zoom-lens-77mm%2F92703&linkin_id=8094918&Issdt=160711052619&searchID=p24.ea21531013086131c1d6&DealName=Nikon+70-200mm+f%2F2.8G+AF-S+ED+VR+II+Zoom+Lens+%2877mm%29&dlprc=1949.0&AR=1&NG=1&NDP=5&PN=1&ST=7&FPT=DSP&NDS=&NMS=&MRS=&PD=95870214&brnId=14763&IsFtr=0&IsSmart=0&op=&CM=&RR=1&IsLps=0&code=&acode=153&category=&HasLink=&ND=&MN=&GR=&lnkId=&SKU=JAA807DA&IID=&MEID="
   @keyword "nikon camera"
   @ip_address "8.8.8.8"
   @is_mobile true
@@ -171,45 +172,40 @@ defmodule Apientry.EbayJsonTransformerTest do
     assert url_data["maximum_price"] == "922.00"
   end
 
-  #test "reject offers in same domain based on offerURL" do
-  #  data = %{
-  #    "categories" => %{
-  #      "category" => [
-  #        %{
-  #          "name" => "Camera Lenses",
-  #          "categoryURL" => @category_url,
-  #          "items" => %{
-  #            "item" => [
-  #              %{
-  #                "offer" => %{
-  #                  "name" => "AF Lens",
-  #                  "manufacturer" => "Nikon",
-  #                  "offerURL" => @ebay_offer_url,
-  #                  "used" => false,
-  #                  "basePrice" => %{
-  #                    "value" => "912.00",
-  #                    "currency" => "USD"
-  #                  },
-  #                  "stockStatus" => "in-stock"
-  #                }
-  #              }
-  #            ]
-  #          }
-  #        }
-  #      ]
-  #    }
-  #  }
+  test "reject offers in same domain based on store name" do
+    data = %{
+      "categories" => %{
+        "category" => [
+          %{
+            "name" => "Camera Lenses",
+            "categoryURL" => @category_url,
+            "items" => %{
+              "item" => [
+                %{
+                  "offer" => %{
+                    "store" => %{
+                      "trusted" => false,
+                      "name" => "Walmart.com"
+                    },
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
 
-  #  assigns = @assigns
-  #  |> put_in([:params, "domain"], "ebay.com")
-  #  result = EbayJsonTransformer.transform(data, assigns)
+    assigns = @assigns
+    |> put_in([:params, "domain"], "www.walmart.com")
+    result = EbayJsonTransformer.transform(data, assigns)
 
-  #  cat = Enum.at(result["categories"]["category"], 0)
-  #  item = Enum.at(cat["items"]["item"], 0)
-  #  assert !item
+    cat = Enum.at(result["categories"]["category"], 0)
+    item = Enum.at(cat["items"]["item"], 0)
+    assert !item
 
-  #  assert cat["items"]["returnedItemCount"] == 0
-  #end
+    assert cat["items"]["returnedItemCount"] == 0
+  end
 
   #test "reject categories in same domain based on categoryURL" do
   #  data = %{
