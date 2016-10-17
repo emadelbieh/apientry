@@ -29,6 +29,14 @@ defmodule Apientry.TrackingIdController do
     render(conn, "new.html", changeset: changeset, account: account, ebay_api_keys: ebay_api_keys)
   end
 
+  def index(conn, %{"publisher_id" => pub_id, "publisher_api_key_id" => publisher_api_key_id, "ebay_api_key_id" => ebay_api_key_id}) do
+    publisher = Repo.get(Publisher, pub_id)
+    tracking_ids = from(t in TrackingId, where: t.publisher_api_key_id == ^publisher_api_key_id, where: t.ebay_api_key_id == ^ebay_api_key_id)
+                   |> Repo.all
+                   |> Repo.preload([:publisher_api_key, :ebay_api_key])
+    render(conn, "index.html", publisher: publisher, tracking_ids: tracking_ids)
+  end
+
   def index(conn, %{"publisher_id" => pub_id}) do
     publisher    = Repo.get!(Publisher, pub_id)
     api_keys     = Repo.all(assoc(publisher, :api_keys))

@@ -41,4 +41,4 @@
                 tr
                   td= link publisher_api_key.publisher.name, to: publisher_path(@conn, :show, publisher_api_key.publisher)
                   td #{publisher_api_key.value} (#{publisher_api_key.title})
-                  td= link "View Tracking Ids", to: publisher_tracking_id_path(@conn, :index, publisher_api_key.publisher)
+                  td= link "View Tracking Ids", to: publisher_tracking_id_path(@conn, :index, publisher_api_key.publisher, ebay_api_key_id: @ebay_api_key.id, publisher_api_key_id: publisher_api_key.id)
