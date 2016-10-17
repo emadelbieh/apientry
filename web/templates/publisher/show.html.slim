@@ -28,10 +28,16 @@
             tbody
               = for api_key <- @api_keys do
                 tr
-                  td= api_key.title
+                  td
+                    = api_key.value
+                    br
+                    ' (#{api_key.title})
                   td
                     = for tracking_id <- api_key.tracking_ids do
-                      ' #{tracking_id.ebay_api_key.account.name} - #{tracking_id.ebay_api_key.title}
+                      = tracking_id.ebay_api_key.value
+                      br
+                      ' (#{tracking_id.ebay_api_key.account.name} - #{tracking_id.ebay_api_key.title})
+                      br
                       br
 
           a.btn.btn-accent.btn-sm[href="#{publisher_api_key_path(@conn, :index, publisher_id: @publisher.id)}"] Manage Publisher API Keys
