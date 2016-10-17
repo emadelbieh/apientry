@@ -35,5 +35,10 @@
               tr
                 th Publisher
                 th Publisher API Key
-                th Tracking Ids
+                th Tracking IDs
             tbody
+              = for publisher_api_key <- @publisher_api_keys do
+                tr
+                  td= link publisher_api_key.publisher.name, to: publisher_path(@conn, :show, publisher_api_key.publisher)
+                  td #{publisher_api_key.value} (#{publisher_api_key.title})
+                  td= link "View Tracking Ids", to: publisher_tracking_id_path(@conn, :index, publisher_api_key.publisher)
