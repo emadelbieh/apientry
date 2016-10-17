@@ -2,7 +2,6 @@ defmodule Apientry.TrackingIdController do
   use Apientry.Web, :controller
 
   alias Apientry.{
-    Geo,
     Account,
     EbayApiKey,
     PublisherApiKey,
@@ -11,13 +10,6 @@ defmodule Apientry.TrackingIdController do
   }
 
   plug :scrub_params, "tracking_id" when action in [:create, :update]
-
-  defp get_api_keys(publisher) do
-    assoc(publisher, :api_keys)
-    |> PublisherApiKey.values_and_ids
-    |> PublisherApiKey.sorted
-    |> Repo.all
-  end
 
   def new(conn, %{"account_id" => account_id}) do
     account = Repo.get(Account, account_id)
