@@ -36,12 +36,15 @@ defmodule Apientry.PublisherController do
 
   def show(conn, %{"id" => id}) do
     publisher = Repo.get!(Publisher, id) |> Repo.preload(:api_keys)
+    publisher_api_keys = publisher.api_keys |> Repo.preload(tracking_ids: [ebay_api_key: :account])
+
     tracking_ids = if publisher.api_keys == [] do
       []
     else
       assoc(publisher.api_keys, :tracking_ids) |> Repo.all
     end
-    render(conn, "show.html", publisher: publisher, tracking_ids: tracking_ids, api_keys: publisher.api_keys)
+
+    render(conn, "show.html", publisher: publisher, tracking_ids: tracking_ids, api_keys: publisher_api_keys)
   end
 
   def edit(conn, %{"id" => id}) do

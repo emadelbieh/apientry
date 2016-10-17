@@ -20,11 +20,20 @@
           h3= gettext "Publisher API Keys"
           p The API keys used by publishers to query the Blackswan API.
         .form
-          = for api_key <- @api_keys do
-            p
-              = api_key.value
-              | &nbsp;&nbsp;&nbsp;
-              | (#{api_key.title})
+          table.table
+            thead
+              tr
+                th Publisher API Key
+                th Ebay Account & API Key
+            tbody
+              = for api_key <- @api_keys do
+                tr
+                  td= api_key.title
+                  td
+                    = for tracking_id <- api_key.tracking_ids do
+                      ' #{tracking_id.ebay_api_key.account.name} - #{tracking_id.ebay_api_key.title}
+                      br
+
           a.btn.btn-accent.btn-sm[href="#{publisher_api_key_path(@conn, :index, publisher_id: @publisher.id)}"] Manage Publisher API Keys
 
       .form-fieldset
