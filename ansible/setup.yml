@@ -5,6 +5,21 @@
   vars:
     ubuntu_version: trusty
   tasks:
+    - name: update ca-certificates
+      apt:
+        name: ca-certificates
+        state: latest
+
+    - name: install apt_key dependencies
+      apt:
+        name: '{{ item }}'
+      with_items: [python-urllib3, python-openssl, python-pyasn1, python-pip]
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution_release == 'trusty'
+
+    - name: install apt_key dependencies
+      command: pip install ndg-httpsclient
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution_release == 'trusty'
+
     - name: nodesource.com apt key
       apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
 
