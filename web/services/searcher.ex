@@ -49,12 +49,6 @@ defmodule Apientry.Searcher do
   # alias Apientry.EbaySearch
   # alias Apientry.IpLookup
 
-  alias Apientry.Repo
-  alias Apientry.EbayApiKey
-  alias Apientry.PublisherApiKey
-  alias Apientry.TrackingId
-
-
   # Keep this sorted, please
   @required_params [
     "apiKey",
@@ -132,10 +126,9 @@ defmodule Apientry.Searcher do
   Returns the publisher as `{:ok, publisher}` or `{:error, message}`.
   """
   def get_publisher(%{"apiKey" => api_key} = _params) do
-    #case DbCache.lookup(:publisher, :api_key, api_key) do
-    case Repo.get_by(PublisherApiKey, value: api_key) do
+    case DbCache.lookup(:publisher_api_key, :value, api_key) do
       nil -> {:error, :invalid_api_key, %{api_key: api_key}}
-      publisher -> {:ok, publisher}
+      publisher_api_key -> {:ok, publisher_api_key}
     end
   end
 
@@ -171,17 +164,12 @@ defmodule Apientry.Searcher do
       {:ok, %Feed{...}}
   """
   def get_feed(tracking_id) do
-    #feed = DbCache.lookup(:feed, :type_country_mobile, {"ebay", country, is_mobile})
-    feed = Repo.get(EbayApiKey, tracking_id.ebay_api_key_id)
+    feed = DbCache.lookup(:ebay_api_key, :id, tracking_id.ebay_api_key_id)
 
     case feed do
       nil -> {:error, :no_feed_associated, %{}}
       feed -> {:ok, feed}
     end
-  end
-
-  def get_feed(_) do
-      {:error, :no_feed_associated, %{}}
   end
 
   @doc """
@@ -194,8 +182,7 @@ defmodule Apientry.Searcher do
       :ok
   """
   def validate_tracking_code(%{"trackingId" => t_id}, publisher_api_key) do
-    #tracking_id = DbCache.lookup(:tracking_id, :publisher_code, {publisher.id, t_id})
-    tracking_id = Repo.get_by(TrackingId, publisher_api_key_id: publisher_api_key.id, code: t_id)
+    tracking_id = DbCache.lookup(:tracking_id, :publisher_code, {publisher_api_key.id, t_id})
 
     case tracking_id do
       nil -> {:error, :invalid_tracking_id, %{tracking_id: t_id}}
