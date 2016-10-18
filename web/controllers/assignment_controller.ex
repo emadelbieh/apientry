@@ -54,6 +54,7 @@ defmodule Apientry.AssignmentController do
     changeset = TrackingId.changeset(tracking_id, %{publisher_api_key_id: publisher_api_key_id})
 
     Repo.update!(changeset)
+    DbCache.update(:tracking_id)
 
     publisher_api_key = Repo.get!(PublisherApiKey, publisher_api_key_id) |> Repo.preload(:publisher)
 
@@ -66,6 +67,7 @@ defmodule Apientry.AssignmentController do
     tracking_id = Repo.get!(TrackingId, id)
     changeset = TrackingId.changeset(tracking_id, %{publisher_api_key_id: nil})
     Repo.update!(changeset)
+    DbCache.update(:tracking_id)
 
     conn
     |> put_flash(:info, "Tracking ID has been successfully unassigned")
