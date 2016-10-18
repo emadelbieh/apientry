@@ -19,7 +19,7 @@ h2 Edit publisher api key
       .form
         .form-group.-horiz
           = label f, :publisher_id, class: "control-label"
-          = select f, :publisher_id, @publishers, class: "form-control"
+          = select f, :publisher_id, @publishers, class: "form-control", prompt: "Select"
           = error_tag f, :publisher_id
 
       .form

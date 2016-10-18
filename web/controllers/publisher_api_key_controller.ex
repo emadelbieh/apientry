@@ -52,6 +52,21 @@ defmodule Apientry.PublisherApiKeyController do
     end
   end
 
+  def update(conn, %{"id" => id, "publisher_api_key" => publisher_api_key_params}) do
+    publisher_api_key = Repo.get!(PublisherApiKey, id)
+    changeset = PublisherApiKey.changeset(publisher_api_key, publisher_api_key_params)
+
+    case Repo.update(changeset) do
+      {:ok, publisher_api_key} ->
+        DbCache.update(:publisher_api_key)
+        conn
+        |> put_flash(:info, "Publisher api key updated successfully.")
+        |> redirect(to: publisher_api_key_path(conn, :index))
+      {:error, changeset} ->
+        publishers = Publisher |> PublisherApiKey.names_and_ids |> Repo.all
+        render(conn, "edit.html", publisher_api_key: publisher_api_key, changeset: changeset, publishers: publishers)
+    end
+  end
   def delete(conn, %{"id" => id}) do
     publisher_api_key = Repo.get!(PublisherApiKey, id)
 
