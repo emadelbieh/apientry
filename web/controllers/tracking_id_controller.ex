@@ -116,6 +116,7 @@ defmodule Apientry.TrackingIdController do
     changeset = TrackingId.legacy_changeset(tracking_id, tracking_id_params)
 
     Repo.update!(changeset)
+    DbCache.update(:tracking_id)
 
     conn
     |> put_flash(:info, "Tracking ID updated successfully")

@@ -18,7 +18,7 @@
               = text_input f, :publisher_id, class: "form-control"
             .form-group
               = label f, :ebay_api_key_id, class: "control-label"
-              = select f, :ebay_api_key_id, @ebay_api_keys, class: "form-control"
+              = select f, :ebay_api_key_id, @ebay_api_keys, class: "form-control", prompt: "-- Select ebay api key"
               = error_tag f, :ebay_api_key_id
             .form-group
               = label f, :publisher_api_key_id, class: "control-label"
