@@ -1,0 +1,6 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [geos: true], title: [title: "Geos", subtitle: "Add new"]
+
+.body
+  .container
+    = render "form.html", changeset: @changeset, action: geo_path(@conn, :update, @geo), mode: :update

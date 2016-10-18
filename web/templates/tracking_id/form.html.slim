@@ -1,11 +1,21 @@
 = form_for @changeset, @action, fn f ->
   .form-fieldset
     .info
-      h2
-        = gettext "New Tracking ID"
-      p
-        = gettext "Enter a new tracking ID."
+      = if assigns[:mode] == :update do
+        h2
+          = gettext "Edit Tracking ID"
+        p
+          = gettext "Modify tracking ID details."
+      - else
+        h2
+          = gettext "New Tracking ID"
+        p
+          = gettext "Enter a new tracking ID."
     .form
+      .form-group
+        = label f, :ebay_api_key_id, class: "control-label"
+        = select f, :ebay_api_key_id, @ebay_api_keys, class: "form-control"
+        = error_tag f, :ebay_api_key_id
       .form-group
         = label f, :code
         = text_input f, :code, class: "form-control", autofocus: true

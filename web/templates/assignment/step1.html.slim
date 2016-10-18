@@ -1,0 +1,38 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [publishers: true], title: [title: @publisher.name, subtitle: "Assign Tracking Id"]
+
+.body
+  .container
+    .basic-panel
+      = form_for @changeset, @action, fn f ->
+        = if @changeset.action do
+          .alert.alert-danger
+            p Oops, something went wrong! Please check the errors below.
+        .form-fieldset
+          .info
+            h3= gettext "Publisher API Key"
+            p Select publisher api key to assign
+          .form
+            .form-group
+              = label f, :publisher_name
+              = text_input f, :publisher_name, class: "form-control", value: @publisher.name, disabled: true
+            .form-group
+              = label f, :publisher_api_key_id
+              = select f, :publisher_api_key_id, @publisher_api_keys, class: "form-control"
+
+        .form-fieldset
+          .info
+            h3= gettext "Ebay Account"
+            p Select eBay account to assign
+          .form
+            .form-group
+              = label f, :account_id
+              select name="tracking_id[account_id]" class="form-control"
+                = for geo <- @geos do
+                  optgroup label=geo.name
+                  = for account <- geo.accounts do
+                    option value=account.id =account.name
+    
+        .form-fieldset
+          .form
+              = submit "Proceed to Step 2", class: "btn btn-primary"

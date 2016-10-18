@@ -1,0 +1,6 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [feeds: true], title: [title: "Publisher API Key", subtitle: "Add new"]
+
+.body
+  .container
+    = render "form.html", changeset: @changeset, action: publisher_api_key_path(@conn, :create), mode: :create

@@ -36,8 +36,7 @@ $(document).on('click', 'a[data-submit="parent"]', function (e) {
     var $text = $('[role~="text"]', this)
     var $userAgent = $('[role~="useragent"]', this)
     var $as = $('[role~="as"]', this)
-
-    var apiKey = $(this).attr('data-apikey')
+    var $apiKey = $('[role~="apikey"]', this)
 
     update()
 
@@ -46,7 +45,7 @@ $(document).on('click', 'a[data-submit="parent"]', function (e) {
 
     function update () {
       $text.val(build({
-        apiKey: apiKey,
+        apiKey: $apiKey.val(),
         ipAddress: $ipAddress.val(),
         userAgent: $userAgent.val(),
         trackingId: $trackingId.val(),

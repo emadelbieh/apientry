@@ -9,7 +9,7 @@ defmodule Apientry.PublisherController do
     publishers =
       from(p in Publisher,
         order_by: p.inserted_at,
-        preload: :tracking_ids)
+        preload: :api_keys)
       |> Repo.all
 
     render(conn, "index.html", publishers: publishers)
@@ -25,7 +25,6 @@ defmodule Apientry.PublisherController do
 
     case Repo.insert(changeset) do
       {:ok, _publisher} ->
-        DbCache.update(:publisher)
         conn
         |> put_flash(:info, "Publisher created successfully.")
         |> redirect(to: publisher_path(conn, :index))
@@ -35,8 +34,16 @@ defmodule Apientry.PublisherController do
   end
 
   def show(conn, %{"id" => id}) do
-    publisher = Repo.get!(Publisher, id) |> Repo.preload(:tracking_ids)
-    render(conn, "show.html", publisher: publisher, tracking_ids: publisher.tracking_ids)
+    publisher = Repo.get!(Publisher, id) |> Repo.preload(:api_keys)
+    publisher_api_keys = publisher.api_keys |> Repo.preload(tracking_ids: [ebay_api_key: :account])
+
+    tracking_ids = if publisher.api_keys == [] do
+      []
+    else
+      assoc(publisher.api_keys, :tracking_ids) |> Repo.all
+    end
+
+    render(conn, "show.html", publisher: publisher, tracking_ids: tracking_ids, api_keys: publisher_api_keys)
   end
 
   def edit(conn, %{"id" => id}) do
@@ -52,7 +59,6 @@ defmodule Apientry.PublisherController do
 
     case Repo.update(changeset) do
       {:ok, _publisher} ->
-        DbCache.update(:publisher)
         conn
         |> put_flash(:info, "Publisher updated successfully.")
         conn
@@ -66,7 +72,6 @@ defmodule Apientry.PublisherController do
     publisher = Repo.get!(Publisher, id)
 
     Repo.delete!(publisher)
-    DbCache.update(:publisher)
 
     conn
     |> put_flash(:info, "Publisher deleted successfully.")

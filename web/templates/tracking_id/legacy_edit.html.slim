@@ -1,0 +1,34 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn
+
+.body
+  .container
+    .basic-panel
+      h2 Edit tracking id
+      = form_for @changeset, @action, fn f ->
+        .form-fieldset
+          .info
+            h2
+              = gettext "New Tracking ID"
+            p
+              = gettext "Enter a new tracking ID."
+          .form
+            .form-group
+              = label f, :publisher_id
+              = text_input f, :publisher_id, class: "form-control"
+            .form-group
+              = label f, :ebay_api_key_id, class: "control-label"
+              = select f, :ebay_api_key_id, @ebay_api_keys, class: "form-control", prompt: "-- Select ebay api key"
+              = error_tag f, :ebay_api_key_id
+            .form-group
+              = label f, :publisher_api_key_id, class: "control-label"
+              = select f, :publisher_api_key_id, @publisher_api_keys, class: "form-control", prompt: "-- Select publisher api key --"
+              = error_tag f, :publisher_api_key_id
+            .form-group
+              = label f, :code
+              = text_input f, :code, class: "form-control", autofocus: true
+              = error_tag f, :code
+            .form-group
+              = submit "Submit", class: "btn btn-primary"
+
+      /= link "Back", to: publisher_path(@conn, :edit, @publisher)

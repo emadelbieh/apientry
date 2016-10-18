@@ -25,7 +25,18 @@ defmodule Apientry.Router do
     pipe_through :secure
     get "/", PageController, :index
 
+    resources "/geos", GeoController
+    resources "/accounts", AccountController
+    resources "/ebay_api_keys", EbayApiKeyController
+    resources "/publisher_api_keys", PublisherApiKeyController
     resources "/feeds", FeedController
+    resources "/tracking_ids", TrackingIdController
+
+    get  "/assign/step1", AssignmentController, :step1
+    post "/assign/step2", AssignmentController, :step2
+    post "/assign/step3", AssignmentController, :step3
+    post "/assign/assign", AssignmentController, :assign
+    patch "/assign/:id/unassign", AssignmentController, :unassign
 
     put "/publishers/:id/regenerate_key", PublisherController, :regenerate
     resources "/publishers", PublisherController do

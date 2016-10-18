@@ -1,8 +1,6 @@
 .top
-  = render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_tracking_id_path(@conn, :new, @publisher), "New feed"}, title: [publisher: @publisher, subtitle: gettext("New Tracking ID")]
-  = render Apientry.PublisherView, "nav.html", conn: @conn, publisher: @publisher, active: :tracking_ids
 
 .body
   .container
     .basic-panel
-      = render "form.html", changeset: @changeset, action: publisher_tracking_id_path(@conn, :create, @publisher)
+      = render "form.html", changeset: @changeset, ebay_api_keys: @ebay_api_keys, action: tracking_id_path(@conn, :create, account_id: @account.id)

@@ -4,35 +4,34 @@ defmodule Apientry.DbCacheSupervisor do
   """
 
   import Supervisor.Spec
-  import Ecto.Query, only: [from: 2]
 
   alias Apientry.Repo
-  alias Apientry.Feed
-  alias Apientry.Publisher
+  alias Apientry.PublisherApiKey
+  alias Apientry.EbayApiKey
   alias Apientry.TrackingId
 
   def start_link(opts \\ []) do
     children = [
       worker(DbCache, [[
-        name: :feed,
+        name: :ebay_api_key,
         repo: Repo,
-        query: from(f in Feed, where: f.is_active == true),
+        query: EbayApiKey,
         indices: [
-          type_country_mobile: &({&1.feed_type, &1.country_code, &1.is_mobile})
-        ]]], id: :feed),
+          id: &(&1.id),
+        ]]], id: :ebay_api_key),
       worker(DbCache, [[
-        name: :publisher,
+        name: :publisher_api_key,
         repo: Repo,
-        query: Publisher,
+        query: PublisherApiKey,
         indices: [
-          api_key: &(&1.api_key)
-        ]]], id: :publisher),
+          value: &(&1.value)
+        ]]], id: :publisher_api_key),
       worker(DbCache, [[
         name: :tracking_id,
         repo: Repo,
         query: TrackingId,
         indices: [
-          publisher_code: &({&1.publisher_id, &1.code})
+          publisher_code: &({&1.publisher_api_key_id, &1.code})
         ]]], id: :tracking_id)
     ]
 
@@ -45,8 +44,8 @@ defmodule Apientry.DbCacheSupervisor do
   Sends `DbCache.update/1` to all available workers.
   """
   def update do
-    DbCache.update(:feed)
-    DbCache.update(:publisher)
+    DbCache.update(:ebay_api_key)
+    DbCache.update(:publisher_api_key)
     DbCache.update(:tracking_id)
   end
 end

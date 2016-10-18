@@ -1,0 +1,6 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [publishers: true], title: [title: "eBay API Key", subtitle: "Add new"]
+
+.body
+  .container
+    = render "form.html", changeset: @changeset, action: ebay_api_key_path(@conn, :create, account_id: @account.id), mode: :create

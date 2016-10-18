@@ -18,11 +18,10 @@
             td.name
               = link publisher.name, to: publisher_path(@conn, :show, publisher)
               span.info
-                = publisher.api_key
+                = length(publisher.api_keys)
+                = " api keys"
             td.actions.crud-actions
               span.info
-                = length publisher.tracking_ids
-                = " tracking IDs"
               = link "Tracking IDs", to: publisher_tracking_id_path(@conn, :index, publisher), class: "btn btn-sm btn-default"
               = link "Edit", to: publisher_path(@conn, :edit, publisher), class: "btn btn-sm btn-default"
               .dropdown.more-actions

@@ -1,0 +1,56 @@
+.top
+  = render Apientry.SharedView, "nav.html", conn: @conn, action: {ebay_api_key_path(@conn, :new, account_id: @account.id), "New Ebay API Key"}, title: [title: gettext("Ebay API Key")]
+
+.body.inset-bg
+  .container
+    .panel-heading
+      h2 eBay API keys for #{@account.name}
+      .action
+        a.btn.btn-sm.btn-highlight[href="#{ebay_api_key_path(@conn, :new, account_id: @account.id)}"]
+          = gettext "New ebay api key"
+    table.crud-table
+      tbody
+        = for ebay_api_key <- @ebay_api_keys do
+          tr
+            td.icon
+              span.default-image.-size64
+                = @geo.name
+            td.name
+              = link (ebay_api_key.title || ""), to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
+              span.info
+                = link ebay_api_key.value, to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
+            td.actions.crud-actions
+              = link "Edit", to: ebay_api_key_path(@conn, :edit, ebay_api_key), class: "btn btn-sm btn-default"
+              /.dropdown.more-actions
+              /  button.toggle(data-toggle="dropdown" title="More actions...")
+              /  ul.dropdown-menu
+              /    li= link "Show", to: ebay_api_key_path(@conn, :show, ebay_api_key)
+              /    li= link "Edit", to: ebay_api_key_path(@conn, :edit, ebay_api_key)
+              /    li= link "Delete", to: ebay_api_key_path(@conn, :delete, ebay_api_key), method: :delete, data: [confirm: "Are you sure?"]
+
+.body.inset-bg
+  .container
+    .panel-heading
+      h2 Tracking IDs for #{@account.name}
+      .action
+        a.btn.btn-sm.btn-highlight[href="#{tracking_id_path(@conn, :new, account_id: @account.id)}"]
+          = gettext "New tracking id"
+    table.crud-table
+      tbody
+        = for tracking_id <- @tracking_ids do
+          tr
+            td.icon
+              span.default-image.-size64
+                = @geo.name
+            td.name
+              = tracking_id.code
+            td.actions.crud-actions
+              span.info
+                ' eBay API Key:
+                = tracking_id.ebay_api_key.title
+              = link "Edit", to: tracking_id_path(@conn, :edit, tracking_id, account_id: @account.id), class: "btn btn-sm btn-default"
+              .dropdown.more-actions
+                button.toggle(data-toggle="dropdown" title="More actions...")
+                ul.dropdown-menu
+                  li= link "Edit", to: tracking_id_path(@conn, :edit, tracking_id, account_id: @account.id)
+                  li= link "Delete", to: tracking_id_path(@conn, :delete, tracking_id, account_id: @account.id), method: :delete, data: [confirm: "Are you sure?"]

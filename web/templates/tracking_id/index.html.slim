@@ -1,5 +1,5 @@
 .top
-  = render Apientry.SharedView, "nav.html", conn: @conn, action: {publisher_tracking_id_path(@conn, :new, @publisher), "New feed"}, crumbs: [publishers: true], title: [publisher: @publisher, subtitle: gettext("Tracking IDs")]
+  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [publishers: true], title: [publisher: @publisher, subtitle: gettext("Tracking IDs")]
   = render Apientry.PublisherView, "nav.html", conn: @conn, publisher: @publisher, active: :tracking_ids
 
 .body.clear-bg
@@ -7,8 +7,8 @@
     .panel-heading
       h2 Tracking ID's for publisher
       .action
-        a.btn.btn-sm.btn-highlight[href="#{publisher_tracking_id_path(@conn, :new, @publisher)}"]
-          = gettext "Add new"
+        a.btn.btn-sm.btn-highlight[href="#{assignment_path(@conn, :step1, publisher_id: @publisher.id)}"]
+          = gettext "Assign tracking ID"
     table.crud-table
       tbody
         = for tracking_id <- @tracking_ids do
@@ -19,9 +19,9 @@
             td.name
               = tracking_id.code
             td.actions.crud-actions
-              = link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id), class: "btn btn-sm btn-default"
-              .dropdown.more-actions
-                button.toggle(data-toggle="dropdown" title="More actions...")
-                ul.dropdown-menu
-                  li= link "Edit", to: publisher_tracking_id_path(@conn, :edit, @publisher, tracking_id)
-                  li= link "Delete", to: publisher_tracking_id_path(@conn, :delete, @publisher, tracking_id), method: :delete, data: [confirm: "Are you sure?"]
+              span.info
+                ' #{tracking_id.ebay_api_key.title}
+              span.info
+                ' #{tracking_id.publisher_api_key.title}
+              ' &nbsp;
+              = link "Unassign", to: assignment_path(@conn, :unassign, tracking_id, publisher_id: @publisher.id), class: "btn btn-sm btn-default", method: :patch, data: [confirm: "Are you sure?"]

@@ -1,0 +1,21 @@
+.basic-panel
+  = form_for @changeset, @action, fn f ->
+    = if @changeset.action do
+      .alert.alert-danger
+        p Oops, something went wrong! Please check the errors below.
+    .form-fieldset
+      .info
+        = if assigns[:mode] == :create do
+          h2 New account
+        - else
+          h2 Edit account
+
+      .form
+        .form-group
+          = label f, :name
+          = text_input f, :name, class: "form-control", autofocus: true
+          = hidden_input f, :geo_id
+
+    .form-fieldset
+      .form
+        = submit "Submit", class: "btn btn-primary"
