@@ -1,9 +1,7 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 VERSION := $(shell git describe --tags | sed 's/^v//')
 bin := /opt/app/apientry/apientry/bin/apientry
-
 deploy: build_release deploy_release start migrate
-
 build_release:
 	mix edeliver build release -V --branch="${BRANCH}"
 
@@ -27,6 +25,7 @@ console: keys
 _ping: keys
 	ssh deployer@52.207.238.14 -- ${bin} ping
 	ssh deployer@54.84.208.240 -- ${bin} ping
+	ssh deployer@54.152.146.150 -- ${bin} ping
 
 keys:
 	chmod 600 ansible/keys/admin2.pem
