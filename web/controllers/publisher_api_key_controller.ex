@@ -20,6 +20,7 @@ defmodule Apientry.PublisherApiKeyController do
 
     case Repo.insert(changeset) do
       {:ok, _publisher_api_key} ->
+        DbCache.update(:publisher_api_key)
         conn
         |> put_flash(:info, "Publisher api key created successfully.")
         |> redirect(to: publisher_api_key_path(conn, :index, publisher_id: publisher_api_key_params["publisher_id"]))
@@ -41,6 +42,7 @@ defmodule Apientry.PublisherApiKeyController do
 
     case Repo.update(changeset) do
       {:ok, publisher_api_key} ->
+        DbCache.update(:publisher_api_key)
         conn
         |> put_flash(:info, "Publisher api key updated successfully.")
         |> redirect(to: publisher_api_key_path(conn, :index))
@@ -56,6 +58,7 @@ defmodule Apientry.PublisherApiKeyController do
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(publisher_api_key)
+    DbCache.update(:publisher_api_key)
 
     conn
     |> put_flash(:info, "Publisher api key deleted successfully.")
