@@ -30,6 +30,7 @@ defmodule Apientry.EbayApiKeyController do
 
     case Repo.insert(changeset) do
       {:ok, _ebay_api_key} ->
+        DbCache.update(:ebay_api_key)
         conn
         |> put_flash(:info, "Ebay api key created successfully.")
         |> redirect(to: ebay_api_key_path(conn, :index, account_id: ebay_api_key_params["account_id"]))
@@ -59,6 +60,7 @@ defmodule Apientry.EbayApiKeyController do
 
     case Repo.update(changeset) do
       {:ok, ebay_api_key} ->
+        DbCache.update(:ebay_api_key)
         conn
         |> put_flash(:info, "Ebay api key updated successfully.")
         |> redirect(to: ebay_api_key_path(conn, :index, account_id: ebay_api_key.account_id))
@@ -73,6 +75,7 @@ defmodule Apientry.EbayApiKeyController do
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(ebay_api_key)
+    DbCache.update(:ebay_api_key)
 
     conn
     |> put_flash(:info, "Ebay api key deleted successfully.")
