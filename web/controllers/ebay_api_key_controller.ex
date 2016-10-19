@@ -7,6 +7,8 @@ defmodule Apientry.EbayApiKeyController do
   alias Apientry.TrackingId
   alias Apientry.PublisherApiKey
 
+  plug :scrub_params, "ebay_api_key" when action in [:create, :update]
+
   def index(conn, %{"account_id" => account_id}) do
     account = Repo.get(Account, account_id) |> Repo.preload(:geo)
     ebay_api_keys = assoc(account, :ebay_api_keys) |> Repo.all

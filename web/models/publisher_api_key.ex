@@ -15,7 +15,7 @@ defmodule Apientry.PublisherApiKey do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:title, :value, :publisher_id])
+    |> cast(trim_value(params), [:title, :value, :publisher_id])
     |> validate_required([:title, :value, :publisher_id])
     |> unique_constraint(:value)
     |> foreign_key_constraint(:publisher_id)
@@ -31,5 +31,12 @@ defmodule Apientry.PublisherApiKey do
 
   def names_and_ids(query) do
     from p in query, select: {p.name, p.id}
+  end
+
+  defp trim_value(params) do
+    case params["value"] do
+      nil -> params
+      value -> Map.put(params, "value", String.trim(value))
+    end
   end
 end
