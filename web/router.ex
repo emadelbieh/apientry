@@ -60,6 +60,14 @@ defmodule Apientry.Router do
     get "/loaderio-694461ab4a923d21b45b975c4032b9ff", LoaderVerificationController, :show_694461ab
     get "/loaderio-694461ab4a923d21b45b975c4032b9ff.html", LoaderVerificationController, :show_694461ab
     get "/loaderio-694461ab4a923d21b45b975c4032b9ff.txt", LoaderVerificationController, :show_694461ab
+
+    get "/loaderio-ed96d28cb6cb372defb0748d98689a27", LoaderVerificationController, :show_ed96d28c
+    get "/loaderio-ed96d28cb6cb372defb0748d98689a27.html", LoaderVerificationController, :show_ed96d28c
+    get "/loaderio-ed96d28cb6cb372defb0748d98689a27.txt", LoaderVerificationController, :show_ed96d28c
+
+    get "/loaderio-7554f28861c6c058e54aaa267c439680", LoaderVerificationController, :show_7554f288
+    get "/loaderio-7554f28861c6c058e54aaa267c439680.html", LoaderVerificationController, :show_7554f288
+    get "/loaderio-7554f28861c6c058e54aaa267c439680.txt", LoaderVerificationController, :show_7554f288
   end
 
   scope "/", Apientry do
@@ -67,10 +75,6 @@ defmodule Apientry.Router do
     pipe_through :secure
     get "/dryrun/publisher", SearchController, :dry_search
     get "/dryrun/publisher/:endpoint", SearchController, :dry_search
-  end
-
-  scope "/", Apientry do
-    get "/loaderio-ed96d28cb6cb372defb0748d98689a27", LoaderIoController, :index
   end
 
   defp handle_errors(conn, details) do
