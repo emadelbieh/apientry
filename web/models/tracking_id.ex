@@ -22,7 +22,7 @@ defmodule Apientry.TrackingId do
   """
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, [:code, :ebay_api_key_id, :publisher_api_key_id])
+    |> cast(trim_code(params), [:code, :ebay_api_key_id, :publisher_api_key_id])
     |> validate_required([:code, :ebay_api_key_id])
     |> unique_constraint(:code, name: :tracking_ids_code_index)
   end
@@ -32,5 +32,12 @@ defmodule Apientry.TrackingId do
     |> cast(params, [:code, :ebay_api_key_id, :publisher_api_key_id, :publisher_id])
     |> validate_required([:code, :ebay_api_key_id])
     |> unique_constraint(:code, name: :tracking_ids_code_index)
+  end
+
+  defp trim_code(params) do
+    case params["code"] do
+      nil -> params
+      code -> Map.put(params, "code", String.trim(code))
+    end
   end
 end

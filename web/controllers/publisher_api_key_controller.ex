@@ -4,6 +4,8 @@ defmodule Apientry.PublisherApiKeyController do
   alias Apientry.Publisher
   alias Apientry.PublisherApiKey
 
+  plug :scrub_params, "publisher_api_key" when action in [:create, :update]
+
   def index(conn, %{"publisher_id" => publisher_id}) do
     publisher = Repo.get(Publisher, publisher_id)
     publisher_api_keys = Repo.all(assoc(publisher, :api_keys))
