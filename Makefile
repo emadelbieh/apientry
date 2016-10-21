@@ -9,12 +9,8 @@ deploy_release:
 	mix edeliver deploy release to production -V --version="${VERSION}"
 
 start:
-	ssh deployer@52.207.238.14 -- ${bin} stop
-	ssh deployer@52.207.238.14 -- ${bin} start
-	ssh deployer@54.84.208.240 -- ${bin} stop
-	ssh deployer@54.84.208.240 -- ${bin} start
-	ssh deployer@54.152.146.150 -- ${bin} stop 
-	ssh deployer@54.152.146.150 -- ${bin} start
+	mix edeliver start production
+	mix edeliver restart production
 
 migrate:
 	./utils/migrate.sh
@@ -22,10 +18,17 @@ migrate:
 console: keys
 	ssh deployer@52.207.238.14 -- ${bin} remote_console
 
+_start: keys
+	ssh deployer@52.207.238.14 -- ${bin} start
+	ssh deployer@54.84.208.240 -- ${bin} start
+	ssh deployer@54.152.146.150 -- ${bin} start
+	ssh deployer@54.197.11.252 -- ${bin} start
+
 _ping: keys
 	ssh deployer@52.207.238.14 -- ${bin} ping
 	ssh deployer@54.84.208.240 -- ${bin} ping
 	ssh deployer@54.152.146.150 -- ${bin} ping
+	ssh deployer@54.197.11.252 -- ${bin} ping
 
 keys:
 	chmod 600 ansible/keys/admin2.pem
