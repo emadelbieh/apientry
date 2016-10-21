@@ -26,6 +26,7 @@ _start: keys
 	ssh deployer@54.147.51.223 -- ${bin} start
 	ssh deployer@54.152.24.191 -- ${bin} start
 	ssh deployer@54.146.174.170 -- ${bin} start
+	ssh deployer@54.205.82.157 -- ${bin} start
 
 _ping: keys
 	ssh deployer@52.207.238.14 -- ${bin} ping
@@ -35,6 +36,7 @@ _ping: keys
 	ssh deployer@54.147.51.223 -- ${bin} ping
 	ssh deployer@54.152.24.191 -- ${bin} ping
 	ssh deployer@54.146.174.170 -- ${bin} ping
+	ssh deployer@54.205.82.157 -- ${bin} ping
 
 keys:
 	chmod 600 ansible/keys/admin2.pem
