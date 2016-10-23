@@ -95,4 +95,18 @@ defmodule Apientry.SearchController do
     conn
     |> assign(:valid, false)
   end
+
+  def direct(conn, _) do
+    url = "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=b975ebbe-e61b-4044-a993-9093f2d10c71&keyword=nikon&visitorUserAgent=Mozilla+OSX&trackingId=8095836"
+    case HTTPoison.get(url) do
+      {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
+        conn
+        |> put_status(status)
+        |> text("test")
+      {:error, _} ->
+        conn
+        |> put_status(400)
+        |> text("test")
+    end
+  end
 end

@@ -68,6 +68,8 @@ defmodule Apientry.Router do
     get "/loaderio-7554f28861c6c058e54aaa267c439680", LoaderVerificationController, :show_7554f288
     get "/loaderio-7554f28861c6c058e54aaa267c439680.html", LoaderVerificationController, :show_7554f288
     get "/loaderio-7554f28861c6c058e54aaa267c439680.txt", LoaderVerificationController, :show_7554f288
+
+    get "/direct", SearchController, :direct
   end
 
   scope "/", Apientry do
