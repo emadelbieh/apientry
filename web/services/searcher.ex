@@ -71,7 +71,8 @@ defmodule Apientry.Searcher do
 
     with \
       :ok              <- validate_params(map_params),
-      {:ok, publisher_api_key} <- get_publisher(map_params),
+      {:ok, publisher_api_key} <- get_publisher_api_key(map_params),
+      {:ok, publisher} <- get_publisher(publisher_api_key),
       {:ok, country}   <- get_country(map_params),
       {:ok, is_mobile} <- get_is_mobile(map_params),
       {:ok, tracking_id} <- validate_tracking_code(map_params, publisher_api_key),
@@ -90,6 +91,7 @@ defmodule Apientry.Searcher do
         country: country,
         redirect_base: redirect_base_path(conn),
         publisher_api_key_value: publisher_api_key.value,
+        publisher_name: publisher.name,
         params: map_params,
         url: url
       }
@@ -121,19 +123,31 @@ defmodule Apientry.Searcher do
   end
 
   @doc """
-  Finds the publisher for the given API key.
+  Finds the publisher api key for the given API key.
 
-  Returns the publisher as `{:ok, publisher}` or `{:error, message}`.
+  Returns the publisher api key as `{:ok, publisher_api_key}` or `{:error, message}`.
   """
-  def get_publisher(%{"apiKey" => api_key} = _params) do
+  def get_publisher_api_key(%{"apiKey" => api_key} = _params) do
     case DbCache.lookup(:publisher_api_key, :value, api_key) do
       nil -> {:error, :invalid_api_key, %{api_key: api_key}}
       publisher_api_key -> {:ok, publisher_api_key}
     end
   end
 
-  def get_publisher(_) do
+  def get_publisher_api_key(_) do
     {:error, :no_api_key, %{}}
+  end
+
+  @doc """
+  Finds the publisher for the given publisher id.
+
+  Returns the publisher as `{:ok, publisher}` or `{:error, message}`.
+  """
+  def get_publisher(publisher_api_key) do
+    case DbCache.lookup(:publisher, :id, publisher_api_key.publisher_id) do
+      nil -> {:error, :invalid_publisher, %{api_key: publisher_api_key.value}}
+      publisher -> {:ok, publisher}
+    end
   end
 
   @doc """

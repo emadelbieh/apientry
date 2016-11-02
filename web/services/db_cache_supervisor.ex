@@ -6,6 +6,7 @@ defmodule Apientry.DbCacheSupervisor do
   import Supervisor.Spec
 
   alias Apientry.Repo
+  alias Apientry.Publisher
   alias Apientry.PublisherApiKey
   alias Apientry.EbayApiKey
   alias Apientry.TrackingId
@@ -19,6 +20,13 @@ defmodule Apientry.DbCacheSupervisor do
         indices: [
           id: &(&1.id),
         ]]], id: :ebay_api_key),
+      worker(DbCache, [[
+        name: :publisher,
+        repo: Repo,
+        query: Publisher,
+        indices: [
+          id: &(&1.id)
+        ]]], id: :publisher),
       worker(DbCache, [[
         name: :publisher_api_key,
         repo: Repo,
@@ -45,6 +53,7 @@ defmodule Apientry.DbCacheSupervisor do
   """
   def update do
     DbCache.update(:ebay_api_key)
+    DbCache.update(:publisher)
     DbCache.update(:publisher_api_key)
     DbCache.update(:tracking_id)
   end
