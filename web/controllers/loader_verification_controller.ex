@@ -5,6 +5,10 @@ defmodule Apientry.LoaderVerificationController do
 
   use Apientry.Web, :controller
 
+  def show_dd9715ba(conn, _params) do
+    conn |> text("loaderio-dd9715bade6eb23cec502a38f3bfa865")
+  end
+
   def show_b86e3ad1(conn, _params) do
     conn |> text("loaderio-b86e3ad1127445bea97f60fc77392f9c")
   end

@@ -69,6 +69,10 @@ defmodule Apientry.Router do
     get "/loaderio-7554f28861c6c058e54aaa267c439680.html", LoaderVerificationController, :show_7554f288
     get "/loaderio-7554f28861c6c058e54aaa267c439680.txt", LoaderVerificationController, :show_7554f288
 
+    get "/loaderio-dd9715bade6eb23cec502a38f3bfa865", LoaderVerificationController, :show_dd9715ba
+    get "/loaderio-dd9715bade6eb23cec502a38f3bfa865", LoaderVerificationController, :show_dd9715ba
+    get "/loaderio-dd9715bade6eb23cec502a38f3bfa865", LoaderVerificationController, :show_dd9715ba
+
     get "/direct", SearchController, :direct
   end
 
