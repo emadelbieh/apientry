@@ -24,7 +24,7 @@ config :apientry, Apientry.Endpoint,
 config :apientry, Apientry.Repo,
   adapter: Ecto.Adapters.Postgres,
   #url: "postgres://apientry:fxuJbaisGapsBacroarh@apientry-production.c1snflmeflqw.us-east-1.rds.amazonaws.com:5432/apientry_production",
-  url: "postgres://autoscaler:79#XKqgP898F@autoscale-db.c1snflmeflqw.us-east-1.rds.amazonaws.com:5432/apientry_autoscale",
+  url: "postgres://apientry:fxuJbaisGapsBacroarh@autoscale-apientry-rds.c1snflmeflqw.us-east-1.rds.amazonaws.com:5432/apientry_production",
   pool_size: 10,
   ssl: true
 
