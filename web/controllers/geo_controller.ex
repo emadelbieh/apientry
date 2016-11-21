@@ -37,7 +37,7 @@ defmodule Apientry.GeoController do
     changeset = Geo.changeset(geo, geo_params)
 
     case Repo.update(changeset) do
-      {:ok, geo} ->
+      {:ok, _geo} ->
         conn
         |> put_flash(:info, "Geo updated successfully.")
         |> redirect(to: geo_path(conn, :index))

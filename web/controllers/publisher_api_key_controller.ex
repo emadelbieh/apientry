@@ -38,12 +38,12 @@ defmodule Apientry.PublisherApiKeyController do
     render(conn, "edit.html", publisher_api_key: publisher_api_key, publishers: publishers, changeset: changeset)
   end
 
-  def update(conn, %{"publisher_id" => publisher_id, "id" => id, "publisher_api_key" => publisher_api_key_params}) do
+  def update(conn, %{"publisher_id" => _publisher_id, "id" => id, "publisher_api_key" => publisher_api_key_params}) do
     publisher_api_key = Repo.get!(PublisherApiKey, id)
     changeset = PublisherApiKey.changeset(publisher_api_key, publisher_api_key_params)
 
     case Repo.update(changeset) do
-      {:ok, publisher_api_key} ->
+      {:ok, _publisher_api_key} ->
         DbCache.update(:publisher_api_key)
         conn
         |> put_flash(:info, "Publisher api key updated successfully.")
@@ -59,7 +59,7 @@ defmodule Apientry.PublisherApiKeyController do
     changeset = PublisherApiKey.changeset(publisher_api_key, publisher_api_key_params)
 
     case Repo.update(changeset) do
-      {:ok, publisher_api_key} ->
+      {:ok, _publisher_api_key} ->
         DbCache.update(:publisher_api_key)
         conn
         |> put_flash(:info, "Publisher api key updated successfully.")
@@ -80,11 +80,5 @@ defmodule Apientry.PublisherApiKeyController do
     conn
     |> put_flash(:info, "Publisher api key deleted successfully.")
     |> redirect(to: publisher_api_key_path(conn, :index))
-  end
-
-  # Legacy actions for dealing with legacy data
-  def index(conn, _) do
-    publisher_api_keys = Repo.all(PublisherApiKey)
-    render conn, "legacy_index.html", publisher_api_keys: publisher_api_keys
   end
 end

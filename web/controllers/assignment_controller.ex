@@ -21,7 +21,7 @@ defmodule Apientry.AssignmentController do
   end
 
   def step2(conn, %{"tracking_id" => %{"account_id" => account_id,
-                                       "publisher_api_key_id" => publisher_api_key_id}} = params) do
+                                       "publisher_api_key_id" => publisher_api_key_id}}) do
     account = Repo.get(Account, account_id) |> Repo.preload(:ebay_api_keys)
     ebay_api_key_ids = get_ebay_api_key_ids(account)
     geo = account.geo
@@ -86,7 +86,7 @@ defmodule Apientry.AssignmentController do
   end
 
   def get_ebay_api_key_ids(account) do
-    query = assoc(account, :ebay_api_keys)
+    assoc(account, :ebay_api_keys)
     |> EbayApiKey.values_and_ids
     |> Repo.all
   end
