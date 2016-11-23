@@ -9,18 +9,7 @@ defmodule Apientry.EbayXmlTransformer do
         is_list(value) -> %{type: "array"}
         true -> %{}
       end
-      value = if is_list(value) do
-        if value != [] do
-        first_element = hd(value)
-        if is_binary(first_element) do
-          Enum.map(value, fn element -> %{key => element} end)
-        else
-          value
-        end
-        end
-      else
-        value
-      end
+      value = normalize_value(key, value)
       {key, properties, do_transform(value)}
     end)
   end
@@ -33,5 +22,21 @@ defmodule Apientry.EbayXmlTransformer do
 
   def do_transform(value) do
     value
+  end
+
+  # handles edge case: %{ "upc" => ["1234567890", "0987654321"] }
+  # transforms it to: %{ "upc" => [%{upc => "1234567890", upc => "0987654321"}]}
+  defp normalize_value(key, value) do
+    cond do
+      value == [] ->
+        nil
+      is_list(value) ->
+        if is_binary(hd(value)) do
+          Enum.map(value, fn element -> %{key => element} end)
+        else
+          value
+        end
+      true -> value
+    end
   end
 end
