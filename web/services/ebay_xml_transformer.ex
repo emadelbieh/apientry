@@ -9,6 +9,18 @@ defmodule Apientry.EbayXmlTransformer do
         is_list(value) -> %{type: "array"}
         true -> %{}
       end
+      value = if is_list(value) do
+        if value != [] do
+        first_element = hd(value)
+        if is_binary(first_element) do
+          Enum.map(value, fn element -> %{key => element} end)
+        else
+          value
+        end
+        end
+      else
+        value
+      end
       {key, properties, do_transform(value)}
     end)
   end
