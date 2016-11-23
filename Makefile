@@ -16,7 +16,7 @@ migrate:
 	./utils/migrate.sh
 
 console: keys
-	ssh deployer@54.84.208.240 -- ${bin} remote_console
+	ssh deployer@52.207.238.14 -- ${bin} remote_console
 
 _start: keys
 	ssh deployer@54.84.208.240 -- ${bin} start
