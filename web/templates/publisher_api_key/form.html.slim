@@ -27,4 +27,14 @@
     .form-fieldset
       .form
         .form-group
-          = submit "Submit", class: "btn btn-primary"
+          = submit "Save Your Own", class: "btn btn-primary"
+          |  or  
+          = submit "Generate Automatically", class: "btn btn-primary"
+        .form-group
+          p
+            ' Note: Click "Save Your Own" if you want to save your own custom API key
+            br
+            ' or click "Generate Automatically" to have the system generate one for you.
+            br
+            ' If you choose the latter and you have filled the "Value"
+
