@@ -16,10 +16,9 @@ migrate:
 	./utils/migrate.sh
 
 console: keys
-	ssh deployer@52.207.238.14 -- ${bin} remote_console
+	ssh deployer@54.84.208.240 -- ${bin} remote_console
 
 _start: keys
-	ssh deployer@52.207.238.14 -- ${bin} start
 	ssh deployer@54.84.208.240 -- ${bin} start
 	ssh deployer@54.172.178.121 -- ${bin} start
 	ssh deployer@54.146.187.142 -- ${bin} start
@@ -29,7 +28,6 @@ _start: keys
 	ssh deployer@54.205.82.157 -- ${bin} start
 
 _ping: keys
-	ssh deployer@52.207.238.14 -- ${bin} ping
 	ssh deployer@54.84.208.240 -- ${bin} ping
 	ssh deployer@54.172.178.121 -- ${bin} ping
 	ssh deployer@54.146.187.142 -- ${bin} ping
