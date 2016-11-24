@@ -39,17 +39,4 @@ defmodule Apientry.PublisherApiKey do
       value -> Map.put(params, "value", String.trim(value))
     end
   end
-
-  def value_changeset(model) do
-    model
-    |> cast(%{}, [])
-    |> generate_api_key()
-  end
-
-  def generate_api_key(changeset) do
-    case changeset.valid? do
-      true -> put_change(changeset, :value, Ecto.UUID.generate)
-      _ -> changeset
-    end
-  end
 end
