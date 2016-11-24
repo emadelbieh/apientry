@@ -18,6 +18,12 @@ defmodule Apientry.PublisherApiKeyController do
   end
 
   def create(conn, %{"publisher_api_key" => publisher_api_key_params}) do
+    publisher_api_key_params = if publisher_api_key_params["value"] == nil do
+      Map.put(publisher_api_key_params, "value", Ecto.UUID.generate)
+    else
+      publisher_api_key_params
+    end
+
     changeset = PublisherApiKey.changeset(%PublisherApiKey{}, publisher_api_key_params)
 
     case Repo.insert(changeset) do
