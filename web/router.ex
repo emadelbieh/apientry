@@ -79,6 +79,16 @@ defmodule Apientry.Router do
     get "/dryrun/publisher/:endpoint", SearchController, :dry_search
   end
 
+  # catch all routes
+  scope "/", Apientry do
+    pipe_through :api
+    get    "/*path", CatchAllController, :catch_all
+    post   "/*path", CatchAllController, :catch_all
+    put    "/*path", CatchAllController, :catch_all
+    patch  "/*path", CatchAllController, :catch_all
+    delete "/*path", CatchAllController, :catch_all
+  end
+
   defp handle_errors(conn, details) do
     ErrorReporter.report(conn, details)
   end
