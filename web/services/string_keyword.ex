@@ -16,6 +16,13 @@ defmodule Apientry.StringKeyword do
     :lists.filter(fn {k, _} -> k != key end, keywords)
   end
 
+  def fetch(keywords, key) when is_list(keywords) and is_binary(key) do
+    case :lists.keyfind(key, 1, keywords) do
+      {^key, value} -> {:ok, value}
+      false -> :error
+    end
+  end
+
   def put(keywords, key, value) when is_list(keywords) and is_binary(key) do
     [{key, value} | delete(keywords, key)]
   end
