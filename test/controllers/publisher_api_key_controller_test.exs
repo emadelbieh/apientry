@@ -28,6 +28,14 @@ defmodule Apientry.PublisherApiKeyControllerTest do
     assert Repo.get_by(PublisherApiKey, %{publisher_id: publisher.id, value: "12345", title: "Key 1"})
   end
 
+  test "generates value if left blank", %{conn: conn, publisher: publisher} do
+    conn = post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, title: "Key 1", value: ""}
+    assert redirected_to(conn) == publisher_api_key_path(conn, :index, publisher_id: publisher.id)
+    publisher_api_key = Repo.get_by(PublisherApiKey, %{publisher_id: publisher.id, title: "Key 1"})
+    assert publisher_api_key.value != nil
+    assert publisher_api_key.value != ""
+  end
+
   test "does not create resource when value already exists", %{conn: conn, publisher: publisher} do
     post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, title: "Key1", value: "12345"}
     conn = post conn, publisher_api_key_path(conn, :create), publisher_api_key: %{publisher_id: publisher.id, title: "Key2", value: "12345"}

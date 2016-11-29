@@ -20,11 +20,12 @@
       .form
         .form-group.-horiz
           = label f, :value, class: "control-label"
-          = text_input f, :value, class: "form-control"
+          = text_input f, :value, class: "form-control", placeholder: "Leave blank to have the system generate one for you"
           = hidden_input f, :publisher_id
           = error_tag f, :value
 
     .form-fieldset
       .form
         .form-group
-          = submit "Submit", class: "btn btn-primary"
+          = submit "Save", class: "btn btn-primary"
+
