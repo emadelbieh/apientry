@@ -25,7 +25,7 @@ defmodule Apientry.Mixfile do
        :phoenix, :phoenix_html, :cowboy, :logger, :gettext,
        :phoenix_ecto, :postgrex, :httpoison, :geolix,
        :phoenix_slime, :cors_plug, :phoenix_pubsub, :edeliver,
-       :basic_auth, :inets, :rollbax
+       :basic_auth, :inets, :rollbax, :xml_builder
      ]]
   end
 
