@@ -1,4 +1,6 @@
 defmodule Apientry.Rerank do
+  @min_cat_size 0.1
+
   def format_ebay_results_for_rerank(ebay_results) do
     Enum.map(ebay_results, fn category ->
       %{
@@ -21,5 +23,21 @@ defmodule Apientry.Rerank do
       end)
       category = Map.put(category, :offers, offers)
     end)
+  end
+
+
+  def remove_small_categories(categories) do
+    threshold = Float.ceil(@min_cat_size * count_total_offers(categories))
+
+    result = Enum.reject(categories, fn category ->
+      length(category.offers) < threshold
+    end)
+  end
+
+  defp count_total_offers(categories) do
+    Enum.map(categories, fn category ->
+      length(category.offers)
+    end)
+    |> Enum.sum
   end
 end
