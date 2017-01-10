@@ -34,10 +34,18 @@ defmodule Apientry.Rerank do
     end)
   end
 
+  def get_max_cat_price(category) do
+    most_expensive_offer = Enum.max_by(category.offers, fn offer ->
+      offer.price
+    end)
+    most_expensive_offer.price
+  end
+
   defp count_total_offers(categories) do
     Enum.map(categories, fn category ->
       length(category.offers)
     end)
     |> Enum.sum
   end
+
 end

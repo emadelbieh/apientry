@@ -83,4 +83,19 @@ defmodule Apientry.RerankTest do
     assert length(result) == 1
     assert length(category.offers) == 10
   end
+
+  test "max category price" do
+    internal_data = %{
+      cat_id: 1,
+      cat_name: "Category 1",
+      offers: [
+        %{title: "Offer 1", price: 19.99},
+        %{title: "Offer 1", price: 49.99},
+        %{title: "Offer 1", price: 32.99}
+      ]
+    }
+
+    result = Apientry.Rerank.get_max_cat_price(internal_data)
+    assert result == 49.99
+  end
 end
