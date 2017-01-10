@@ -26,4 +26,31 @@ defmodule Apientry.RerankTest do
     assert offer2.title == "Offer 2"
     assert offer2.price == 20.89
   end
+
+  test "remove duplicate" do
+    internal_data = [
+      %{
+        cat_id: 1,
+        cat_name: "Category",
+        offers: [
+          %{ title: "Offer 1", price: 19.99 },
+          %{ title: "Offer 1", price: 19.99 }
+        ]
+      }
+    ]
+
+    expected = [
+      %{
+        cat_id: 1,
+        cat_name: "Category",
+        offers: [
+          %{ title: "Offer 1", price: 19.99 }
+        ]
+      }
+    ]
+
+    result = Apientry.Rerank.remove_duplicate(internal_data)
+
+    assert result == expected
+  end
 end

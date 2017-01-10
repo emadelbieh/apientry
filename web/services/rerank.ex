@@ -13,4 +13,13 @@ defmodule Apientry.Rerank do
       }
     end)
   end
+
+  def remove_duplicate(categories) do
+    Enum.map(categories, fn category ->
+      offers = Enum.uniq_by(category.offers, fn offer ->
+        "#{offer.title} #{offer.price}"
+      end)
+      category = Map.put(category, :offers, offers)
+    end)
+  end
 end
