@@ -1,4 +1,4 @@
-defmodule Apientry.AmplitudeTest do
+defmodule Apientry.RerankTest do
   use ExUnit.Case
   
   test "formatting" do
