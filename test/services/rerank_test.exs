@@ -98,4 +98,14 @@ defmodule Apientry.RerankTest do
     result = Apientry.Rerank.get_max_cat_price(internal_data)
     assert result == 49.99
   end
+
+  test "calculate price val" do
+    max_cat_price = 20;
+    offer = %{
+      price: 18
+    }
+    result = Apientry.Rerank.calculate_price_val(offer, max_cat_price)
+
+    assert_in_delta(result, 0.10, 0.000001)
+  end
 end

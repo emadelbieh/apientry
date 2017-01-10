@@ -48,4 +48,8 @@ defmodule Apientry.Rerank do
     |> Enum.sum
   end
 
+  def calculate_price_val(offer, max_cat_price) do
+    1 - (offer.price / max_cat_price)
+  end
+
 end
