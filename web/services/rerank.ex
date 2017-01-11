@@ -87,4 +87,9 @@ defmodule Apientry.Rerank do
     sorted = Enum.sort_by(category.offers, fn offer -> offer.val end, &>=/2)
     Map.put(category, :offers, sorted)
   end
+
+  def get_top_ten_offers(categories) do
+    offers = Enum.flat_map(categories, fn category -> category.offers end)
+    Enum.take(offers, 10)
+  end
 end

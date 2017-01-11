@@ -183,4 +183,19 @@ defmodule Apientry.RerankTest do
 
     assert vals == [7, 6, 5]
   end
+
+  test "get_top_ten_offers returns the top 10 offers accross all categories" do
+    data = [
+      %{offers: [%{val: 1},  %{val: 2},  %{val: 3}]},
+      %{offers: [%{val: 4},  %{val: 5},  %{val: 6}]},
+      %{offers: [%{val: 7},  %{val: 8},  %{val: 9}]},
+      %{offers: [%{val: 10}, %{val: 11}, %{val: 12}]}
+    ]
+
+    offers = Apientry.Rerank.get_top_ten_offers(data)
+    assert length(offers) == 10
+
+    vals = Enum.map(offers, fn offer -> offer.val end)
+    assert vals == [1,2,3,4,5,6,7,8,9,10]
+  end
 end
