@@ -76,4 +76,10 @@ defmodule Apientry.Rerank do
       Map.put(category, :offers, new_offers)
     end)
   end
+
+  def sort_categories(categories) do
+    Enum.sort_by(categories, fn category ->
+      category.val
+    end, &>=/2)
+  end
 end

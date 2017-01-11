@@ -156,4 +156,17 @@ defmodule Apientry.RerankTest do
     assert_in_delta(offer1.val, 2.4, 0.0000001)
     assert offer2.val == 2.0
   end
+
+  test "sort_categories sorts categories by category value" do
+    data = [
+      %{ cat_name: "Category 1", val: 6},
+      %{ cat_name: "Category 2", val: 5},
+      %{ cat_name: "Category 3", val: 7},
+    ]
+
+    result = Apientry.Rerank.sort_categories(data)
+
+    names = Enum.map(result, fn category -> category.cat_name end)
+    assert names == ["Category 3", "Category 1", "Category 2"]
+  end
 end
