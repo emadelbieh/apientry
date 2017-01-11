@@ -108,4 +108,16 @@ defmodule Apientry.RerankTest do
 
     assert_in_delta(result, 0.10, 0.000001)
   end
+
+  test "adding_of_price_val" do
+    offers = [
+      %{title: "test1"},
+      %{title: "test2"}
+    ]
+
+    result = Apientry.Rerank.add_price_val(offers, 7, fn _, _ -> 7 end)
+
+    assert hd(result).price_val == 7
+    assert hd(tl(result)).price_val == 7
+  end
 end

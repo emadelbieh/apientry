@@ -52,4 +52,9 @@ defmodule Apientry.Rerank do
     1 - (offer.price / max_cat_price)
   end
 
+  def add_price_val(offers, max_cat_price, calculator) do
+    Enum.map(offers, fn offer ->
+      Map.put(offer, :price_val, calculator.(offer, max_cat_price))
+    end)
+  end
 end
