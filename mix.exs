@@ -60,6 +60,7 @@ defmodule Apientry.Mixfile do
      {:earmark, "~> 0.1", only: :dev},
      {:ex_doc, "~> 0.11", only: :dev},
      {:xml_builder, "~> 0.0.6"},
+     {:stemex, "~> 0.1.1"},
     ]
   end
 

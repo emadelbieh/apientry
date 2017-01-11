@@ -44,4 +44,5 @@
   "rollbax": {:hex, :rollbax, "0.7.0", "b1c194f4ce10b507898ece4d995d0aaab4da247e7fce0b1e9e76384b134ed41e", [:mix], [{:hackney, "~> 1.1", [hex: :hackney, optional: false]}, {:poison, "~> 1.4 or ~> 2.0", [hex: :poison, optional: false]}]},
   "slime": {:hex, :slime, "0.13.0", "fb9b1296b5ef3fe6aed09deec2794a146c94f5270b3bcd9f956c01d3660fc196", [:mix], []},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.1", "28a4d65b7f59893bc2c7de786dec1e1555bd742d336043fe644ae956c3497fbe", [:make, :rebar], []},
+  "stemex": {:hex, :stemex, "0.1.1", "726d693b67c4ee82398ca6f1bfbacc8d7aad20861a0371e44e9c6f9dee1e042d", [:mix], []},
   "xml_builder": {:hex, :xml_builder, "0.0.8", "dea10735e15c91e24582e41ee2d3282b7f0177a5b42d6268096a6221ba83226f", [:mix], []}}

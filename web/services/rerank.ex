@@ -1,6 +1,16 @@
 defmodule Apientry.Rerank do
   @min_cat_size 0.1
 
+  @keywordsDontStemm ~w(homme hommes femme femmes herren)
+
+  @stemmers %{
+    us: &Stemex.english/1,
+    au: &Stemex.english/1,
+    gb: &Stemex.english/1,
+    de: &Stemex.german/1,
+    fr: &Stemex.french/1
+  }
+
   # from rerank/helpers.js
   def format_ebay_results_for_rerank(ebay_results) do
     Enum.map(ebay_results, fn category ->
@@ -8,8 +18,7 @@ defmodule Apientry.Rerank do
         cat_name: category.name,
         cat_id: category.id,
         offers: Enum.map(category.items.item, fn item ->
-          %{
-            title: item.offer.name,
+          %{ title: item.offer.name,
             price: item.offer.basePrice.value
           }
         end)
@@ -30,15 +39,42 @@ defmodule Apientry.Rerank do
     ""
   end
   def normalize_string(string) do
-    String.downcase(string)
+    string
+    |> String.downcase
     |> String.replace(~r/é/m, "e")
     |> String.replace(~r/(-|®|\||\(|\)|:|,|gen|’|_|\+|&|\!|\%|\*|\$|\@|\#|\;|\^|\/|'|\\|")/m, " ")
     |> String.replace(~r/ +(?= )/, "")
     |> String.trim()
   end
 
-  def tokenize(string) do
-    String.split(string)
+  def stem(string, stemer) do
+    if Enum.any?(@keywordsDontStemm, string) do
+      string
+    else
+      stemer.(string)
+    end
+  end
+
+  def tokenize(string, geo) do
+    tokens = string
+    |> normalize_string()
+    |> String.split(~r/\s+/)
+    |> Stream.reject(fn str -> str =~ ~r/\d+/ end)
+
+    if geo do
+      Enum.map(tokens, fn str -> stem(str, @stemmers[geo]) end)
+    else
+      tokens
+    end
+  end
+
+  def get_attr_from_title_by_cat_id(geo, cat_id, title) do
+  end
+
+  def add_token_val(offers, search_term, geo, cat_id, fetchedUrl) do
+    token_count_in_search_term = length(tokenize(search_term))
+
+    attributes_
   end
 
   # counts the number of tokens in search term
@@ -52,8 +88,6 @@ defmodule Apientry.Rerank do
       end)
     end)
   end
-
-
 
   # from rerank/rerank.js
   def remove_small_categories(categories) do
