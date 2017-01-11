@@ -78,14 +78,12 @@ defmodule Apientry.Rerank do
   end
 
   def sort_categories(categories) do
-    Enum.sort_by(categories, fn category ->
-      category.val
-    end, &>=/2)
+    Enum.sort_by(categories, fn category -> category.val end, &>=/2)
   end
 
   def sort_products_within_categories(category) do
-    sorted = Enum.sort_by(category.offers, fn offer -> offer.val end, &>=/2)
-    Map.put(category, :offers, sorted)
+    offers = Enum.sort_by(category.offers, fn offer -> offer.val end, &>=/2)
+    Map.put(category, :offers, offers)
   end
 
   def get_top_ten_offers(categories) do
