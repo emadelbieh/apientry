@@ -138,4 +138,22 @@ defmodule Apientry.RerankTest do
     assert_in_delta(token_val1, 0.666666667, 000000001)
     assert token_val2 == 1
   end
+
+  test "add_prod_vals adds weighted val to each offers based on token_val and price_val" do
+    data = [
+      %{ offers: [%{ token_val: 1, price_val: 3 }] },
+      %{ offers: [%{ token_val: 2, price_val: 2 }] },
+    ]
+
+    result = Apientry.Rerank.add_prod_val(data)
+
+    category1 = hd(result)
+    category2 = hd(tl(result))
+
+    offer1 = hd(category1.offers)
+    offer2 = hd(category2.offers)
+
+    assert_in_delta(offer1.val, 2.4, 0.0000001)
+    assert offer2.val == 2.0
+  end
 end

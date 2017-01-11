@@ -67,4 +67,13 @@ defmodule Apientry.Rerank do
       Map.put(category, :offers, new_offers)
     end)
   end
+
+  def add_prod_val(categories) do
+    Enum.map(categories, fn category ->
+      new_offers = Enum.map(category.offers, fn offer ->
+        Map.put(offer, :val, 0.3 * offer.token_val + 0.7 * offer.price_val)
+      end)
+      Map.put(category, :offers, new_offers)
+    end)
+  end
 end
