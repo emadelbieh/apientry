@@ -198,4 +198,17 @@ defmodule Apientry.RerankTest do
     vals = Enum.map(offers, fn offer -> offer.val end)
     assert vals == [1,2,3,4,5,6,7,8,9,10]
   end
+
+  test "get_max_offer_token_val returns the highest token val" do
+    data = [
+      %{offers: [%{token_val: 11}, %{token_val: 12}, %{token_val: 13}]},
+      %{offers: [%{token_val: 14}, %{token_val: 15}, %{token_val: 16}]},
+      %{offers: [%{token_val: 17}, %{token_val: 18}, %{token_val: 19}]},
+      %{offers: [%{token_val: 10}, %{token_val: 11}, %{token_val: 12}]}
+    ]
+
+    max = Apientry.Rerank.get_max_offer_token_val(data)
+
+    assert max == 19
+  end
 end
