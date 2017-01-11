@@ -169,4 +169,18 @@ defmodule Apientry.RerankTest do
     names = Enum.map(result, fn category -> category.cat_name end)
     assert names == ["Category 3", "Category 1", "Category 2"]
   end
+
+  test "sort_products_within_categories sorts offers by val" do
+    category = %{ cat_name: "Category 1", offers: [
+        %{val: 6}, %{val: 5}, %{val: 7}
+      ]}
+
+    result = Apientry.Rerank.sort_products_within_categories(category)
+
+    vals = Enum.map(result.offers, fn offer ->
+      offer.val
+    end)
+
+    assert vals == [7, 6, 5]
+  end
 end
