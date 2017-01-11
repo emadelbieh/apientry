@@ -211,4 +211,29 @@ defmodule Apientry.RerankTest do
 
     assert max == 19
   end
+
+  test "normalize_string removes leading and trailing spaces" do
+    result = Apientry.Rerank.normalize_string("    test   ")
+    assert result == "test"
+  end
+
+  test "normalize_string replaces double spaces with a single one" do
+    result = Apientry.Rerank.normalize_string("this   is   a test")
+    assert result == "this is a test"
+  end
+
+  test "normalize_string downcases everything" do
+    result = Apientry.Rerank.normalize_string("heyThereHeyThere")
+    assert result == "heythereheythere"
+  end
+
+  test "normalize_string replaces é with e" do
+    result = Apientry.Rerank.normalize_string("Lés Fils Du Vent")
+    assert result == "les fils du vent"
+  end
+
+  test "normalize_string removes special characters" do
+    result = Apientry.Rerank.normalize_string("-®|():,’_+&!%*$@#;^/'\\")
+    assert result == ""
+  end
 end

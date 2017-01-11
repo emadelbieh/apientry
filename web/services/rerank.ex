@@ -1,6 +1,7 @@
 defmodule Apientry.Rerank do
   @min_cat_size 0.1
 
+  # from rerank/helpers.js
   def format_ebay_results_for_rerank(ebay_results) do
     Enum.map(ebay_results, fn category ->
       %{
@@ -25,7 +26,36 @@ defmodule Apientry.Rerank do
     end)
   end
 
+  def normalize_string("") do
+    ""
+  end
+  def normalize_string(string) do
+    String.downcase(string)
+    |> String.replace(~r/é/m, "e")
+    |> String.replace(~r/(-|®|\||\(|\)|:|,|gen|’|_|\+|&|\!|\%|\*|\$|\@|\#|\;|\^|\/|'|\\|")/m, " ")
+    |> String.replace(~r/ +(?= )/, "")
+    |> String.trim()
+  end
 
+  def tokenize(string) do
+    String.split(string)
+  end
+
+  # counts the number of tokens in search term
+  def get_num_of_same_tokens(offer, search_term) do
+    title_tokens = Enum.uniq tokenize(offer.title)
+    search_term_tokens = Enum.uniq tokenize(search_term)
+
+    Enum.count(title_tokens, fn title_token ->
+      Enum.any?(search_term_tokens, fn search_token ->
+        search_token == title_token
+      end)
+    end)
+  end
+
+
+
+  # from rerank/rerank.js
   def remove_small_categories(categories) do
     threshold = Float.ceil(@min_cat_size * count_total_offers(categories))
 
