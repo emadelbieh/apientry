@@ -89,8 +89,8 @@ defmodule Apientry.Rerank do
   end
 
   def get_top_ten_offers(categories) do
-    offers = Enum.flat_map(categories, fn category -> category.offers end)
-    Enum.take(offers, 10)
+    Stream.flat_map(categories, fn category -> category.offers end)
+    |> Enum.take(10)
   end
 
   def get_max_offer_token_val(categories) do
