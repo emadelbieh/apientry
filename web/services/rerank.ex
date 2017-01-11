@@ -57,4 +57,14 @@ defmodule Apientry.Rerank do
       Map.put(offer, :price_val, calculator.(offer, max_cat_price))
     end)
   end
+
+  def normalize_token_vals(categories, max_offer_token_val) do
+    Enum.map(categories, fn category ->
+      new_offers = Enum.map(category.offers, fn offer ->
+        normalized_token_val = offer.token_val / max_offer_token_val;
+        Map.put(offer, :token_val, normalized_token_val)
+      end)
+      Map.put(category, :offers, new_offers)
+    end)
+  end
 end

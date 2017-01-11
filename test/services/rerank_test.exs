@@ -120,4 +120,22 @@ defmodule Apientry.RerankTest do
     assert hd(result).price_val == 7
     assert hd(tl(result)).price_val == 7
   end
+
+  test "normalization of token values" do
+    data = [
+      %{offers: [%{token_val: 2}]},
+      %{offers: [%{token_val: 3}]}
+    ]
+
+    result = Apientry.Rerank.normalize_token_vals(data, 3)
+
+    offers1 = hd(result).offers
+    offers2 = hd(tl(result)).offers
+
+    token_val1 = hd(offers1).token_val
+    token_val2 = hd(offers2).token_val
+
+    assert_in_delta(token_val1, 0.666666667, 000000001)
+    assert token_val2 == 1
+  end
 end
