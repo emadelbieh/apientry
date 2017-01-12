@@ -3,12 +3,12 @@ defmodule Apientry.RerankTest do
   
   test "formatting" do
     original = [%{
-      id: 1,
-      name: "Category",
-      items: %{
-        item: [
-          %{offer: %{name: "Offer 1", basePrice: %{value: 19.99}}},
-          %{offer: %{name: "Offer 2", basePrice: %{value: 20.89}}}
+      "id" => 1,
+      "name" => "Category",
+      "items" => %{
+        "item" => [
+          %{"offer" => %{"name" => "Offer 1", "basePrice" => %{"value" => "19.99"}}},
+          %{"offer" => %{"name" => "Offer 2", "basePrice" => %{"value" => "20.89"}}}
         ]
       }
     }]
@@ -19,12 +19,11 @@ defmodule Apientry.RerankTest do
 
     offer1 = hd(result.offers)
     assert offer1.title == "Offer 1"
-    assert offer1.price == 19.99
-
+    assert offer1.price == "19.99"
 
     offer2 = hd(tl(result.offers))
     assert offer2.title == "Offer 2"
-    assert offer2.price == 20.89
+    assert offer2.price == "20.89"
   end
 
   test "remove duplicate" do

@@ -1,3 +1,5 @@
+require IEx
+
 defmodule Apientry.Rerank do
   @min_cat_size 0.1
 
@@ -19,13 +21,21 @@ defmodule Apientry.Rerank do
     |> remove_duplicate()
     |> remove_small_categories()
 
+
     categories = Enum.map(categories, fn category ->
+      IO.puts "***********************************************"
       max_cat_price = get_max_cat_price(category)
+      IO.puts "max_cat_price #{max_cat_price}"
 
       offers = category.offers
+      IO.puts "-------------- with token vals ---------------"
       offers = add_token_val(offers, search_term, geo, category.cat_id, fetched_url)
+      IO.inspect offers
+      IO.puts "-------------- with price vals ---------------"
       offers = add_price_val(offers, max_cat_price)
+      IO.inspect offers
 
+      IO.puts "***********************************************"
       Map.put(category, :offers, offers)
     end)
 
@@ -39,23 +49,31 @@ categories = normalize_token_vals(categories, max_offer_token_val)
     result = get_top_ten_offers(categories)
   end
 
-  # from rerank/helpers.js
-  def format_ebay_results_for_rerank(ebay_results) do
-    Enum.map(ebay_results, fn category ->
+  # refactored from format_ebay_results_for_rerank
+  def extract_offers(ebay_items) do
+    ebay_items
+    |> Enum.filter(fn item -> item["offer"] end)
+    |> Enum.map(fn item ->
       %{
-        cat_name: category.name,
-        cat_id: category.id,
-        offers: Enum.map(category.items.item, fn item ->
-          %{ title: item.offer.name,
-            price: item.offer.basePrice.value
-          }
-        end)
+        title: item["offer"]["name"],
+        price: item["offer"]["basePrice"]["value"]
+      }
+    end)
+  end
+
+  def format_ebay_results_for_rerank(ebay_results) do
+    ebay_results
+    |> Enum.map(fn category ->
+      %{
+        cat_name: category["name"],
+        cat_id: category["id"],
+        offers: extract_offers(category["items"]["item"])
       }
     end)
   end
 
   def remove_duplicate(categories) do
-    Enum.map(categories, fn category ->
+    categories = Enum.map(categories, fn category ->
       offers = Enum.uniq_by(category.offers, fn offer ->
         "#{offer.title} #{offer.price}"
       end)
@@ -87,7 +105,7 @@ categories = normalize_token_vals(categories, max_offer_token_val)
     tokens = string
     |> normalize_string()
     |> String.split(~r/\s+/)
-    |> Stream.reject(fn str -> str =~ ~r/\d+/ end)
+    |> Enum.reject(fn str -> str =~ ~r/\d+/ end)
   end
 
   def tokenize(string, geo) do
@@ -97,7 +115,7 @@ categories = normalize_token_vals(categories, max_offer_token_val)
   end
 
   def get_attr_from_title_by_cat_id(geo, cat_id, title) do
-    ["apple", "rose gold"]
+    ["nike", "men", "run"]
   end
 
   def calculate_token_val(num_attr_search_term, num_same_tokens_between_title_and_search_term, num_tokens_in_searh_term) do
@@ -110,17 +128,26 @@ categories = normalize_token_vals(categories, max_offer_token_val)
 
   def add_token_val(offers, search_term, geo, cat_id, fetchedUrl) do
     token_count_in_search_term = length(tokenize(search_term))
+    IO.puts "found #{token_count_in_search_term} tokens in search term"
 
     attributes_from_ebay = get_attr_from_title_by_cat_id(geo, cat_id, search_term)
+    IO.puts "attributes_from_ebay:"
+    IO.inspect attributes_from_ebay
 
     offers = Enum.filter(offers, fn offer ->
       m = get_num_of_same_tokens(offer, search_term)
+      IO.puts "m: #{m}"
 
-      (fetchedUrl && length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
+      qualified = (fetchedUrl && String.length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
       (token_count_in_search_term >= 10 && m > 5) ||
       (token_count_in_search_term > 5 && token_count_in_search_term <= 9 && m > 2) ||
       (token_count_in_search_term <= 5 && m > 1)
+      
+      IO.puts "qualified: #{qualified}"
+
+      qualified
     end)
+    IO.puts "&&&&&&&&&&&&&&&&&&&&&"
 
     offers = Enum.map(offers, fn offer ->
       n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, offer)
@@ -139,7 +166,12 @@ categories = normalize_token_vals(categories, max_offer_token_val)
   # counts the number of tokens in search term
   def get_num_of_same_tokens(offer, search_term) do
     title_tokens = Enum.uniq tokenize(offer.title)
+    IO.puts "title tokens:"
+    IO.inspect title_tokens
+
     search_term_tokens = Enum.uniq tokenize(search_term)
+    IO.puts "search_term tokens:"
+    IO.inspect search_term_tokens
 
     Enum.count(title_tokens, fn title_token ->
       Enum.any?(search_term_tokens, fn search_token ->
