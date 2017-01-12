@@ -1,7 +1,7 @@
 defmodule Apientry.Rerank do
   @min_cat_size 0.1
 
-  @keywordsDontStemm ~w(homme hommes femme femmes herren)
+  @keywords_dont_stemm ~w(homme hommes femme femmes herren)
 
   @stemmers %{
     us: &Stemex.english/1,
@@ -10,6 +10,34 @@ defmodule Apientry.Rerank do
     de: &Stemex.german/1,
     fr: &Stemex.french/1
   }
+
+  def get_products(ebay_results, search_term, geo, fetched_url) do
+    geo = geo || "";
+
+    categories = ebay_results
+    |> format_ebay_results_for_rerank()
+    |> remove_duplicate()
+    |> remove_small_categories()
+
+    categories = Enum.map(categories, fn category ->
+      max_cat_price = get_max_cat_price(category)
+
+      offers = category.offers
+      offers = add_token_val(offers, search_term, geo, category.cat_id, fetched_url)
+      offers = add_price_val(offers, max_cat_price)
+
+      Map.put(category, :offers, offers)
+    end)
+
+    max_offer_token_val = get_max_offer_token_val(categories)
+categories = normalize_token_vals(categories, max_offer_token_val)
+    categories = add_prod_val(categories)
+    categories = add_cat_val(categories)
+    categories = sort_categories(categories)
+    categories = sort_products_within_categories(categories)
+
+    result = get_top_ten_offers(categories)
+  end
 
   # from rerank/helpers.js
   def format_ebay_results_for_rerank(ebay_results) do
@@ -48,33 +76,64 @@ defmodule Apientry.Rerank do
   end
 
   def stem(string, stemer) do
-    if Enum.any?(@keywordsDontStemm, string) do
+    if Enum.any?(@keywords_dont_stemm, string) do
       string
     else
       stemer.(string)
     end
   end
 
-  def tokenize(string, geo) do
+  def tokenize(string) do
     tokens = string
     |> normalize_string()
     |> String.split(~r/\s+/)
     |> Stream.reject(fn str -> str =~ ~r/\d+/ end)
+  end
 
-    if geo do
-      Enum.map(tokens, fn str -> stem(str, @stemmers[geo]) end)
-    else
-      tokens
-    end
+  def tokenize(string, geo) do
+    string
+    |> tokenize()
+    |> Enum.map(fn str -> stem(str, @stemmers[geo]) end)
   end
 
   def get_attr_from_title_by_cat_id(geo, cat_id, title) do
+    ["apple", "rose gold"]
+  end
+
+  def calculate_token_val(num_attr_search_term, num_same_tokens_between_title_and_search_term, num_tokens_in_searh_term) do
+    num_same_tokens_between_title_and_search_term / num_tokens_in_searh_term * :math.pow(2, num_attr_search_term)
+  end
+
+  def get_num_of_attrs_name_contained_in_product(attributes_from_ebay, offer) do
+
   end
 
   def add_token_val(offers, search_term, geo, cat_id, fetchedUrl) do
     token_count_in_search_term = length(tokenize(search_term))
 
-    attributes_
+    attributes_from_ebay = get_attr_from_title_by_cat_id(geo, cat_id, search_term)
+
+    offers = Enum.filter(offers, fn offer ->
+      m = get_num_of_same_tokens(offer, search_term)
+
+      (fetchedUrl && length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
+      (token_count_in_search_term >= 10 && m > 5) ||
+      (token_count_in_search_term > 5 && token_count_in_search_term <= 9 && m > 2) ||
+      (token_count_in_search_term <= 5 && m > 1)
+    end)
+
+    offers = Enum.map(offers, fn offer ->
+      n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, offer)
+      m = get_num_of_same_tokens(offer, search_term)
+
+      if token_count_in_search_term > 6 && m >= 5 do
+        Map.put(offer, :token_val, 1 * :math.pow(2, m))
+      else
+        Map.put(offer, :token_val, calculate_token_val(n, m, token_count_in_search_term))
+      end
+    end)
+
+    offers
   end
 
   # counts the number of tokens in search term
@@ -105,20 +164,13 @@ defmodule Apientry.Rerank do
     most_expensive_offer.price
   end
 
-  defp count_total_offers(categories) do
-    Enum.map(categories, fn category ->
-      length(category.offers)
-    end)
-    |> Enum.sum
-  end
-
   def calculate_price_val(offer, max_cat_price) do
     1 - (offer.price / max_cat_price)
   end
 
-  def add_price_val(offers, max_cat_price, calculator) do
+  def add_price_val(offers, max_cat_price, calc_fn \\ &calculate_price_val/2) do
     Enum.map(offers, fn offer ->
-      Map.put(offer, :price_val, calculator.(offer, max_cat_price))
+      Map.put(offer, :price_val, calc_fn.(offer, max_cat_price))
     end)
   end
 
@@ -138,6 +190,21 @@ defmodule Apientry.Rerank do
         Map.put(offer, :val, 0.3 * offer.token_val + 0.7 * offer.price_val)
       end)
       Map.put(category, :offers, new_offers)
+    end)
+  end
+
+  def count_total_offers(categories) do
+    categories
+    |> Stream.map(fn category -> length(category.offers) end)
+    |> Enum.sum
+  end
+
+  def add_cat_val(categories) do
+    num_offers = count_total_offers(categories)
+
+    Enum.map(categories, fn category ->
+      cat_val = 0.5 * category.token_val + 0.5 * length(category.offers) / num_offers
+      Map.put(category, :val, cat_val)
     end)
   end
 
