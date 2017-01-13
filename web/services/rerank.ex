@@ -54,9 +54,10 @@ categories = normalize_token_vals(categories, max_offer_token_val)
     ebay_items
     |> Enum.filter(fn item -> item["offer"] end)
     |> Enum.map(fn item ->
+      {price, _} = Float.parse(item["offer"]["basePrice"]["value"])
       %{
         title: item["offer"]["name"],
-        price: item["offer"]["basePrice"]["value"]
+        price: price
       }
     end)
   end

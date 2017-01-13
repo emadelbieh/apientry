@@ -19,11 +19,11 @@ defmodule Apientry.RerankTest do
 
     offer1 = hd(result.offers)
     assert offer1.title == "Offer 1"
-    assert offer1.price == "19.99"
+    assert offer1.price == 19.99
 
     offer2 = hd(tl(result.offers))
     assert offer2.title == "Offer 2"
-    assert offer2.price == "20.89"
+    assert offer2.price == 20.89
   end
 
   test "remove duplicate" do
