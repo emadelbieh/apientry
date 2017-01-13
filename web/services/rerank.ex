@@ -21,7 +21,6 @@ defmodule Apientry.Rerank do
     |> remove_duplicate()
     |> remove_small_categories()
 
-
     categories = Enum.map(categories, fn category ->
       IO.puts "***********************************************"
       max_cat_price = get_max_cat_price(category)
@@ -40,13 +39,20 @@ defmodule Apientry.Rerank do
     end)
 
     max_offer_token_val = get_max_offer_token_val(categories)
-categories = normalize_token_vals(categories, max_offer_token_val)
+    categories = normalize_token_vals(categories, max_offer_token_val)
     categories = add_prod_val(categories)
+    categories = add_category_token_vals(categories)
     categories = add_cat_val(categories)
     categories = sort_categories(categories)
     categories = sort_products_within_categories(categories)
 
     result = get_top_ten_offers(categories)
+
+    IO.puts "============= result ==========================="
+    IO.inspect(result)
+    IO.puts "===============++++++++========================="
+
+    result
   end
 
   # refactored from format_ebay_results_for_rerank
@@ -118,7 +124,8 @@ categories = normalize_token_vals(categories, max_offer_token_val)
   end
 
   def get_attr_from_title_by_cat_id(geo, cat_id, title) do
-    ["nike", "men", "run"]
+    ["nike", "men", "run"] # nike shoes
+    [ 'danskin', 'women', 'run', 'short' ] # danskin
   end
 
   def calculate_token_val(num_attr_search_term, num_same_tokens_between_title_and_search_term, num_tokens_in_searh_term) do
@@ -245,6 +252,14 @@ categories = normalize_token_vals(categories, max_offer_token_val)
     end)
   end
 
+  def add_category_token_vals(categories) do
+    Enum.map(categories, fn category ->
+      sum = Enum.reduce(category.offers, 0, fn offer, acc -> acc + offer.token_val end)
+      cat_token_val = sum / length(category.offers)
+      Map.put(category, :token_val, cat_token_val)
+    end)
+  end
+
   def count_total_offers(categories) do
     categories
     |> Stream.map(fn category -> length(category.offers) end)
@@ -264,9 +279,11 @@ categories = normalize_token_vals(categories, max_offer_token_val)
     Enum.sort_by(categories, fn category -> category.val end, &>=/2)
   end
 
-  def sort_products_within_categories(category) do
-    offers = Enum.sort_by(category.offers, fn offer -> offer.val end, &>=/2)
-    Map.put(category, :offers, offers)
+  def sort_products_within_categories(categories) do
+    Enum.map(categories, fn category ->
+      offers = Enum.sort_by(category.offers, fn offer -> offer.val end, &>=/2)
+      Map.put(category, :offers, offers)
+    end)
   end
 
   def get_top_ten_offers(categories) do
