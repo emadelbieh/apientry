@@ -235,4 +235,13 @@ defmodule Apientry.RerankTest do
     result = Apientry.Rerank.normalize_string("-®|():,’_+&!%*$@#;^/'\\")
     assert result == ""
   end
+
+  test "get_num_of_attrs_name_contained_in_product returns number of attributes present in offer title" do
+    offer = %{title: "The rain in SPAIN stays mainly in the plain"}
+    attributes_from_ebay = ["ain", "in"]
+
+    result = Apientry.Rerank.get_num_of_attrs_name_contained_in_product(attributes_from_ebay, "us", offer)
+
+    assert result == ["ain", "in"]
+  end
 end

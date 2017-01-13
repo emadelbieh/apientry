@@ -6,11 +6,11 @@ defmodule Apientry.Rerank do
   @keywords_dont_stemm ~w(homme hommes femme femmes herren)
 
   @stemmers %{
-    us: &Stemex.english/1,
-    au: &Stemex.english/1,
-    gb: &Stemex.english/1,
-    de: &Stemex.german/1,
-    fr: &Stemex.french/1
+    "us" => &Stemex.english/1,
+    "au" =>  &Stemex.english/1,
+    "gb" =>  &Stemex.english/1,
+    "de" =>  &Stemex.german/1,
+    "fr" =>  &Stemex.french/1
   }
 
   def get_products(ebay_results, search_term, geo, fetched_url) do
@@ -94,7 +94,7 @@ categories = normalize_token_vals(categories, max_offer_token_val)
   end
 
   def stem(string, stemer) do
-    if Enum.any?(@keywords_dont_stemm, string) do
+    if Enum.any?(@keywords_dont_stemm, fn dont_stem -> string == dont_stem end) do
       string
     else
       stemer.(string)
@@ -109,9 +109,11 @@ categories = normalize_token_vals(categories, max_offer_token_val)
   end
 
   def tokenize(string, geo) do
-    string
+    result = string
     |> tokenize()
     |> Enum.map(fn str -> stem(str, @stemmers[geo]) end)
+
+    result
   end
 
   def get_attr_from_title_by_cat_id(geo, cat_id, title) do
@@ -122,8 +124,21 @@ categories = normalize_token_vals(categories, max_offer_token_val)
     num_same_tokens_between_title_and_search_term / num_tokens_in_searh_term * :math.pow(2, num_attr_search_term)
   end
 
-  def get_num_of_attrs_name_contained_in_product(attributes_from_ebay, offer) do
+  def regex_from_list(list) do
+    regex = Enum.join(list, "|")
+    regex = "(#{regex})" 
+    {:ok, regex} = Regex.compile(regex)
+    regex
+  end
 
+  def get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer) do
+    tokenized_title = tokenize(offer.title, geo) |> Enum.join(" ")
+
+    attributes_from_ebay
+    |> regex_from_list()
+    |> Regex.scan(tokenized_title)
+    |> Stream.map(fn list -> hd(list) end)
+    |> Enum.uniq()
   end
 
   def add_token_val(offers, search_term, geo, cat_id, fetchedUrl) do
@@ -150,8 +165,11 @@ categories = normalize_token_vals(categories, max_offer_token_val)
     IO.puts "&&&&&&&&&&&&&&&&&&&&&"
 
     offers = Enum.map(offers, fn offer ->
-      n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, offer)
+      n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer)
+      IO.puts "n: #{n}"
       m = get_num_of_same_tokens(offer, search_term)
+      IO.puts "m: #{m}"
+      IO.puts "token_count: #{token_count_in_search_term}"
 
       if token_count_in_search_term > 6 && m >= 5 do
         Map.put(offer, :token_val, 1 * :math.pow(2, m))
