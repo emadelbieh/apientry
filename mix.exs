@@ -61,6 +61,7 @@ defmodule Apientry.Mixfile do
      {:ex_doc, "~> 0.11", only: :dev},
      {:xml_builder, "~> 0.0.6"},
      {:stemex, "~> 0.1.1"},
+     {:csv, "~> 1.4.2"},
     ]
   end
 
