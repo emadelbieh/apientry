@@ -47,6 +47,7 @@ defmodule Apientry.Rerank do
     categories = sort_products_within_categories(categories)
 
     result = get_top_ten_offers(categories)
+    |> Enum.map(fn offer -> offer.original_item end)
 
     IO.puts "============= result ==========================="
     IO.inspect(result)
@@ -63,7 +64,8 @@ defmodule Apientry.Rerank do
       {price, _} = Float.parse(item["offer"]["basePrice"]["value"])
       %{
         title: item["offer"]["name"],
-        price: price
+        price: price,
+        original_item: item
       }
     end)
   end
