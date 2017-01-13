@@ -242,6 +242,6 @@ defmodule Apientry.RerankTest do
 
     result = Apientry.Rerank.get_num_of_attrs_name_contained_in_product(attributes_from_ebay, "us", offer)
 
-    assert result == ["ain", "in"]
+    assert result == 2
   end
 end

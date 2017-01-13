@@ -138,7 +138,8 @@ categories = normalize_token_vals(categories, max_offer_token_val)
     |> regex_from_list()
     |> Regex.scan(tokenized_title)
     |> Stream.map(fn list -> hd(list) end)
-    |> Enum.uniq()
+    |> Stream.uniq()
+    |> Enum.count
   end
 
   def add_token_val(offers, search_term, geo, cat_id, fetchedUrl) do
