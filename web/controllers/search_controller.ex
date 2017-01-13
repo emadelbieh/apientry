@@ -17,7 +17,7 @@ defmodule Apientry.SearchController do
   alias Apientry.ErrorReporter
   alias Apientry.StringKeyword
 
-  plug :set_search_options when action in [:search, :dry_search]
+  plug :set_search_options when action in [:search, :dry_search, :search_rerank]
 
   @doc """
   Dry run of a search.
@@ -47,15 +47,41 @@ defmodule Apientry.SearchController do
           Apientry.Amplitude.track_publisher(conn.assigns)
         end
 
-        decoded = Poison.decode!(body)
-        geo = conn.assigns.country |> String.downcase
-        kw = conn.query_params["keyword"]
-        Apientry.Rerank.get_products(decoded["categories"]["category"], kw, geo, "http://api.apientry.com/publisher?numItems=50&numAttributes=0&numAttributesWithValues=0&groupItemsByCategory=true&numCategories=2&apiKey=b9c527cf-f3b4-4bb0-8158-3a7e6d34bec2&trackingId=8095000&keyword=nike%20men's%20revolution%203%20running%20shoe&domain=www.amazon.com&visitorUserAgent=Mozilla%252F5.0%2520(Macintosh%253B%2520Intel%2520Mac%2520OS%2520X%252010_12_1)%2520AppleWebKit%252F537.36%2520(KHTML%252C%2520like%2520Gecko)%2520Chrome%252F55.0.2883.95%2520Safari%252F537.36&visitorIPAddress=8.8.8.8&minPrice=33&maxPrice=68&categoryId=96602&attributeValue=23995114_men")
-
         conn
         |> put_status(status)
         |> put_resp_content_type("application/#{request_format}")
         |> render("index.xml", data: body)
+
+      {:error, %HTTPoison.Error{reason: reason} = error} ->
+        ErrorReporter.track_httpoison_error(conn, error)
+        conn
+        |> put_status(400)
+        |> render(:error, data: %{error: reason})
+    end
+  end
+
+  def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
+    case HTTPoison.get(url) do
+      {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
+        body = Poison.decode!(body)
+        ErrorReporter.track_ebay_response(conn, status, body, headers)
+
+        request_format = conn.params["format"] || "json"
+        body = transform_by_format(conn, body, request_format)
+
+        if get_req_header(conn, "x-apientry-dnt") == [] do
+          Apientry.Amplitude.track_publisher(conn.assigns)
+        end
+
+        decoded = Poison.decode!(body)
+        geo = conn.assigns.country |> String.downcase
+        kw = conn.query_params["keyword"]
+        new_data = Apientry.Rerank.get_products(decoded["categories"]["category"], kw, geo, "http://api.apientry.com/publisher?numItems=50&numAttributes=0&numAttributesWithValues=0&groupItemsByCategory=true&numCategories=2&apiKey=b9c527cf-f3b4-4bb0-8158-3a7e6d34bec2&trackingId=8095000&keyword=nike%20men's%20revolution%203%20running%20shoe&domain=www.amazon.com&visitorUserAgent=Mozilla%252F5.0%2520(Macintosh%253B%2520Intel%2520Mac%2520OS%2520X%252010_12_1)%2520AppleWebKit%252F537.36%2520(KHTML%252C%2520like%2520Gecko)%2520Chrome%252F55.0.2883.95%2520Safari%252F537.36&visitorIPAddress=8.8.8.8&minPrice=33&maxPrice=68&categoryId=96602&attributeValue=23995114_men")
+
+        conn
+        |> put_status(status)
+        |> put_resp_content_type("application/#{request_format}")
+        |> render("index.xml", data: Poison.encode!(new_data))
 
       {:error, %HTTPoison.Error{reason: reason} = error} ->
         ErrorReporter.track_httpoison_error(conn, error)
