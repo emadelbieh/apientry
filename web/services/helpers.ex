@@ -41,4 +41,12 @@ defmodule Apientry.Helpers do
       Map.put(acc, cat_id, regex)
     end)
   end
+
+  def get_regex_string(cat_id) do
+    tree = load_ebay_data
+    |> create_attr_tree
+    |> regex_from_attr_tree
+
+    tree[cat_id]
+  end
 end

@@ -126,11 +126,15 @@ defmodule Apientry.Rerank do
   end
 
   def get_attr_from_title_by_cat_id(geo, cat_id, title) do
-    if title =~ ~r/women/ do
-      [ 'danskin', 'women', 'run', 'short' ] # danskin
-    else
-      ["nike", "men", "run"] # nike shoes
-    end
+    title = title
+    |> tokenize(geo)
+    |> Enum.join(" ")
+
+    regex = cat_id
+    |> Apientry.Helpers.get_regex_string()
+    |> Regex.compile()
+
+    Regex.scan(title) || []
   end
 
   def calculate_token_val(num_attr_search_term, num_same_tokens_between_title_and_search_term, num_tokens_in_searh_term) do
