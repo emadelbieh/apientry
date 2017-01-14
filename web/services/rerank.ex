@@ -91,7 +91,8 @@ defmodule Apientry.Rerank do
     string
     |> String.downcase
     |> String.replace(~r/é/m, "e")
-    |> String.replace(~r/(-|®|\||\(|\)|:|,|gen|’|_|\+|&|\!|\%|\*|\$|\@|\#|\;|\^|\/|'|\\|")/m, " ")
+    |> String.replace(~r/(-|®|\||\(|\)|:|,|gen|’|_|\+|&|\!|\%|\*|\$|\@|\#|\;|\^|\/|\\|")/m, " ")
+    |> String.replace(~r/'/, "")
     |> String.replace(~r/ +(?= )/, "")
     |> String.trim()
   end
