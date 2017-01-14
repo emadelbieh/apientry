@@ -9,7 +9,19 @@ defmodule Apientry.Helpers do
       |> Stream.zip(downcased)
       |> Enum.into(%{})
     end)
-    # normalize data here, see helpers.js 142-147
+    |> Stream.map(fn data->
+      tokenized_attribute_value_name = data.attribute_value_name
+      |> Apientry.Rerank.tokenize("us")
+      |> Enum.join(" ")
+
+      %{
+        cat_id: data.cat_id,
+        cat_name: Apientry.Rerank.normalize_string(data.cat_name),
+        attribute_name: Apientry.Rerank.normalize_string(data.attribute_name),
+        attribute_value_name: tokenized_attribute_value_name,
+        attribute_value_id: data.attribute_value_id
+      }
+    end)
     |> Stream.reject(fn data ->
       #data.attribute_name in ["store", "fourchette de prix", "magasin", "online shop"]
       data.attribute_name == "store"
