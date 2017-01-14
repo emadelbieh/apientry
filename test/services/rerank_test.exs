@@ -170,11 +170,13 @@ defmodule Apientry.RerankTest do
   end
 
   test "sort_products_within_categories sorts offers by val" do
-    category = %{ cat_name: "Category 1", offers: [
+    categories = [
+      %{ cat_name: "Category 1", offers: [
         %{val: 6}, %{val: 5}, %{val: 7}
       ]}
+    ]
 
-    result = Apientry.Rerank.sort_products_within_categories(category)
+    result = hd(Apientry.Rerank.sort_products_within_categories(categories))
 
     vals = Enum.map(result.offers, fn offer ->
       offer.val
