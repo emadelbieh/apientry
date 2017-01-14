@@ -29,10 +29,8 @@ defmodule Apientry.Rerank do
       offers = category.offers
       IO.puts "-------------- with token vals ---------------"
       offers = add_token_val(offers, search_term, geo, category.cat_id, fetched_url)
-      IO.inspect offers
       IO.puts "-------------- with price vals ---------------"
       offers = add_price_val(offers, max_cat_price)
-      IO.inspect offers
 
       IO.puts "***********************************************"
       Map.put(category, :offers, offers)
@@ -48,10 +46,6 @@ defmodule Apientry.Rerank do
 
     result = get_top_ten_offers(categories)
     |> Enum.map(fn offer -> offer.original_item end)
-
-    IO.puts "============= result ==========================="
-    IO.inspect(result)
-    IO.puts "===============++++++++========================="
 
     result
   end
@@ -137,7 +131,9 @@ defmodule Apientry.Rerank do
     scanned = Regex.scan(regex, title) || []
 
     if length(scanned) > 1 do
-      Enum.map(scanned, fn element -> hd(element) end)
+      scanned
+      |> Stream.map(fn element -> hd(element) end)
+      |> Enum.reject(fn element -> element == "" end)
     else
       scanned
     end
@@ -177,16 +173,11 @@ defmodule Apientry.Rerank do
       m = get_num_of_same_tokens(offer, search_term)
       IO.puts "m: #{m}"
 
-      qualified = (fetchedUrl && String.length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
+      (fetchedUrl && String.length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
       (token_count_in_search_term >= 10 && m > 5) ||
       (token_count_in_search_term > 5 && token_count_in_search_term <= 9 && m > 2) ||
       (token_count_in_search_term <= 5 && m > 1)
-      
-      IO.puts "qualified: #{qualified}"
-
-      qualified
     end)
-    IO.puts "&&&&&&&&&&&&&&&&&&&&&"
 
     offers = Enum.map(offers, fn offer ->
       n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer)
