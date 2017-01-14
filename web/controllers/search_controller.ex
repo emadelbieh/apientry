@@ -76,12 +76,17 @@ defmodule Apientry.SearchController do
         decoded = Poison.decode!(body)
         geo = conn.assigns.country |> String.downcase
         kw = conn.query_params["keyword"]
-        new_data = Apientry.Rerank.get_products(decoded["categories"]["category"], kw, geo, "http://api.apientry.com/publisher?numItems=50&numAttributes=0&numAttributesWithValues=0&groupItemsByCategory=true&numCategories=2&apiKey=b9c527cf-f3b4-4bb0-8158-3a7e6d34bec2&trackingId=8095000&keyword=nike%20men's%20revolution%203%20running%20shoe&domain=www.amazon.com&visitorUserAgent=Mozilla%252F5.0%2520(Macintosh%253B%2520Intel%2520Mac%2520OS%2520X%252010_12_1)%2520AppleWebKit%252F537.36%2520(KHTML%252C%2520like%2520Gecko)%2520Chrome%252F55.0.2883.95%2520Safari%252F537.36&visitorIPAddress=8.8.8.8&minPrice=33&maxPrice=68&categoryId=96602&attributeValue=23995114_men")
+        req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+        new_data = Apientry.Rerank.get_products(decoded["categories"]["category"], kw, geo, req_url)
+
+        items = hd(decoded["categories"]["category"])
+        items = put_in(items, ["items","item"], new_data)
+        decoded = put_in(decoded, ["categories", "category"], [items])
 
         conn
         |> put_status(status)
         |> put_resp_content_type("application/#{request_format}")
-        |> render("index.xml", data: Poison.encode!(new_data))
+        |> render("index.xml", data: Poison.encode!(decoded))
 
       {:error, %HTTPoison.Error{reason: reason} = error} ->
         ErrorReporter.track_httpoison_error(conn, error)
