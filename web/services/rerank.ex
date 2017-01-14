@@ -130,11 +130,17 @@ defmodule Apientry.Rerank do
     |> tokenize(geo)
     |> Enum.join(" ")
 
-    regex = cat_id
+    {:ok, regex} = cat_id
     |> Apientry.Helpers.get_regex_string()
     |> Regex.compile()
 
-    Regex.scan(title) || []
+    scanned = Regex.scan(regex, title) || []
+
+    if length(scanned) > 1 do
+      Enum.map(scanned, fn element -> hd(element) end)
+    else
+      scanned
+    end
   end
 
   def calculate_token_val(num_attr_search_term, num_same_tokens_between_title_and_search_term, num_tokens_in_searh_term) do

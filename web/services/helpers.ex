@@ -47,6 +47,12 @@ defmodule Apientry.Helpers do
     |> create_attr_tree
     |> regex_from_attr_tree
 
-    tree[cat_id]
+    result = tree[cat_id]
+
+    IO.puts "********** regex string **********"
+    IO.inspect(result)
+    IO.puts "********** regex string **********"
+
+    result
   end
 end
