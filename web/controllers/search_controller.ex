@@ -35,7 +35,8 @@ defmodule Apientry.SearchController do
       GET /publisher?keyword=nikon
   """
   def search(%{assigns: %{url: url, format: format}} = conn, _) do
-    case HTTPoison.get(url) do
+    time1 = :os.system_time
+    result = case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
         ErrorReporter.track_ebay_response(conn, status, body, headers)
@@ -58,10 +59,14 @@ defmodule Apientry.SearchController do
         |> put_status(400)
         |> render(:error, data: %{error: reason})
     end
+    time2 = :os.system_time
+    IO.puts "#{time2 - time1} without rerank"
+    result
   end
 
   def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
-    case HTTPoison.get(url) do
+    time1 = :os.system_time
+    result = case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
         ErrorReporter.track_ebay_response(conn, status, body, headers)
@@ -77,7 +82,11 @@ defmodule Apientry.SearchController do
         geo = conn.assigns.country |> String.downcase
         kw = conn.query_params["keyword"]
         req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+
+        time1 = :os.system_time
         new_data = Apientry.Rerank.get_products(decoded["categories"]["category"], kw, geo, req_url)
+        time2 = :os.system_time
+        IO.puts "get_products took #{time2 - time1} nanoseconds"
 
         items = hd(decoded["categories"]["category"])
         items = put_in(items, ["items","item"], new_data)
@@ -94,6 +103,9 @@ defmodule Apientry.SearchController do
         |> put_status(400)
         |> render(:error, data: %{error: reason})
     end
+    time2 = :os.system_time
+    IO.puts "#{time2 - time1} with rerank"
+    result
   end
 
   defp transform_by_format(conn, body, format) do

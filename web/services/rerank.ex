@@ -17,35 +17,78 @@ defmodule Apientry.Rerank do
     geo = geo || "";
 
     categories = ebay_results
-    |> format_ebay_results_for_rerank()
-    |> remove_duplicate()
-    |> remove_small_categories()
 
+    time1 = :os.system_time
+    categories = format_ebay_results_for_rerank(categories)
+    time2 = :os.system_time
+    IO.puts "format_ebay_results_for_rerank took #{time2 - time1} nanoseconds"
+
+    time1 = :os.system_time
+    categories = remove_duplicate(categories)
+    time2 = :os.system_time
+    IO.puts "remove_duplicate took #{time2 - time1} nanoseconds"
+
+    time1 = :os.system_time
+    categories = remove_small_categories(categories)
+    time2 = :os.system_time
+    IO.puts "remove_small_categories took #{time2 - time1} nanoseconds"
+
+
+    time1 = :os.system_time
     categories = Enum.map(categories, fn category ->
-      IO.puts "***********************************************"
       max_cat_price = get_max_cat_price(category)
-      IO.puts "max_cat_price #{max_cat_price}"
 
       offers = category.offers
-      IO.puts "-------------- with token vals ---------------"
       offers = add_token_val(offers, search_term, geo, category.cat_id, fetched_url)
-      IO.puts "-------------- with price vals ---------------"
       offers = add_price_val(offers, max_cat_price)
 
-      IO.puts "***********************************************"
       Map.put(category, :offers, offers)
     end)
+    time2 = :os.system_time
+    IO.puts "adding of token and price vals took #{time2 - time1} nanoseconds"
 
+    time1 = :os.system_time
     max_offer_token_val = get_max_offer_token_val(categories)
-    categories = normalize_token_vals(categories, max_offer_token_val)
-    categories = add_prod_val(categories)
-    categories = add_category_token_vals(categories)
-    categories = add_cat_val(categories)
-    categories = sort_categories(categories)
-    categories = sort_products_within_categories(categories)
+    time2 = :os.system_time
+    IO.puts "get_max_offer_token_val took #{time2 - time1} nanoseconds"
 
+    time1 = :os.system_time
+    categories = normalize_token_vals(categories, max_offer_token_val)
+    time2 = :os.system_time
+    IO.puts "normalize_token_vals took #{time2 - time1} nanoseconds"
+
+    time1 = :os.system_time
+    categories = add_prod_val(categories)
+    time2 = :os.system_time
+    IO.puts "add_prod_val took #{time2 - time1} nanoseconds"
+
+    time1 = :os.system_time
+    categories = add_category_token_vals(categories)
+    time2 = :os.system_time
+    IO.puts "add_category_token_vals took #{time2 - time1} nanoseconds"
+
+    time1 = :os.system_time
+    categories = add_cat_val(categories)
+    time2 = :os.system_time
+    IO.puts "add_cat_val took #{time2 - time1} nanoseconds"
+
+    time1 = :os.system_time
+    categories = sort_categories(categories)
+    time2 = :os.system_time
+    IO.puts "sort_categories took #{time2 - time1} nanoseconds"
+
+    time1 = :os.system_time
+    categories = sort_products_within_categories(categories)
+    time2 = :os.system_time
+    IO.puts "sort_products_within_categories took #{time2 - time1} nanoseconds"
+
+
+    time1 = :os.system_time
     result = get_top_ten_offers(categories)
     |> Enum.map(fn offer -> offer.original_item end)
+    time2 = :os.system_time
+    IO.puts "get_top_ten_offers took #{time2 - time1} nanoseconds"
+
 
     result
   end
@@ -164,15 +207,11 @@ defmodule Apientry.Rerank do
 
   def add_token_val(offers, search_term, geo, cat_id, fetchedUrl) do
     token_count_in_search_term = length(tokenize(search_term))
-    IO.puts "found #{token_count_in_search_term} tokens in search term"
 
     attributes_from_ebay = get_attr_from_title_by_cat_id(geo, cat_id, search_term)
-    IO.puts "attributes_from_ebay:"
-    IO.inspect attributes_from_ebay
 
     offers = Enum.filter(offers, fn offer ->
       m = get_num_of_same_tokens(offer, search_term)
-      IO.puts "m: #{m}"
 
       (fetchedUrl && String.length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
       (token_count_in_search_term >= 10 && m > 5) ||
@@ -182,10 +221,7 @@ defmodule Apientry.Rerank do
 
     offers = Enum.map(offers, fn offer ->
       n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer)
-      IO.puts "n: #{n}"
       m = get_num_of_same_tokens(offer, search_term)
-      IO.puts "m: #{m}"
-      IO.puts "token_count: #{token_count_in_search_term}"
 
       if token_count_in_search_term > 6 && m >= 5 do
         Map.put(offer, :token_val, 1 * :math.pow(2, m))
@@ -200,12 +236,8 @@ defmodule Apientry.Rerank do
   # counts the number of tokens in search term
   def get_num_of_same_tokens(offer, search_term) do
     title_tokens = Enum.uniq tokenize(offer.title)
-    IO.puts "title tokens:"
-    IO.inspect title_tokens
 
     search_term_tokens = Enum.uniq tokenize(search_term)
-    IO.puts "search_term tokens:"
-    IO.inspect search_term_tokens
 
     Enum.count(title_tokens, fn title_token ->
       Enum.any?(search_term_tokens, fn search_token ->
