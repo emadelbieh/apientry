@@ -355,9 +355,6 @@ defmodule Apientry.Rerank do
   end
 
   def calculate_price_val(offer, max_cat_price) do
-    IO.puts("offer title: #{offer.title}")
-    IO.puts("offer price: #{offer.price}")
-    IO.puts("max_cat_price: #{max_cat_price}")
     1 - (offer.price / max_cat_price)
   end
 
