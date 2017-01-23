@@ -18,94 +18,96 @@ defmodule Apientry.Rerank do
 
     categories = ebay_results
 
-
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = format_ebay_results_for_rerank(categories)
-    #time2 = :os.system_time
-    #format_ebay_results_for_rerank = time2 - time1
+    time2 = :os.system_time
+    format_ebay_results_for_rerank = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = remove_duplicate(categories)
-    #time2 = :os.system_time
-    #remove_duplicate = time2 - time1
+    time2 = :os.system_time
+    remove_duplicate = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = remove_small_categories(categories)
-    #time2 = :os.system_time
-    #remove_small_categories = time2 - time1
+    time2 = :os.system_time
+    remove_small_categories = time2 - time1
 
-    #time1 = :os.system_time
+    regex_strings = Apientry.Helpers.regex_strings
+    time1 = :os.system_time
     categories = Enum.map(categories, fn category ->
+      {:ok, regex} = regex_strings[category.cat_id] |> Regex.compile()
+
       max_cat_price = get_max_cat_price(category)
 
       offers = category.offers
-      offers = add_token_val(offers, search_term, geo, category.cat_id, fetched_url)
+      offers = add_token_val(offers, search_term, geo, regex, fetched_url)
       offers = add_price_val(offers, max_cat_price)
 
       Map.put(category, :offers, offers)
     end)
-    #time2 = :os.system_time
-    #add_token_val_price_val = time2 - time1
+    time2 = :os.system_time
+    add_token_val_price_val = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     max_offer_token_val = get_max_offer_token_val(categories)
-    #time2 = :os.system_time
-    #get_max_offer_token_val = time2 - time1
+    time2 = :os.system_time
+    get_max_offer_token_val = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = normalize_token_vals(categories, max_offer_token_val)
-    #time2 = :os.system_time
-    #normalize_token_vals = time2 - time1
+    time2 = :os.system_time
+    normalize_token_vals = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = add_prod_val(categories)
-    #time2 = :os.system_time
-    #add_prod_val = time2 - time1
+    time2 = :os.system_time
+    add_prod_val = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = add_category_token_vals(categories)
-    #time2 = :os.system_time
-    #add_category_token_vals = time2 - time1
+    time2 = :os.system_time
+    add_category_token_vals = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = add_cat_val(categories)
-    #time2 = :os.system_time
-    #add_cat_val = time2 - time1
+    time2 = :os.system_time
+    add_cat_val = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = sort_categories(categories)
-    #time2 = :os.system_time
-    #sort_categories = time2 - time1
+    time2 = :os.system_time
+    sort_categories = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     categories = sort_products_within_categories(categories)
-    #time2 = :os.system_time
-    #sort_products_within_categories = time2 - time1
+    time2 = :os.system_time
+    sort_products_within_categories = time2 - time1
 
-    #time1 = :os.system_time
+    time1 = :os.system_time
     result = get_top_ten_offers(categories)
     |> Enum.map(fn offer -> offer.original_item end)
-    #time2 = :os.system_time
-    #get_top_ten_offers = time2 - time1
+    time2 = :os.system_time
+    get_top_ten_offers = time2 - time1
 
-    #time_data = %{
-    #  format_ebay_results_for_rerank: format_ebay_results_for_rerank,
-    #  remove_duplicate: remove_duplicate,
-    #  remove_small_categories: remove_small_categories,
-    #  add_token_val_price_val: add_token_val_price_val,
-    #  get_max_offer_token_val: get_max_offer_token_val,
-    #  normalize_token_vals: normalize_token_vals,
-    #  add_prod_val: add_prod_val,
-    #  add_category_token_vals: add_category_token_vals,
-    #  add_cat_val: add_cat_val,
-    #  sort_categories: sort_categories,
-    #  sort_products_within_categories: sort_products_within_categories,
-    #  get_top_ten_offers: get_top_ten_offers
-    #}
+    time_data = %{
+      format_ebay_results_for_rerank: format_ebay_results_for_rerank,
+      remove_duplicate: remove_duplicate,
+      remove_small_categories: remove_small_categories,
+      add_token_val_price_val: add_token_val_price_val,
+      get_max_offer_token_val: get_max_offer_token_val,
+      normalize_token_vals: normalize_token_vals,
+      add_prod_val: add_prod_val,
+      add_category_token_vals: add_category_token_vals,
+      add_cat_val: add_cat_val,
+      sort_categories: sort_categories,
+      sort_products_within_categories: sort_products_within_categories,
+      get_top_ten_offers: get_top_ten_offers
+    }
 
-    #Task.start(fn ->
-    #  Apientry.Amplitude.track_latency(conn, time_data)
-    #end)
+    Task.start(fn ->
+      Apientry.Amplitude.track_latency(conn, time_data)
+    end)
 
     result
   end
@@ -179,18 +181,10 @@ defmodule Apientry.Rerank do
     |> Enum.map(fn str -> stem(str, @stemmers[geo]) end)
   end
 
-  def get_attr_from_title_by_cat_id(geo, cat_id, title) do
+  def get_attr_from_title_by_cat_id(geo, regex, title) do
     title = title
     |> tokenize(geo)
     |> Enum.join(" ")
-
-    regex_string = cat_id
-    |> Apientry.Helpers.get_regex_string()
-
-
-    {:ok, regex} = cat_id
-    |> Apientry.Helpers.get_regex_string()
-    |> Regex.compile()
 
     scanned = Regex.scan(regex, title) || []
 
@@ -230,35 +224,32 @@ defmodule Apientry.Rerank do
     |> Enum.count
   end
 
-  def add_token_val(offers, search_term, geo, cat_id, fetchedUrl) do
+  defp add_token_val_helper(offer, attributes_from_ebay, geo, search_term, token_count_in_search_term) do
+    n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer)
+    m = get_num_of_same_tokens(offer, search_term)
+
+    value = if token_count_in_search_term > 6 && m >= 5 do
+      Map.put(offer, :token_val, 1 * :math.pow(2, m))
+    else
+      Map.put(offer, :token_val, calculate_token_val(n, m, token_count_in_search_term))
+    end
+  end
+
+  def add_token_val(offers, search_term, geo, regex, fetchedUrl) do
     token_count_in_search_term = length(tokenize(search_term))
+    attributes_from_ebay = get_attr_from_title_by_cat_id(geo, regex, search_term)
 
-    attributes_from_ebay = get_attr_from_title_by_cat_id(geo, cat_id, search_term)
-
-    offers = offers
-    |> Enum.filter(fn offer ->
+    offers
+    |> Stream.filter(fn offer ->
       m = get_num_of_same_tokens(offer, search_term)
 
-      result =  (fetchedUrl && String.length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
+      (fetchedUrl && String.length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
       (token_count_in_search_term >= 10 && m > 5) ||
       (token_count_in_search_term > 5 && token_count_in_search_term <= 9 && m > 2) ||
       (token_count_in_search_term <= 5 && m > 1)
-
-      result
     end)
-
-    offers = Enum.map(offers, fn offer ->
-      n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer)
-      m = get_num_of_same_tokens(offer, search_term)
-
-      if token_count_in_search_term > 6 && m >= 5 do
-        Map.put(offer, :token_val, 1 * :math.pow(2, m))
-      else
-        Map.put(offer, :token_val, calculate_token_val(n, m, token_count_in_search_term))
-      end
-    end)
-
-    offers
+    |> Enum.map(&Task.async(fn -> add_token_val_helper(&1, attributes_from_ebay, geo, search_term, token_count_in_search_term) end))
+    |> Enum.map(&Task.await(&1))
   end
 
   # counts the number of tokens in search term
