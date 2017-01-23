@@ -16,7 +16,18 @@ defmodule Apientry.Rerank do
   def get_products(conn, ebay_results, search_term, geo, fetched_url) do
     geo = geo || "";
 
-    regex_strings = Task.async(fn -> Apientry.Helpers.regex_strings end)
+    regex_strings = Task.async(fn ->
+      try do
+        Apientry.Helpers.regex_strings
+      rescue
+        e in RuntimeError ->
+          Apientry.ErrorReporter.report(conn, %{
+            kind: :error,
+            reason: e,
+            stacktrace: System.stacktrace()
+          }
+      end
+    end)
 
     categories = ebay_results
 
@@ -251,7 +262,18 @@ defmodule Apientry.Rerank do
       (token_count_in_search_term > 5 && token_count_in_search_term <= 9 && m > 2) ||
       (token_count_in_search_term <= 5 && m > 1)
     end)
-    |> Enum.map(&Task.async(fn -> add_token_val_helper(&1, attributes_from_ebay, geo, search_term, token_count_in_search_term) end))
+    |> Enum.map(&Task.async(fn ->
+      try do
+        add_token_val_helper(&1, attributes_from_ebay, geo, search_term, token_count_in_search_term) 
+      rescue
+        e in RuntimeError ->
+          Apientry.ErrorReporter.report(conn, %{
+            kind: :error,
+            reason: e,
+            stacktrace: System.stacktrace()
+          }
+      end
+    end))
     |> Enum.map(&Task.await(&1))
   end
 
@@ -347,7 +369,18 @@ defmodule Apientry.Rerank do
     end
 
     categories
-    |> Enum.map(&Task.async(fn -> function.(&1) end))
+    |> Enum.map(&Task.async(fn ->
+      try do
+        function.(&1)
+      rescue
+        e in RuntimeError ->
+          Apientry.ErrorReporter.report(conn, %{
+            kind: :error,
+            reason: e,
+            stacktrace: System.stacktrace()
+          }
+      end
+    end))
     |> Enum.map(&Task.await(&1))
   end
 
