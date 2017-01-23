@@ -88,6 +88,17 @@ defmodule Apientry.Amplitude do
     })
   end
 
+  def track_latency(conn, time_data) do
+    request_uri = "#{conn.scheme}://#{conn.host}#{conn.request_path}?#{conn.query_string}"
+    send_request(%{
+      user_id: "latency_tracker",
+      event_type: "track_latency",
+      event_properties: Map.merge(time_data, %{
+        request_uri: request_uri,
+      })
+    })
+  end
+
   defp urls_to_properties(urls) do
     Enum.with_index(urls, 1)
     |> Enum.map(fn {url, index} -> {"anomalous#{index}", url} end)

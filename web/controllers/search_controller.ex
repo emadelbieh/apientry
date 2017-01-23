@@ -84,7 +84,7 @@ defmodule Apientry.SearchController do
         req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
 
         time1 = :os.system_time
-        new_data = Apientry.Rerank.get_products(decoded["categories"]["category"], kw, geo, req_url)
+        new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
         time2 = :os.system_time
         IO.puts "get_products took #{time2 - time1} nanoseconds"
 

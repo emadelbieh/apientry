@@ -13,123 +13,99 @@ defmodule Apientry.Rerank do
     "fr" =>  &Stemex.french/1
   }
 
-  def get_products(ebay_results, search_term, geo, fetched_url) do
+  def get_products(conn, ebay_results, search_term, geo, fetched_url) do
     geo = geo || "";
 
     categories = ebay_results
 
+
     time1 = :os.system_time
     categories = format_ebay_results_for_rerank(categories)
-    #IO.puts "******************************"
-    #Enum.each(categories, fn category ->
-    #  Enum.each(category.offers, fn offer ->
-    #    IO.puts "price: #{offer.price} title: #{offer.title}"
-    #  end)
-    #end)
-    #IO.puts "******************************"
     time2 = :os.system_time
-    IO.puts "format_ebay_results_for_rerank took #{time2 - time1} nanoseconds"
+    format_ebay_results_for_rerank = time2 - time1
 
     time1 = :os.system_time
     categories = remove_duplicate(categories)
-    #IO.puts "******************************"
-    #Enum.each(categories, fn category ->
-    #  Enum.each(category.offers, fn offer ->
-    #    IO.puts "price: #{offer.price} title: #{offer.title}"
-    #  end)
-    #end)
-    #IO.puts "******************************"
     time2 = :os.system_time
-    IO.puts "remove_duplicate took #{time2 - time1} nanoseconds"
+    remove_duplicate = time2 - time1
 
     time1 = :os.system_time
     categories = remove_small_categories(categories)
-    #IO.puts "******************************"
-    #Enum.each(categories, fn category ->
-    #  Enum.each(category.offers, fn offer ->
-    #    IO.puts "price: #{offer.price} title: #{offer.title}"
-    #  end)
-    #end)
-    #IO.puts "******************************"
     time2 = :os.system_time
-    IO.puts "remove_small_categories took #{time2 - time1} nanoseconds"
+    remove_small_categories = time2 - time1
 
     time1 = :os.system_time
-    IO.puts "******************************"
     categories = Enum.map(categories, fn category ->
       max_cat_price = get_max_cat_price(category)
-      IO.puts "max_cat_price #{max_cat_price}"
 
       offers = category.offers
       offers = add_token_val(offers, search_term, geo, category.cat_id, fetched_url)
-      IO.puts "begin with token vals"
-      Enum.each(offers, fn offer ->
-        IO.puts "price: #{offer.price} title: #{offer.title} token_val: #{offer.token_val}"
-      end)
-      IO.puts "end with token vals"
       offers = add_price_val(offers, max_cat_price)
-      IO.puts "begin with price vals"
-      Enum.each(offers, fn offer ->
-        IO.puts "price: #{offer.price}"
-        IO.puts "title: #{offer.title}"
-        IO.puts "token_val: #{offer.token_val}"
-        IO.puts "price_val: #{offer.price_val}"
-      end)
-      IO.puts "end with price vals"
 
       Map.put(category, :offers, offers)
     end)
-    IO.puts "******************************"
     time2 = :os.system_time
-    IO.puts "adding of token and price vals took #{time2 - time1} nanoseconds"
+    add_token_val_price_val = time2 - time1
 
     time1 = :os.system_time
     max_offer_token_val = get_max_offer_token_val(categories)
     time2 = :os.system_time
-    IO.puts "get_max_offer_token_val took #{time2 - time1} nanoseconds"
+    get_max_offer_token_val = time2 - time1
 
     time1 = :os.system_time
     categories = normalize_token_vals(categories, max_offer_token_val)
     time2 = :os.system_time
-    IO.puts "normalize_token_vals took #{time2 - time1} nanoseconds"
+    normalize_token_vals = time2 - time1
 
     time1 = :os.system_time
     categories = add_prod_val(categories)
     time2 = :os.system_time
-    IO.puts "add_prod_val took #{time2 - time1} nanoseconds"
+    add_prod_val = time2 - time1
 
     time1 = :os.system_time
     categories = add_category_token_vals(categories)
     time2 = :os.system_time
-    IO.puts "add_category_token_vals took #{time2 - time1} nanoseconds"
+    add_category_token_vals = time2 - time1
 
     time1 = :os.system_time
     categories = add_cat_val(categories)
     time2 = :os.system_time
-    IO.puts "add_cat_val took #{time2 - time1} nanoseconds"
+    add_cat_val = time2 - time1
 
     time1 = :os.system_time
     categories = sort_categories(categories)
     time2 = :os.system_time
-    IO.puts "sort_categories took #{time2 - time1} nanoseconds"
+    sort_categories = time2 - time1
 
     time1 = :os.system_time
     categories = sort_products_within_categories(categories)
     time2 = :os.system_time
-    IO.puts "sort_products_within_categories took #{time2 - time1} nanoseconds"
-
+    sort_products_within_categories = time2 - time1
 
     time1 = :os.system_time
     result = get_top_ten_offers(categories)
     |> Enum.map(fn offer -> offer.original_item end)
+    time2 = :os.system_time
+    get_top_ten_offers = time2 - time1
 
-    #Enum.each(result, fn offer ->
-    #  IO.puts offer.title
-    #  IO.puts offer.price
-    #  IO.puts ""
-    #end)
-    #time2 = :os.system_time
-    #IO.puts "get_top_ten_offers took #{time2 - time1} nanoseconds"
+    time_data = %{
+      format_ebay_results_for_rerank: format_ebay_results_for_rerank,
+      remove_duplicate: remove_duplicate,
+      remove_small_categories: remove_small_categories,
+      add_token_val_price_val: add_token_val_price_val,
+      get_max_offer_token_val: get_max_offer_token_val,
+      normalize_token_vals: normalize_token_vals,
+      add_prod_val: add_prod_val,
+      add_category_token_vals: add_category_token_vals,
+      add_cat_val: add_cat_val,
+      sort_categories: sort_categories,
+      sort_products_within_categories: sort_products_within_categories,
+      get_top_ten_offers: get_top_ten_offers
+    }
+
+    Task.start(fn ->
+      Apientry.Amplitude.track_latency(conn, time_data)
+    end)
 
     result
   end
@@ -208,22 +184,15 @@ defmodule Apientry.Rerank do
     |> tokenize(geo)
     |> Enum.join(" ")
 
-    IO.puts "here at get_attr_from_title_by_cat_id"
-    IO.puts "tokenized title: #{title}"
-
     regex_string = cat_id
     |> Apientry.Helpers.get_regex_string()
 
-    IO.puts(regex_string)
 
     {:ok, regex} = cat_id
     |> Apientry.Helpers.get_regex_string()
     |> Regex.compile()
 
     scanned = Regex.scan(regex, title) || []
-
-    IO.puts "scanned: "
-    IO.inspect scanned
 
     if length(scanned) > 1 do
       scanned
@@ -235,20 +204,9 @@ defmodule Apientry.Rerank do
   end
 
   def calculate_token_val(num_attr_search_term, num_same_tokens_between_title_and_search_term, num_tokens_in_searh_term) do
-    n = num_attr_search_term
-    m = num_same_tokens_between_title_and_search_term
-    o = num_tokens_in_searh_term
+    result = (num_same_tokens_between_title_and_search_term / num_tokens_in_searh_term) * :math.pow(2, num_attr_search_term)
 
-    IO.puts "n: #{n}"
-    IO.puts "m: #{m}"
-    IO.puts "o: #{o}"
-
-    result1 = m / (o * :math.pow(2, n))
-    result2 = (num_same_tokens_between_title_and_search_term / num_tokens_in_searh_term) * :math.pow(2, num_attr_search_term)
-
-    #IO.puts "result1: #{result1}"
-    #IO.puts "result2: #{result2}"
-    result2
+    result
   end
 
   def regex_from_list(list) do
@@ -277,18 +235,6 @@ defmodule Apientry.Rerank do
 
     attributes_from_ebay = get_attr_from_title_by_cat_id(geo, cat_id, search_term)
 
-    offers
-    |> Enum.with_index()
-    |> Enum.each(fn {offer, index} ->
-      IO.puts "attributes from ebay"
-      IO.inspect attributes_from_ebay
-      IO.puts index
-      IO.puts offer.price
-      IO.puts offer.title
-      IO.puts nil
-    end)
-
-    IO.puts "^^^^^^^^^^^^^^^^^^^^"
     offers = offers
     |> Enum.filter(fn offer ->
       m = get_num_of_same_tokens(offer, search_term)
@@ -298,13 +244,8 @@ defmodule Apientry.Rerank do
       (token_count_in_search_term > 5 && token_count_in_search_term <= 9 && m > 2) ||
       (token_count_in_search_term <= 5 && m > 1)
 
-      IO.puts "title: #{offer.title}"
-      IO.puts "included: #{result}"
-      IO.puts "---------------------"
-
       result
     end)
-    IO.puts "^^^^^^^^^^^^^^^^^^^^"
 
     offers = Enum.map(offers, fn offer ->
       n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer)
@@ -324,11 +265,6 @@ defmodule Apientry.Rerank do
   def get_num_of_same_tokens(offer, search_term) do
     title_tokens = Enum.uniq tokenize(offer.title)
     search_term_tokens = Enum.uniq tokenize(search_term)
-
-    IO.puts "title_tokens:"
-    IO.inspect(title_tokens)
-    IO.puts "search_term_tokens:"
-    IO.inspect(search_term_tokens)
 
     Enum.count(title_tokens, fn title_token ->
       Enum.any?(search_term_tokens, fn search_token ->
