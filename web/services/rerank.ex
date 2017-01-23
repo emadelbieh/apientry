@@ -143,7 +143,7 @@ defmodule Apientry.Rerank do
       %{
         title: item["offer"]["name"],
         price: price,
-        #original_item: item
+        original_item: item
       }
     end)
   end
