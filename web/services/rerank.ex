@@ -16,6 +16,8 @@ defmodule Apientry.Rerank do
   def get_products(conn, ebay_results, search_term, geo, fetched_url) do
     geo = geo || "";
 
+    regex_strings = Task.async(fn -> Apientry.Helpers.regex_strings end)
+
     categories = ebay_results
 
     time1 = :os.system_time
@@ -33,8 +35,9 @@ defmodule Apientry.Rerank do
     time2 = :os.system_time
     remove_small_categories = time2 - time1
 
-    regex_strings = Apientry.Helpers.regex_strings
     time1 = :os.system_time
+    
+    regex_strings = Task.await(regex_strings)
     categories = Enum.map(categories, fn category ->
       {:ok, regex} = regex_strings[category.cat_id] |> Regex.compile()
 
@@ -333,8 +336,7 @@ defmodule Apientry.Rerank do
   def add_cat_val(categories) do
     num_offers = count_total_offers(categories)
 
-
-    Enum.map(categories, fn category ->
+    function = fn category ->
       if num_offers == 0 do
         0
       else
@@ -342,7 +344,11 @@ defmodule Apientry.Rerank do
       end
 
       Map.put(category, :val, cat_val)
-    end)
+    end
+
+    categories
+    |> Enum.map(&Task.async(fn -> function.(&1) end))
+    |> Enum.map(&Task.await(&1))
   end
 
   def sort_categories(categories) do
