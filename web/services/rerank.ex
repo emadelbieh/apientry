@@ -121,16 +121,15 @@ defmodule Apientry.Rerank do
 
     time1 = :os.system_time
     result = get_top_ten_offers(categories)
-    #|> Enum.map(fn offer -> offer.original_item end)
+    |> Enum.map(fn offer -> offer.original_item end)
 
-    Enum.each(result, fn offer ->
-      IO.puts offer.title
-      IO.puts offer.price
-      IO.puts ""
-    end)
-    time2 = :os.system_time
-    IO.puts "get_top_ten_offers took #{time2 - time1} nanoseconds"
-
+    #Enum.each(result, fn offer ->
+    #  IO.puts offer.title
+    #  IO.puts offer.price
+    #  IO.puts ""
+    #end)
+    #time2 = :os.system_time
+    #IO.puts "get_top_ten_offers took #{time2 - time1} nanoseconds"
 
     result
   end
