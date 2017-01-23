@@ -25,7 +25,7 @@ defmodule Apientry.Rerank do
             kind: :error,
             reason: e,
             stacktrace: System.stacktrace()
-          }
+          })
       end
     end)
 
@@ -55,7 +55,7 @@ defmodule Apientry.Rerank do
       max_cat_price = get_max_cat_price(category)
 
       offers = category.offers
-      offers = add_token_val(offers, search_term, geo, regex, fetched_url)
+      offers = add_token_val(conn, offers, search_term, geo, regex, fetched_url)
       offers = add_price_val(offers, max_cat_price)
 
       Map.put(category, :offers, offers)
@@ -84,7 +84,7 @@ defmodule Apientry.Rerank do
     add_category_token_vals = time2 - time1
 
     time1 = :os.system_time
-    categories = add_cat_val(categories)
+    categories = add_cat_val(conn, categories)
     time2 = :os.system_time
     add_cat_val = time2 - time1
 
@@ -249,7 +249,7 @@ defmodule Apientry.Rerank do
     end
   end
 
-  def add_token_val(offers, search_term, geo, regex, fetchedUrl) do
+  def add_token_val(conn, offers, search_term, geo, regex, fetchedUrl) do
     token_count_in_search_term = length(tokenize(search_term))
     attributes_from_ebay = get_attr_from_title_by_cat_id(geo, regex, search_term)
 
@@ -271,7 +271,7 @@ defmodule Apientry.Rerank do
             kind: :error,
             reason: e,
             stacktrace: System.stacktrace()
-          }
+          })
       end
     end))
     |> Enum.map(&Task.await(&1))
@@ -355,7 +355,7 @@ defmodule Apientry.Rerank do
     |> Enum.sum
   end
 
-  def add_cat_val(categories) do
+  def add_cat_val(conn, categories) do
     num_offers = count_total_offers(categories)
 
     function = fn category ->
@@ -378,7 +378,7 @@ defmodule Apientry.Rerank do
             kind: :error,
             reason: e,
             stacktrace: System.stacktrace()
-          }
+          })
       end
     end))
     |> Enum.map(&Task.await(&1))
