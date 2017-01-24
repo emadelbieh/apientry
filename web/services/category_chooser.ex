@@ -53,7 +53,7 @@ defmodule Apientry.CategoryChooser do
     is_in_cat = str =~ rule_regex
 
     if is_in_cat do
-      gender_rec = Apientry.Helpers.recognize_gender(str)
+      gender_rec = recognize_gender(str)
 
       if gender_rec && gender[gender_rec] do
         attribute_value = [gender[gender_rec] | attribute_value]
@@ -79,31 +79,31 @@ defmodule Apientry.CategoryChooser do
     nil
   end
 
-  def laptopsUs do
+  def laptopsUs(data) do
   end
 
-  def clothingFr do
+  def clothingFr(data) do
   end
 
-  def shoesFr do
+  def shoesFr(data) do
   end
 
-  def sofaFr do
+  def sofaFr(data) do
   end
 
-  def bagsFr do
+  def bagsFr(data) do
   end
 
-  def lingerieFr do
+  def lingerieFr(data) do
   end
 
-  def microwaveFr do
+  def microwaveFr(data) do
   end
 
-  def ovenFr do
+  def ovenFr(data) do
   end
 
-  def tvFr do
+  def tvFr(data) do
   end
 
   @global_chooser %{
@@ -143,12 +143,32 @@ defmodule Apientry.CategoryChooser do
   end
 
   def cat_data_from_default_chooser(data) do
-    IO.inspect data
+    data = Map.put(data, :kw, "danskin now women builtin liner shorts")
+    data = Map.put(data, :pageTitle, "danskin now women builtin liner shorts")
+    data = Map.put(data, :siteUrl, "http://www.amazon.com/danskin now")
+    data = Map.put(data, :breadCrumbs, "")
     chooser = @global_chooser[data.geo]
-    IO.inspect chooser
-    Stream.filter(chooser, fn {key, value} ->
-      apply(chooser[key], data)
+    chooser = Stream.map(chooser, fn {_, function} ->
+      function.(data)
     end)
+    |> Stream.reject(fn data -> data == nil end)
     |> Enum.at(0) || %{}
+  end
+
+  def recognize_gender(str) do
+    cond do
+      str =~ ~r/(\herren\b)/ ->
+        "herren"
+      str =~ ~r/(\bdamen\b)/ ->
+        "damen"
+      str =~ ~r/(\bfemme\b)/ ->
+        "femme"
+      str =~ ~r/(\bhomme\b)/ ->
+        "homme"
+      str =~ ~r/(\bwomen\b|\bwoman\b|\bwomens\b)/ ->
+        "women"
+      str =~ ~r/(\bmen\b|\bman\b|\bmens\b|\bmans\b)/ ->
+        "men"
+    end
   end
 end
