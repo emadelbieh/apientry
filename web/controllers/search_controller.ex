@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.SearchController do
   @moduledoc """
   Takes in requests from /publisher.
@@ -65,7 +63,9 @@ defmodule Apientry.SearchController do
   end
 
   def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
-    #time1 = :os.system_time
+    cat_data = CatChooser.get()
+
+    time1 = :os.system_time
     result = case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
@@ -103,8 +103,6 @@ defmodule Apientry.SearchController do
         |> put_status(400)
         |> render(:error, data: %{error: reason})
     end
-    #time2 = :os.system_time
-    #IO.puts "#{time2 - time1} with rerank"
     result
   end
 
