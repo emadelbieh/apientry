@@ -17,7 +17,8 @@ defmodule Apientry.AmazonMapper do
         cat_id: "418"
       }
     },
-    "fr" => %{ "chaussures et sacs, sacs" => %{
+    "fr" => %{
+      "chaussures et sacs, sacs" => %{
         cat_id: "96668",
         attribute_value: []
       },
@@ -40,20 +41,22 @@ defmodule Apientry.AmazonMapper do
     }
   }
 
-  def get_category_data(geo) do
+  def get_category_data(data) do
+    geo = data.geo
+    bread_crumbs = data.bread_crumbs
     cond do
       !geo || !@mapper[geo] ->
         nil
-      !bread_crumbs || length(breadcrumbs) < 4 ->
+      !bread_crumbs || String.length(bread_crumbs) < 4 ->
         nil
       true ->
-        mapper_keys = Map.keys(@mapper["us"])
-        mapper_keys = Enum.join("|")
+        mapper_keys = Map.keys(@mapper[geo])
+        mapper_keys = Enum.join(mapper_keys, "|")
         mapper_keys = "(#{mapper_keys})"
         {:ok, regex} = Regex.compile(mapper_keys)
         if bread_crumbs =~ regex do
-          key = Regex.run(regex, bread_crumbs)
-          @mapper[key]
+          key = Regex.run(regex, bread_crumbs) |> Enum.at(1)
+          @mapper[geo][key]
         else
           nil
         end

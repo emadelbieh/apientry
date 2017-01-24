@@ -1,63 +1,13 @@
+require IEx
+
 defmodule Apientry.CategoryChooser do
-  @global_chooser %{
-    "us" => %{
-      clothing: &clothingUs/1,
-      laptops: &laptopsUs/1
-    },
-    "au" => %{
-      clothing: &clothingUs/1,
-      laptops: &laptopsUs/1,
-    },
-    "de" => %{
-      laptops: &laptopsUs/1
-    },
-    "gb" => %{
-      clothing: &clothingUs/1
-    },
-    "fr" => %{
-      tvFr: &tvFr/1,
-      oven: &ovenFr/1,
-      microwave: &microwaveFr/1,
-      lingerie: &lingerieFr/1,
-      sofa: &sofaFr/1,
-      bags: &bagsFr/1,
-      shoes: &shoesFr/1,
-      laptops: &laptopsUs/1,
-      clothing: &clothingFr/1
-    }
-  }
-  
-  def initialize(data) do
-    chooser = nil
-    set_geo(data)
-  end
-
-  def set_geo(data) do
-    set_global_chooser(geo)
-  end
-
-  def get(geo, data) do
-    cat_data_from_amazon(data) || cat_data_from_default_chooser(geo, data)
-  end
-
-  def cat_data_from_amazon(data) do
-    Apientry.AmazonMapper.get_cat_data(data)
-  end
-
-  def cat_data_from_default_chooser(geo, data) do
-    chooser = @global_chooser[geo]
-    Stream.filter(chooser, fn {key, value} ->
-      apply(chooser[key], data)
-    end)
-  end
-
-  def clothingUs do
+  def clothingUs(data) do
     str = ""
 
-    title = kw
-    pageTitle = pageTitle
-    url = siteUrl
-    breadCrumbs = breadCrumbs
+    title = data.kw
+    pageTitle = data.pageTitle
+    url = data.siteUrl
+    breadCrumbs = data.breadCrumbs
 
     title = URI.decode(title)
     str = "#{title} #{pageTitle} #{breadCrumbs}"
@@ -110,14 +60,14 @@ defmodule Apientry.CategoryChooser do
       end
 
       attrs_ids = Enum.filter(strongattributes, fn {attrId, attributes} ->
-        attributes_reg = Enum.join(attributes_reg, "\\b|\\b")
+        attributes_reg = Enum.join(attributes, "\\b|\\b")
         attributes_reg = "(\\b#{attributes_reg}\\b)"
         {:ok, regex} = Regex.compile(attributes_reg)
         str =~ regex
       end)
 
       if length(attrs_ids) > 0 do
-        attribute_value = [hd(attr_ids) | attribute_value]
+        attribute_value = [hd(attrs_ids) | attribute_value]
       end
 
       %{
@@ -154,5 +104,51 @@ defmodule Apientry.CategoryChooser do
   end
 
   def tvFr do
+  end
+
+  @global_chooser %{
+    "us" => %{
+      clothing: &__MODULE__.clothingUs/1,
+      laptops: &__MODULE__.laptopsUs/1
+    },
+    "au" => %{
+      clothing: &__MODULE__.clothingUs/1,
+      laptops: &__MODULE__.laptopsUs/1,
+    },
+    "de" => %{
+      laptops: &__MODULE__.laptopsUs/1
+    },
+    "gb" => %{
+      clothing: &__MODULE__.clothingUs/1
+    },
+    "fr" => %{
+      tvFr: &__MODULE__.tvFr/1,
+      oven: &__MODULE__.ovenFr/1,
+      microwave: &__MODULE__.microwaveFr/1,
+      lingerie: &__MODULE__.lingerieFr/1,
+      sofa: &__MODULE__.sofaFr/1,
+      bags: &__MODULE__.bagsFr/1,
+      shoes: &__MODULE__.shoesFr/1,
+      laptops: &__MODULE__.laptopsUs/1,
+      clothing: &__MODULE__.clothingFr/1
+    }
+  }
+  
+  def get(data) do
+    cat_data_from_amazon(data) || cat_data_from_default_chooser(data)
+  end
+
+  def cat_data_from_amazon(data) do
+    Apientry.AmazonMapper.get_category_data(data)
+  end
+
+  def cat_data_from_default_chooser(data) do
+    IO.inspect data
+    chooser = @global_chooser[data.geo]
+    IO.inspect chooser
+    Stream.filter(chooser, fn {key, value} ->
+      apply(chooser[key], data)
+    end)
+    |> Enum.at(0) || %{}
   end
 end
