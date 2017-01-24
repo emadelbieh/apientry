@@ -1,162 +1,126 @@
-require IEx
-
 defmodule Apientry.CategoryChooser do
-  def clothingUs(data) do
-    str = ""
+  def init(data) do
+    %{
+                   geo: data["geo"]         || "",
+                 title: data["kw"]          || "",
+            page_title: data["page_title"]  || "",
+                   url: data["site_url"]    || "",
+           breadcrumbs: data["breadcrumbs"] || "",
+      attribute_values: [],
+    } end
 
-    title = data.kw
-    pageTitle = data.pageTitle
-    url = data.siteUrl
-    breadCrumbs = data.breadCrumbs
+  def get_category_data(data) do
+    data = data
+    |> decode_title()
+    |> combine_keywords()
+    |> tokenize_keywords()
+    |> combine_tokens()
+    |> match_with_rules()
+    |> recognize_gender()
+    |> add_gender_attribute()
+    |> add_strong_attributes()
 
-    title = URI.decode(title)
-    str = "#{title} #{pageTitle} #{breadCrumbs}"
+    if data.rules_match do
+      %{
+        category_id: get_category_id(data),
+        attribute_value: data.attribute_values
+      }
+    else
+      nil
+    end
+  end
+  
+  defp get_category_id(data) do
+    Apientry.ClothingUS.category_id
+  end
 
-    catId = "31515"
-    attribute_value = []
+  defp get_rules(data) do
+    Apientry.ClothingUS.rules
+  end
 
-    str = str
-    |> Apientry.Rerank.tokenize("us")
-    |> Enum.join(" ")
+  defp get_genders(data) do
+    Apientry.ClothingUS.genders
+  end
 
-    gender = %{
-      "women" => "71816_women",
-      "men" => "71816_men",
-      "boys" => "71816_boys",
-      "girls" => "71816_girls"
-    };
+  defp get_strong_attributes(data) do
+    Apientry.ClothingUS.strong_attributes
+  end
 
-    rules = ~w[bra hats hat hoodie Fleece Tunic dress shirt shirts t shirt bra bras boxer pants jacket shorts short Panties Sweatshirts Crew Socks Bikini skirts Cardigan Cardigans skirt Pullovers Sweater Vests jeans Jean Coats Swimwear Swimwears Sleepwear Sleepwears Socks Leggings Legging Lingerie Lingeries Underwear Underwears Stretch Fit V Neck]
+  defp decode_title(data) do
+    title = URI.decode(data.title)
+    Map.put(data, :title, title)
+  end
 
-    strongattributes = %{
-      "pants": ["pants"],
-      "71827_jackets_vests": ['jackets', "jacket", 'vests'],
-      "dresses": ['dresses', 'dress'],
-      "71827_sweaters_and_sweatshirts": ['sweaters', 'sweater', 'sweatshirts', 'sweatshirt'],
-      "71827_underwear_and_lingerie": ['underwear', 'lingerie'],
-      "71827_shorts": ['shorts'],
-      "71827_jeans": ['jeans'],
-      "71827_coats": ['coats', 'coat'],
-      "71827_skirts": ['skirts', 'skirt']
-    }
+  defp combine_keywords(data) do
+    keywords = "#{data.title} #{data.page_title} #{data.breadcrumbs}"
+    Map.put(data, :keywords, keywords)
+  end
 
-    rules = rules
-    |> Enum.map(fn rule ->
-      rule = String.downcase(rule)
-      rule = "\\b#{rule}\\b"
-    end)
+  defp tokenize_keywords(data) do
+    tokens = data.keywords |> Apientry.Rerank.tokenize(data.geo)
+    Map.put(data, :tokens, tokens)
+  end
+
+  defp combine_tokens(data) do
+    keywords = data.tokens |> Enum.join(" ")
+    Map.put(data, :keywords, keywords)
+  end
+
+  defp match_with_rules(data) do
+    rules = get_rules(data)
+            |> Enum.map(fn rule ->
+              rule = String.downcase(rule)
+              rule = "\\b#{rule}\\b"
+            end)
     |> Enum.join("|")
     rules = "(#{rules})"
-
     {:ok, rule_regex} = Regex.compile(rules)
 
-    is_in_cat = str =~ rule_regex
+    has_match = data.keywords =~ rule_regex
 
-    if is_in_cat do
-      gender_rec = recognize_gender(str)
+    Map.put(data, :rules_match, has_match)
+  end
 
-      if gender_rec && gender[gender_rec] do
-        attribute_value = [gender[gender_rec] | attribute_value]
+  defp add_gender_attribute(data) do
+    data = if data.gender do
+      genders = get_genders(data)
+
+      if genders[data.gender] do
+        Map.put(data, :attribute_values, [genders[data.gender] | data.attribute_values])
+      else
+        data
       end
+    else
+      data
+    end
+  end
 
-      attrs_ids = Enum.filter(strongattributes, fn {attrId, attributes} ->
+  defp add_strong_attributes(data) do
+    if data.rules_match do
+      attrs_ids = data
+      |> get_strong_attributes()
+      |> Enum.filter(fn {attrId, attributes} ->
         attributes_reg = Enum.join(attributes, "\\b|\\b")
         attributes_reg = "(\\b#{attributes_reg}\\b)"
         {:ok, regex} = Regex.compile(attributes_reg)
-        str =~ regex
+        data.keywords =~ regex
       end)
 
       if length(attrs_ids) > 0 do
-        attribute_value = [hd(attrs_ids) | attribute_value]
+        attribute_values = [hd(attrs_ids) | data.attribute_values]
+        Map.put(data, :attribute_values, attribute_values)
+      else
+        data
       end
-
-      %{
-        catId: catId,
-        attribute_value: attribute_value
-      }
+    else
+      data
     end
-
-    nil
   end
 
-  def laptopsUs(data) do
-  end
+  defp recognize_gender(data) do
+    str = data.keywords
 
-  def clothingFr(data) do
-  end
-
-  def shoesFr(data) do
-  end
-
-  def sofaFr(data) do
-  end
-
-  def bagsFr(data) do
-  end
-
-  def lingerieFr(data) do
-  end
-
-  def microwaveFr(data) do
-  end
-
-  def ovenFr(data) do
-  end
-
-  def tvFr(data) do
-  end
-
-  @global_chooser %{
-    "us" => %{
-      clothing: &__MODULE__.clothingUs/1,
-      laptops: &__MODULE__.laptopsUs/1
-    },
-    "au" => %{
-      clothing: &__MODULE__.clothingUs/1,
-      laptops: &__MODULE__.laptopsUs/1,
-    },
-    "de" => %{
-      laptops: &__MODULE__.laptopsUs/1
-    },
-    "gb" => %{
-      clothing: &__MODULE__.clothingUs/1
-    },
-    "fr" => %{
-      tvFr: &__MODULE__.tvFr/1,
-      oven: &__MODULE__.ovenFr/1,
-      microwave: &__MODULE__.microwaveFr/1,
-      lingerie: &__MODULE__.lingerieFr/1,
-      sofa: &__MODULE__.sofaFr/1,
-      bags: &__MODULE__.bagsFr/1,
-      shoes: &__MODULE__.shoesFr/1,
-      laptops: &__MODULE__.laptopsUs/1,
-      clothing: &__MODULE__.clothingFr/1
-    }
-  }
-  
-  def get(data) do
-    cat_data_from_amazon(data) || cat_data_from_default_chooser(data)
-  end
-
-  def cat_data_from_amazon(data) do
-    Apientry.AmazonMapper.get_category_data(data)
-  end
-
-  def cat_data_from_default_chooser(data) do
-    data = Map.put(data, :kw, "danskin now women builtin liner shorts")
-    data = Map.put(data, :pageTitle, "danskin now women builtin liner shorts")
-    data = Map.put(data, :siteUrl, "http://www.amazon.com/danskin now")
-    data = Map.put(data, :breadCrumbs, "")
-    chooser = @global_chooser[data.geo]
-    chooser = Stream.map(chooser, fn {_, function} ->
-      function.(data)
-    end)
-    |> Stream.reject(fn data -> data == nil end)
-    |> Enum.at(0) || %{}
-  end
-
-  def recognize_gender(str) do
-    cond do
+    gender = cond do
       str =~ ~r/(\herren\b)/ ->
         "herren"
       str =~ ~r/(\bdamen\b)/ ->
@@ -170,5 +134,7 @@ defmodule Apientry.CategoryChooser do
       str =~ ~r/(\bmen\b|\bman\b|\bmens\b|\bmans\b)/ ->
         "men"
     end
+
+    Map.put(data, :gender, gender)
   end
 end
