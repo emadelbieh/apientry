@@ -75,6 +75,7 @@ defmodule Apientry.PublisherApiKeyController do
         render(conn, "edit.html", publisher_api_key: publisher_api_key, changeset: changeset, publishers: publishers)
     end
   end
+
   def delete(conn, %{"id" => id}) do
     publisher_api_key = Repo.get!(PublisherApiKey, id)
 
@@ -85,6 +86,6 @@ defmodule Apientry.PublisherApiKeyController do
 
     conn
     |> put_flash(:info, "Publisher api key deleted successfully.")
-    |> redirect(to: publisher_api_key_path(conn, :index))
+    |> redirect(to: publisher_api_key_path(conn, :index, publisher_id: publisher_api_key.publisher_id))
   end
 end

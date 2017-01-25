@@ -74,7 +74,7 @@ defmodule Apientry.PublisherApiKeyControllerTest do
   test "deletes chosen resource", %{conn: conn} do
     publisher_api_key = Repo.insert! %PublisherApiKey{}
     conn = delete conn, publisher_api_key_path(conn, :delete, publisher_api_key)
-    assert redirected_to(conn) == publisher_api_key_path(conn, :index)
+    assert redirected_to(conn) == publisher_api_key_path(conn, :index, publisher_id: publisher_api_key.publisher_id)
     refute Repo.get(PublisherApiKey, publisher_api_key.id)
   end
 end
