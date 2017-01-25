@@ -18,7 +18,7 @@ defmodule Apientry.Rerank do
 
     regex_strings = Task.async(fn ->
       try do
-        Apientry.Helpers.regex_strings
+        Apientry.Helpers.regex_strings(geo)
       rescue
         e in RuntimeError ->
           Apientry.ErrorReporter.report(conn, %{
