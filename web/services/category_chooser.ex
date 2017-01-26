@@ -1,10 +1,11 @@
+require IEx
+
 defmodule Apientry.CategoryChooser do
   def init(data) do
     %{
                    geo: data["geo"]         || "",
                  title: data["kw"]          || "",
             page_title: data["page_title"]  || "",
-                   url: data["site_url"]    || "",
            breadcrumbs: data["breadcrumbs"] || "",
       attribute_values: [],
     } end
@@ -117,7 +118,7 @@ defmodule Apientry.CategoryChooser do
     end
   end
 
-  defp recognize_gender(data) do
+  def recognize_gender(data) do
     str = data.keywords
 
     gender = cond do
@@ -133,6 +134,8 @@ defmodule Apientry.CategoryChooser do
         "women"
       str =~ ~r/(\bmen\b|\bman\b|\bmens\b|\bmans\b)/ ->
         "men"
+      true ->
+        nil
     end
 
     Map.put(data, :gender, gender)

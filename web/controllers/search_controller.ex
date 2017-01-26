@@ -1,3 +1,5 @@
+require IEx
+
 defmodule Apientry.SearchController do
   @moduledoc """
   Takes in requests from /publisher.
@@ -62,9 +64,37 @@ defmodule Apientry.SearchController do
     result
   end
 
-  def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
-    cat_data = CatChooser.get()
+  defp build_category_chooser_data(conn) do
+    country = conn.assigns.country |> String.downcase
 
+    %{
+      "geo" => country,
+      "kw" => conn.params["keyword"],
+    }
+  end
+
+  def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
+    # run category chooser
+    category_data = conn
+                    |> build_category_chooser_data()
+                    |> Apientry.CategoryChooser.init()
+                    |> Apientry.CategoryChooser.get_category_data()
+
+    # run first fetch
+    case HTTPoison.get(url) do
+      {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
+        body = Poison.decode!(body)
+
+        if length(body["categories"]["category"]) == 1 do
+          category = hd(body["categories"]["category"])
+          category_id = category["id"]
+          cat_data = Apientry.StrongAttributeIDSelector.get_strong_attr_ids(%{
+            "category_id" => category_id,
+            "geo"         => String.downcase(conn.assigns.country),
+            "kw"          => conn.params["keyword"]
+          })
+
+          url = url <> "&" <> URI.encode_query(cat_data)
     time1 = :os.system_time
     result = case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
@@ -104,6 +134,25 @@ defmodule Apientry.SearchController do
         |> render(:error, data: %{error: reason})
     end
     result
+        end
+      {:error, %HTTPoison.Error{reason: reason} = error} ->
+        ErrorReporter.track_httpoison_error(conn, error)
+        conn
+        |> put_status(400)
+        |> render(:error, data: %{error: reason})
+    end
+
+
+
+
+
+
+
+
+
+
+    
+
   end
 
   defp transform_by_format(conn, body, format) do
