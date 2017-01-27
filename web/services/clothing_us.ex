@@ -5,14 +5,14 @@ defmodule Apientry.ClothingUS do
 
   @strong_attributes %{
                              "pants" => ["pants"],
-               "71827_jackets_vests" => ['jackets', "jacket", 'vests'],
-                           "dresses" => ['dresses', 'dress'],
-    "71827_sweaters_and_sweatshirts" => ['sweaters', 'sweater', 'sweatshirts', 'sweatshirt'],
-      "71827_underwear_and_lingerie" => ['underwear', 'lingerie'],
-                      "71827_shorts" => ['shorts'],
-                       "71827_jeans" => ['jeans'],
-                       "71827_coats" => ['coats', 'coat'],
-                      "71827_skirts" => ['skirts', 'skirt']
+               "71827_jackets_vests" => ["jackets", "jacket", "vests"],
+                           "dresses" => ["dresses", "dress"],
+    "71827_sweaters_and_sweatshirts" => ["sweaters", "sweater", "sweatshirts", "sweatshirt"],
+      "71827_underwear_and_lingerie" => ["underwear", "lingerie"],
+                      "71827_shorts" => ["shorts"],
+                       "71827_jeans" => ["jeans"],
+                       "71827_coats" => ["coats", "coat"],
+                      "71827_skirts" => ["skirts", "skirt"]
   }
 
   def category_id do

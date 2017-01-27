@@ -24,10 +24,12 @@ defmodule Apientry.CategoryChooser do
     if data.rules_match do
       %{
         category_id: get_category_id(data),
-        attribute_value: data.attribute_values
+        attribute_values: data.attribute_values
       }
     else
-      nil
+      %{
+        attribute_values: []
+      }
     end
   end
   
@@ -100,11 +102,14 @@ defmodule Apientry.CategoryChooser do
     if data.rules_match do
       attrs_ids = data
       |> get_strong_attributes()
-      |> Enum.filter(fn {attrId, attributes} ->
+      |> Stream.filter(fn {attrId, attributes} ->
         attributes_reg = Enum.join(attributes, "\\b|\\b")
         attributes_reg = "(\\b#{attributes_reg}\\b)"
         {:ok, regex} = Regex.compile(attributes_reg)
         data.keywords =~ regex
+      end)
+      |> Enum.map(fn {attrId, attributes} ->
+        attrId
       end)
 
       if length(attrs_ids) > 0 do

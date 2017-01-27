@@ -97,7 +97,7 @@ defmodule Apientry.StrongAttributeIDSelector do
     else
       %{
         categoryId: data.category_id,
-        attributeValue: []
+        attributeValue: nil
       }
     end
   end

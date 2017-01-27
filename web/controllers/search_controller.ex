@@ -73,6 +73,14 @@ defmodule Apientry.SearchController do
     }
   end
 
+  def append_category_data(url, %{attribute_values: []}), do: url
+  def append_category_data(url, category_data) do
+    url = url <> "&categoryId=#{category_data[:category_id]}"
+    Enum.reduce(category_data[:attribute_values], url, fn attr, url ->
+      url <> "&attributeValue=#{attr}"
+    end)
+  end
+
   def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
     # run category chooser
     category_data = conn
@@ -80,12 +88,16 @@ defmodule Apientry.SearchController do
                     |> Apientry.CategoryChooser.init()
                     |> Apientry.CategoryChooser.get_category_data()
 
+    IO.inspect category_data
+    url = append_category_data(url, category_data)
+
     # run first fetch
     case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
 
-        if length(body["categories"]["category"]) == 1 do
+        if length(category_data[:attribute_values]) == 0 &&
+          length(body["categories"]["category"]) == 1 do
           category = hd(body["categories"]["category"])
           category_id = category["id"]
           cat_data = Apientry.StrongAttributeIDSelector.get_strong_attr_ids(%{
@@ -95,64 +107,87 @@ defmodule Apientry.SearchController do
           })
 
           url = url <> "&" <> URI.encode_query(cat_data)
-    time1 = :os.system_time
-    result = case HTTPoison.get(url) do
-      {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
-        body = Poison.decode!(body)
-        ErrorReporter.track_ebay_response(conn, status, body, headers)
 
-        request_format = conn.params["format"] || "json"
-        body = transform_by_format(conn, body, request_format)
+          IO.puts "**********************"
+          IO.puts URI.encode_query(cat_data)
+          IO.puts "**********************"
 
-        if get_req_header(conn, "x-apientry-dnt") == [] do
-          Apientry.Amplitude.track_publisher(conn.assigns)
+          time1 = :os.system_time
+          result = case HTTPoison.get(url) do
+            {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
+              body = Poison.decode!(body)
+              ErrorReporter.track_ebay_response(conn, status, body, headers)
+
+              request_format = conn.params["format"] || "json"
+              body = transform_by_format(conn, body, request_format)
+
+              if get_req_header(conn, "x-apientry-dnt") == [] do
+                Apientry.Amplitude.track_publisher(conn.assigns)
+              end
+
+              decoded = Poison.decode!(body)
+              geo = conn.assigns.country |> String.downcase
+              kw = conn.query_params["keyword"]
+              req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+
+              time1 = :os.system_time
+              new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
+              time2 = :os.system_time
+              IO.puts "get_products took #{time2 - time1} nanoseconds"
+
+              items = hd(decoded["categories"]["category"])
+              items = put_in(items, ["items","item"], new_data)
+              decoded = put_in(decoded, ["categories", "category"], [items])
+
+              conn
+              |> put_status(status)
+              |> put_resp_content_type("application/#{request_format}")
+              |> render("index.xml", data: Poison.encode!(decoded))
+
+            {:error, %HTTPoison.Error{reason: reason} = error} ->
+              ErrorReporter.track_httpoison_error(conn, error)
+              conn
+              |> put_status(400)
+              |> render(:error, data: %{error: reason})
+          end
+          result
+        else
+          ErrorReporter.track_ebay_response(conn, status, body, headers)
+
+          request_format = conn.params["format"] || "json"
+          body = transform_by_format(conn, body, request_format)
+
+          if get_req_header(conn, "x-apientry-dnt") == [] do
+            Apientry.Amplitude.track_publisher(conn.assigns)
+          end
+
+          decoded = Poison.decode!(body)
+          geo = conn.assigns.country |> String.downcase
+          kw = conn.query_params["keyword"]
+          req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+
+          time1 = :os.system_time
+          new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
+          time2 = :os.system_time
+          IO.puts "get_products took #{time2 - time1} nanoseconds"
+
+          if length(decoded["categories"]["category"]) > 0 do
+            items = hd(decoded["categories"]["category"])
+            items = put_in(items, ["items","item"], new_data)
+            decoded = put_in(decoded, ["categories", "category"], [items])
+          end
+
+          conn
+          |> put_status(status)
+          |> put_resp_content_type("application/#{request_format}")
+          |> render("index.xml", data: Poison.encode!(decoded))
         end
-
-        decoded = Poison.decode!(body)
-        geo = conn.assigns.country |> String.downcase
-        kw = conn.query_params["keyword"]
-        req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
-
-        time1 = :os.system_time
-        new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
-        time2 = :os.system_time
-        IO.puts "get_products took #{time2 - time1} nanoseconds"
-
-        items = hd(decoded["categories"]["category"])
-        items = put_in(items, ["items","item"], new_data)
-        decoded = put_in(decoded, ["categories", "category"], [items])
-
-        conn
-        |> put_status(status)
-        |> put_resp_content_type("application/#{request_format}")
-        |> render("index.xml", data: Poison.encode!(decoded))
-
       {:error, %HTTPoison.Error{reason: reason} = error} ->
         ErrorReporter.track_httpoison_error(conn, error)
         conn
         |> put_status(400)
         |> render(:error, data: %{error: reason})
     end
-    result
-        end
-      {:error, %HTTPoison.Error{reason: reason} = error} ->
-        ErrorReporter.track_httpoison_error(conn, error)
-        conn
-        |> put_status(400)
-        |> render(:error, data: %{error: reason})
-    end
-
-
-
-
-
-
-
-
-
-
-    
-
   end
 
   defp transform_by_format(conn, body, format) do
@@ -200,19 +235,5 @@ defmodule Apientry.SearchController do
   def set_search_options(conn, _) do
     conn
     |> assign(:valid, false)
-  end
-
-  def direct(conn, _) do
-    url = "http://api.ebaycommercenetwork.com/publisher/3.0/json/GeneralSearch?apiKey=b975ebbe-e61b-4044-a993-9093f2d10c71&keyword=nikon&visitorUserAgent=Mozilla+OSX&trackingId=8095836"
-    case HTTPoison.get(url) do
-      {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
-        conn
-        |> put_status(status)
-        |> text("test")
-      {:error, _} ->
-        conn
-        |> put_status(400)
-        |> text("test")
-    end
   end
 end
