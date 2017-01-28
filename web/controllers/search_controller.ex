@@ -81,7 +81,18 @@ defmodule Apientry.SearchController do
     end)
   end
 
+  def add_min_max_price(params) do
+    max_price = params["maxPrice"] || "1000000"
+    min_price = params["minPrice"] || "0"
+
+    params
+    |> Map.put("minPrice", min_price)
+    |> Map.put("maxPrice", max_price)
+  end
+
   def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
+    conn = Map.put(conn, :params, add_min_max_price(conn.params))
+
     # run category chooser
     category_data = conn
                     |> build_category_chooser_data()
