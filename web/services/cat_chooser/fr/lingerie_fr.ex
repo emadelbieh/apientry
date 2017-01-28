@@ -3,7 +3,7 @@ defmodule Apientry.LingerieFR do
 
   @attribute_values []
 
-  @regex = ~r/lingerie/
+  @regex ~r/lingerie/
 
   def process(data) do
     if data.breadcrumbs =~ @regex do

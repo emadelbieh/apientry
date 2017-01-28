@@ -8,7 +8,7 @@ defmodule Apientry.BagsFR do
   def process(data) do
     title = data.keywords
 
-    if(title && String.length(title)>0 && title =~ regex) do
+    if(title && String.length(title)>0 && title =~ @regex) do
       Map.merge(data, %{
         category_id: @category_id,
         attribute_values: @attribute_values

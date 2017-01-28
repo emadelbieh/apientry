@@ -9,7 +9,7 @@ defmodule Apientry.ShoesFR do
 
   def process(data) do
     str = Apientry.Rerank.tokenize(data.breadcrumbs, "fr")
-    str = Enum.join(tokenized, " ")
+    str = Enum.join(str, " ")
 
     if(str =~ @rules && str =~ @regex) do
       Map.merge(data, %{
