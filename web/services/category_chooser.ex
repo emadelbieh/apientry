@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.CategoryChooser do
   def init(data) do
     %{

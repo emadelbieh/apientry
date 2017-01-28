@@ -1,7 +1,51 @@
 defmodule Apientry.ClothingUS do
   @category_id "31515"
 
-  @rules ~w[bra hats hat hoodie Fleece Tunic dress shirt shirts t shirt bra bras boxer pants jacket shorts short Panties Sweatshirts Crew Socks Bikini skirts Cardigan Cardigans skirt Pullovers Sweater Vests jeans Jean Coats Swimwear Swimwears Sleepwear Sleepwears Socks Leggings Legging Lingerie Lingeries Underwear Underwears Stretch Fit V Neck]
+  @rules [
+    "bra",
+    "hats",
+    "hat",
+    "hoodie",
+    "Fleece",
+    "Tunic",
+    "dress",
+    "shirt",
+    "shirts",
+    "t shirt",
+    "bra",
+    "bras",
+    "boxer",
+    "pants",
+    "jacket",
+    "shorts",
+    "short",
+    "Panties",
+    "Sweatshirts",
+    "Crew Socks",
+    "Bikini",
+    "skirts",
+    "Cardigan",
+    "Cardigans",
+    "skirt",
+    "Pullovers",
+    "Sweater Vests",
+    "jeans",
+    "Jean",
+    "Coats",
+    "Swimwear",
+    "Swimwears",
+    "Sleepwear",
+    "Sleepwears",
+    "Socks",
+    "Leggings",
+    "Legging",
+    "Lingerie",
+    "Lingeries",
+    "Underwear",
+    "Underwears",
+    "Stretch Fit",
+    "V Neck"
+  ]
 
   @strong_attributes %{
                              "pants" => ["pants"],
