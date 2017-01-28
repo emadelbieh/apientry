@@ -11,7 +11,10 @@ defmodule Apientry.LaptopsUS do
     title = data.keywords
 
     if String.length(title) > 5 && title =~ @regex && title =~ @rules do
-      Map.put(data, :has_match, true)
+      Map.merge(data, %{
+        category_id: @category_id,
+        attribute_values: @attribute_values
+      })
     else
       data
     end
