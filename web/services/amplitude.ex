@@ -88,11 +88,11 @@ defmodule Apientry.Amplitude do
     })
   end
 
-  def track_latency(conn, time_data) do
+  def track_latency(conn, time_data, event_type \\ "rerank_functions") do
     request_uri = "#{conn.scheme}://#{conn.host}#{conn.request_path}?#{conn.query_string}"
     send_request(%{
       user_id: "latency_tracker",
-      event_type: "track_latency",
+      event_type: event_type,
       event_properties: Map.merge(time_data, %{
         request_uri: request_uri,
       })

@@ -91,9 +91,12 @@ defmodule Apientry.SearchController do
   end
 
   def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
+    overall_1 = :os.system_time
+
     conn = Map.put(conn, :params, add_min_max_price(conn.params))
 
     # run category chooser
+    time1 = :os.system_time
     category_data = conn
                     |> build_category_chooser_data()
                     |> Apientry.CategoryChooser.init()
@@ -102,13 +105,29 @@ defmodule Apientry.SearchController do
     IO.inspect category_data
     url = append_category_data(url, category_data)
 
+    time2 = :os.system_time
+    local_catchooser = time2 - time1
+
+
     # run first fetch
-    case HTTPoison.get(url) do
+    first_fetch_1 = :os.system_time
+    first_fetch = nil
+    second_fetch = nil
+    remote_catchooser = nil
+    rerank = nil
+
+    result = case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
+        first_fetch_2 = :os.system_time
+        first_fetch = first_fetch_2 - first_fetch_1
+
         body = Poison.decode!(body)
 
         if length(category_data[:attribute_values]) == 0 &&
           length(body["categories"]["category"]) == 1 do
+
+          time1 = :os.system_time
+
           category = hd(body["categories"]["category"])
           category_id = category["id"]
           cat_data = Apientry.StrongAttributeIDSelector.get_strong_attr_ids(%{
@@ -122,10 +141,16 @@ defmodule Apientry.SearchController do
           IO.puts "**********************"
           IO.puts URI.encode_query(cat_data)
           IO.puts "**********************"
+          time2 = :os.system_time
+          remote_catchooser = time2 - time1
 
           time1 = :os.system_time
+          second_fetch_1 = :os.system_time
           result = case HTTPoison.get(url) do
             {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
+              second_fetch_2 = :os.system_time
+              second_fetch = second_fetch_2 - second_fetch_1
+
               body = Poison.decode!(body)
               ErrorReporter.track_ebay_response(conn, status, body, headers)
 
@@ -144,7 +169,7 @@ defmodule Apientry.SearchController do
               time1 = :os.system_time
               new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
               time2 = :os.system_time
-              IO.puts "get_products took #{time2 - time1} nanoseconds"
+              rerank = time2 - time1
 
               items = hd(decoded["categories"]["category"])
               items = put_in(items, ["items","item"], new_data)
@@ -180,7 +205,7 @@ defmodule Apientry.SearchController do
           time1 = :os.system_time
           new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
           time2 = :os.system_time
-          IO.puts "get_products took #{time2 - time1} nanoseconds"
+          rerank = time2 - time1
 
           if length(decoded["categories"]["category"]) > 0 do
             items = hd(decoded["categories"]["category"])
@@ -199,6 +224,31 @@ defmodule Apientry.SearchController do
         |> put_status(400)
         |> render(:error, data: %{error: reason})
     end
+    overall_2 = :os.system_time
+    overall = overall_2 - overall_1
+
+    IO.puts "**************** time results ****************"
+    IO.puts "local catchooser: #{local_catchooser}"
+    IO.puts "remote_catchooser: #{remote_catchooser}"
+    IO.puts "ebay first fetch: #{first_fetch}"
+    IO.puts "ebay second_fetch: #{second_fetch}"
+    IO.puts "rerank: #{rerank}"
+    IO.puts "overall: #{overall}"
+    IO.puts "**************** time results ****************"
+
+
+    Task.start(fn ->
+      Apientry.Amplitude.track_latency(conn, %{
+        "local_catchooser" => local_catchooser,
+        "remote_catchooser" => remote_catchooser,
+        "ebay_first_fetch" => first_fetch,
+        "ebay_second_fetch" => second_fetch,
+        "rerank" => rerank,
+        "overall" => overall
+      }, "overall")
+    end)
+
+    result
   end
 
   defp transform_by_format(conn, body, format) do
