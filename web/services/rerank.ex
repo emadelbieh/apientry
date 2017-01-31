@@ -14,6 +14,7 @@ defmodule Apientry.Rerank do
   }
 
   def get_products(conn, ebay_results, search_term, geo, fetched_url) do
+    rerank1 = :os.system_time(:micro_seconds)
     geo = geo || "";
 
     regex_strings = Task.async(fn ->
@@ -31,22 +32,22 @@ defmodule Apientry.Rerank do
 
     categories = ebay_results
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = format_ebay_results_for_rerank(categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     format_ebay_results_for_rerank = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = remove_duplicate(categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     remove_duplicate = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = remove_small_categories(categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     remove_small_categories = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     
     regex_strings = Task.await(regex_strings)
     categories = Enum.map(categories, fn category ->
@@ -60,49 +61,52 @@ defmodule Apientry.Rerank do
 
       Map.put(category, :offers, offers)
     end)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     add_token_val_price_val = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     max_offer_token_val = get_max_offer_token_val(categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     get_max_offer_token_val = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = normalize_token_vals(categories, max_offer_token_val)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     normalize_token_vals = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = add_prod_val(categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     add_prod_val = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = add_category_token_vals(categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     add_category_token_vals = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = add_cat_val(conn, categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     add_cat_val = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = sort_categories(categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     sort_categories = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     categories = sort_products_within_categories(categories)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     sort_products_within_categories = time2 - time1
 
-    time1 = :os.system_time
+    time1 = :os.system_time(:micro_seconds)
     result = get_top_ten_offers(categories)
     |> Enum.map(fn offer -> offer.original_item end)
-    time2 = :os.system_time
+    time2 = :os.system_time(:micro_seconds)
     get_top_ten_offers = time2 - time1
+
+    rerank2 = :os.system_time(:micro_seconds)
+    rerank = rerank2 - rerank1
 
     time_data = %{
       format_ebay_results_for_rerank: format_ebay_results_for_rerank,
@@ -118,6 +122,20 @@ defmodule Apientry.Rerank do
       sort_products_within_categories: sort_products_within_categories,
       get_top_ten_offers: get_top_ten_offers
     }
+
+    IO.puts "format_ebay_results_for_rerank: #{format_ebay_results_for_rerank},"
+    IO.puts "remove_duplicate: #{remove_duplicate},"
+    IO.puts "remove_small_categories: #{remove_small_categories},"
+    IO.puts "add_token_val_price_val: #{add_token_val_price_val},"
+    IO.puts "get_max_offer_token_val: #{get_max_offer_token_val},"
+    IO.puts "normalize_token_vals: #{normalize_token_vals},"
+    IO.puts "add_prod_val: #{add_prod_val},"
+    IO.puts "add_category_token_vals: #{add_category_token_vals},"
+    IO.puts "add_cat_val: #{add_cat_val},"
+    IO.puts "sort_categories: #{sort_categories},"
+    IO.puts "sort_products_within_categories: #{sort_products_within_categories},"
+    IO.puts "get_top_ten_offers: #{get_top_ten_offers}"
+    IO.puts "rerank: #{rerank} micro seconds"
 
     Task.start(fn ->
       Apientry.Amplitude.track_latency(conn, time_data)
@@ -143,21 +161,25 @@ defmodule Apientry.Rerank do
 
   def format_ebay_results_for_rerank(ebay_results) do
     ebay_results
-    |> Enum.map(fn category ->
+    |> ParallelStream.map(fn category ->
       %{
         cat_name: category["name"],
         cat_id: category["id"],
         offers: extract_offers(category["items"]["item"])
       }
     end)
+    |> Enum.into([])
   end
 
   def remove_duplicate(categories) do
-    categories = Enum.map(categories, fn category ->
-      offers = Enum.uniq_by(category.offers, fn offer ->
-        "#{offer.title} #{offer.price}"
+    ParallelStream.map(categories, fn category ->
+      offers = category.offers
+      |> Enum.reduce(%{}, fn offer, map ->
+        Map.put(map, "#{offer.title} #{offer.price}", offer)
       end)
-      category = Map.put(category, :offers, offers)
+      |> Enum.map(fn {_, offer} -> offer end)
+
+      Map.put(category, :offers, offers)
     end)
   end
 
@@ -255,7 +277,7 @@ defmodule Apientry.Rerank do
     attributes_from_ebay = get_attr_from_title_by_cat_id(geo, regex, search_term)
 
     offers
-    |> Stream.filter(fn offer ->
+    |> ParallelStream.filter(fn offer ->
       m = get_num_of_same_tokens(offer, search_term)
 
       (fetchedUrl && String.length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
@@ -263,19 +285,10 @@ defmodule Apientry.Rerank do
       (token_count_in_search_term > 5 && token_count_in_search_term <= 9 && m > 2) ||
       (token_count_in_search_term <= 5 && m > 1)
     end)
-    |> Enum.map(&Task.async(fn ->
-      try do
-        add_token_val_helper(&1, attributes_from_ebay, geo, search_term, token_count_in_search_term) 
-      rescue
-        e in RuntimeError ->
-          Apientry.ErrorReporter.report(conn, %{
-            kind: :error,
-            reason: e,
-            stacktrace: System.stacktrace()
-          })
-      end
-    end))
-    |> Enum.map(&Task.await(&1))
+    |> ParallelStream.map(fn offer ->
+      add_token_val_helper(offer, attributes_from_ebay, geo, search_term, token_count_in_search_term) 
+    end)
+    |> Enum.into([])
   end
 
   # counts the number of tokens in search term
@@ -351,8 +364,8 @@ defmodule Apientry.Rerank do
   end
 
   def count_total_offers(categories) do
-    categories
-    |> Stream.map(fn category -> length(category.offers) end)
+    offers_total = categories
+    |> ParallelStream.map(fn category -> length(category.offers) end)
     |> Enum.sum
   end
 
