@@ -129,8 +129,8 @@ defmodule Apientry.Rerank do
   # refactored from format_ebay_results_for_rerank
   def extract_offers(ebay_items) do
     ebay_items
-    |> Enum.filter(fn item -> item["offer"] end)
-    |> Enum.map(fn item ->
+    |> ParallelStream.filter(fn item -> item["offer"] end)
+    |> ParallelStream.map(fn item ->
       {price, _} = Float.parse(item["offer"]["basePrice"]["value"])
       %{
         title: item["offer"]["name"],
@@ -138,6 +138,7 @@ defmodule Apientry.Rerank do
         original_item: item
       }
     end)
+    |> Enum.into([])
   end
 
   def format_ebay_results_for_rerank(ebay_results) do
