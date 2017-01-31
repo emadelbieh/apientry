@@ -13,7 +13,10 @@ defmodule Apientry.RerankTest do
       }
     }]
 
-    result = hd(Apientry.Rerank.format_ebay_results_for_rerank(original))
+    result = Apientry.Rerank.format_ebay_results_for_rerank(original)
+    |> Enum.into([])
+    |> hd
+
     assert result.cat_name == "Category"
     assert result.cat_id == 1
 
@@ -49,6 +52,7 @@ defmodule Apientry.RerankTest do
     ]
 
     result = Apientry.Rerank.remove_duplicate(internal_data)
+    |> Enum.into([])
 
     assert result == expected
   end

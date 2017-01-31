@@ -120,22 +120,9 @@ defmodule Apientry.Rerank do
       add_cat_val: add_cat_val,
       sort_categories: sort_categories,
       sort_products_within_categories: sort_products_within_categories,
-      get_top_ten_offers: get_top_ten_offers
+      get_top_ten_offers: get_top_ten_offers,
+      rerank: rerank
     }
-
-    IO.puts "format_ebay_results_for_rerank: #{format_ebay_results_for_rerank},"
-    IO.puts "remove_duplicate: #{remove_duplicate},"
-    IO.puts "remove_small_categories: #{remove_small_categories},"
-    IO.puts "add_token_val_price_val: #{add_token_val_price_val},"
-    IO.puts "get_max_offer_token_val: #{get_max_offer_token_val},"
-    IO.puts "normalize_token_vals: #{normalize_token_vals},"
-    IO.puts "add_prod_val: #{add_prod_val},"
-    IO.puts "add_category_token_vals: #{add_category_token_vals},"
-    IO.puts "add_cat_val: #{add_cat_val},"
-    IO.puts "sort_categories: #{sort_categories},"
-    IO.puts "sort_products_within_categories: #{sort_products_within_categories},"
-    IO.puts "get_top_ten_offers: #{get_top_ten_offers}"
-    IO.puts "rerank: #{rerank} micro seconds"
 
     Task.start(fn ->
       Apientry.Amplitude.track_latency(conn, time_data)
@@ -168,7 +155,6 @@ defmodule Apientry.Rerank do
         offers: extract_offers(category["items"]["item"])
       }
     end)
-    |> Enum.into([])
   end
 
   def remove_duplicate(categories) do
