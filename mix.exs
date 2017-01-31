@@ -62,6 +62,7 @@ defmodule Apientry.Mixfile do
      {:xml_builder, "~> 0.0.6"},
      {:stemex, "~> 0.1.1"},
      {:csv, "~> 1.4.2"},
+     {:parallel_stream, "~> 1.0.5"},
     ]
   end
 
