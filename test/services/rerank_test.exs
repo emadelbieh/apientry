@@ -197,7 +197,7 @@ defmodule Apientry.RerankTest do
       %{offers: [%{val: 10}, %{val: 11}, %{val: 12}]}
     ]
 
-    offers = Apientry.Rerank.get_top_ten_offers(data)
+    offers = Apientry.Rerank.get_top_ten_offers(data, %{params: %{}})
     assert length(offers) == 10
 
     vals = Enum.map(offers, fn offer -> offer.val end)
