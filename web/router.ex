@@ -44,15 +44,10 @@ defmodule Apientry.Router do
     end
   end
 
-  #scope "/beta", Apientry do
-  #  pipe_through :api
-  #  get "/publisher", SearchController, :search_rerank
-  #end
-
   scope "/", Apientry do
     pipe_through :api
     get "/publisher", SearchController, :search
-    get "/beta/publisher", SearchController, :search_rerank
+    get "/alpha/publisher", SearchController, :search_rerank
     get "/publisher/:endpoint", SearchController, :search
     get "/redirect/:fragment", RedirectController, :show
 
