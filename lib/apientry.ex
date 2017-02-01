@@ -14,12 +14,14 @@ defmodule Apientry do
       supervisor(Apientry.Repo, []),
       # Here you could define other workers and supervisors as children
       # worker(Apientry.Worker, [arg1, arg2, arg3]),
-      supervisor(Apientry.DbCacheSupervisor, [[name: :db_cache_supervisor]])
+      supervisor(Apientry.DbCacheSupervisor, [[name: :db_cache_supervisor]]),
+      worker(CsvCacheRegistry, [CsvCacheRegistry]),
+      supervisor(CsvCacheSupervisor, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Apientry.Supervisor]
+    opts = [strategy: :rest_for_one, name: Apientry.Supervisor]
     Supervisor.start_link(children, opts)
   end
 

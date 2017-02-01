@@ -17,7 +17,7 @@ defmodule Apientry.Rerank do
     rerank1 = :os.system_time(:milli_seconds)
     geo = geo || "";
 
-    regex_strings = Task.async(fn ->
+    regex_cache = Task.async(fn ->
       try do
         Apientry.Helpers.regex_strings(geo)
       rescue
@@ -49,9 +49,10 @@ defmodule Apientry.Rerank do
 
     time1 = :os.system_time(:milli_seconds)
     
-    regex_strings = Task.await(regex_strings)
+    regex_cache = Task.await(regex_cache)
     categories = Enum.map(categories, fn category ->
-      {:ok, regex} = regex_strings[category.cat_id] |> Regex.compile()
+      regex_string = CsvCache.get(regex_cache, category.cat_id)
+      {:ok, regex} = regex_string |> Regex.compile()
 
       max_cat_price = get_max_cat_price(category)
 
