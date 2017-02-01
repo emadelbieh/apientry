@@ -101,7 +101,7 @@ defmodule Apientry.Rerank do
     sort_products_within_categories = time2 - time1
 
     time1 = :os.system_time(:milli_seconds)
-    result = get_top_ten_offers(categories)
+    result = get_top_ten_offers(categories, conn)
     |> Enum.map(fn offer -> offer.original_item end)
     time2 = :os.system_time(:milli_seconds)
     get_top_ten_offers = time2 - time1
@@ -396,9 +396,30 @@ defmodule Apientry.Rerank do
     end)
   end
 
-  def get_top_ten_offers(categories) do
+  def normalize_num_offers(conn) do
+    num = conn.params["numOffers"]
+    
+    if num == nil do
+      10
+    else
+      {num, _} = Integer.parse(num)
+      cond do
+        num == nil ->
+          10
+        num > 50 ->
+          50
+        num < 1 ->
+          10
+        true ->
+          num
+      end
+    end
+  end
+
+  def get_top_ten_offers(categories, conn) do
+    num = normalize_num_offers(conn)
     Stream.flat_map(categories, fn category -> category.offers end)
-    |> Enum.take(10)
+    |> Enum.take(num)
   end
 
   def get_max_offer_token_val(categories) do
