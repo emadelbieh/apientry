@@ -25,7 +25,8 @@ defmodule Apientry.Mixfile do
        :phoenix, :phoenix_html, :cowboy, :logger, :gettext,
        :phoenix_ecto, :postgrex, :httpoison, :geolix,
        :phoenix_slime, :cors_plug, :phoenix_pubsub, :edeliver,
-       :basic_auth, :inets, :rollbax, :xml_builder, :csv, :stemex
+       :basic_auth, :inets, :rollbax, :xml_builder, :csv, :stemex,
+       :quantum
      ]]
   end
 
@@ -63,6 +64,7 @@ defmodule Apientry.Mixfile do
      {:stemex, "~> 0.1.1"},
      {:csv, "~> 1.4.2"},
      {:parallel_stream, "~> 1.0.5"},
+     {:quantum, ">= 1.9.0"},
     ]
   end
 
