@@ -25,6 +25,7 @@ defmodule Apientry.Router do
     pipe_through :secure
     get "/", PageController, :index
 
+    resources "/merchants", MerchantController
     resources "/geos", GeoController
     resources "/accounts", AccountController
     resources "/ebay_api_keys", EbayApiKeyController
