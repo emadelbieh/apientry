@@ -3,7 +3,6 @@ defmodule Apientry.Repo.Migrations.CreateMerchant do
 
   def change do
     create table(:merchants) do
-      add :feeds4_id, :string
       add :merchant, :string
       add :slug, :string
       add :website, :string
