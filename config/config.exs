@@ -64,6 +64,7 @@ config :apientry, :rollbar_enabled, false
 config :quantum, :apientry,
   cron: [
       "* */6 * * *":  {"Apientry.DownloadMerchantWorker", :perform}
+      "9 */6 * * *":  {"Apientry.DownloadMerchantWorker", :perform}
   ]
 
 # Import environment specific config. This must remain at the bottom
