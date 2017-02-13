@@ -2,7 +2,6 @@ defmodule Apientry.Merchant do
   use Apientry.Web, :model
 
   schema "merchants" do
-    field :feeds4_id, :string
     field :merchant, :string
     field :slug, :string
     field :website, :string
@@ -20,7 +19,7 @@ defmodule Apientry.Merchant do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:feeds4_id, :merchant, :slug, :website, :domain, :url, :network, :country, :logo])
-    |> validate_required([:feeds4_id, :merchant, :slug, :website, :domain, :url, :network, :country, :logo])
+    |> cast(params, [:id, :merchant, :slug, :website, :domain, :url, :network, :country, :logo])
+    |> validate_required([:id, :merchant, :slug, :website, :domain, :url, :network, :country, :logo])
   end
 end
