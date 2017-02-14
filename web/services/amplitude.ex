@@ -17,6 +17,8 @@ defmodule Apientry.Amplitude do
     "CLICK_OFFER_URL" => true,
     "CLICK_PRODUCT_URL" => true,
     "CLICK_REVIEW_URL" => true,
+
+    "CLICK_COUPON_URL" => true
   }
 
   @doc """
