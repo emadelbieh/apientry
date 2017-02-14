@@ -1,6 +1,8 @@
 defmodule Apientry.Coupon do
   use Apientry.Web, :model
 
+  alias Apientry.EbayJsonTransformer
+
   schema "coupons" do
     field :merchant, :string
     field :merchantid, :string
