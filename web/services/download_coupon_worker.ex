@@ -24,7 +24,7 @@ defmodule Apientry.DownloadCouponWorker do
             changeset = Coupon.changeset(%Coupon{}, coupon)
             case Repo.insert(changeset) do
               {:ok, coupon} ->
-                IO.puts("Coupont #{coupon.id} successfully saved")
+                IO.puts("Coupon #{coupon.id} successfully saved")
               {:error, changeset} ->
                 IO.puts("Error saving coupon: #{changeset.id}")
             end
