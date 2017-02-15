@@ -1,5 +1,5 @@
 defmodule Apientry.DownloadMerchantWorker do
-  @endpoint "https://api.feeds4.com/merchants/?token=bl213euxg-scof-zq44-f3b4589h74&recor&format=json"
+  @endpoint "https://api.feeds4.com/merchants/?token=bl213euxg-scof-zq44-f3b4589h74&recordset=all&format=json"
 
   alias HTTPoison.Response
   alias Apientry.Merchant
