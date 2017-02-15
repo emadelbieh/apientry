@@ -32,6 +32,7 @@ defmodule Apientry.Router do
     resources "/publisher_api_keys", PublisherApiKeyController
     resources "/feeds", FeedController
     resources "/tracking_ids", TrackingIdController
+    resources "/publisher_sub_ids", PublisherSubIdController
 
     get  "/assign/step1", AssignmentController, :step1
     post "/assign/step2", AssignmentController, :step2

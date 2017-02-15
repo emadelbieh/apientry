@@ -1,0 +1,6 @@
+<h2>Edit publisher sub id</h2>
+
+<%= render "form.html", changeset: @changeset,
+                        action: publisher_sub_id_path(@conn, :update, @publisher_sub_id) %>
+
+<%= link "Back", to: publisher_sub_id_path(@conn, :index) %>

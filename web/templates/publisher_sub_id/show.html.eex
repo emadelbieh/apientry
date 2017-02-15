@@ -1,0 +1,18 @@
+<h2>Show publisher sub id</h2>
+
+<ul>
+
+  <li>
+    <strong>Publisher:</strong>
+    <%= @publisher_sub_id.publisher_id %>
+  </li>
+
+  <li>
+    <strong>Sub:</strong>
+    <%= @publisher_sub_id.sub_id %>
+  </li>
+
+</ul>
+
+<%= link "Edit", to: publisher_sub_id_path(@conn, :edit, @publisher_sub_id) %>
+<%= link "Back", to: publisher_sub_id_path(@conn, :index) %>

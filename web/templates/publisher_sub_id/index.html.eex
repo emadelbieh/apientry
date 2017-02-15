@@ -1,0 +1,28 @@
+<h2>Listing publisher sub ids</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Publisher</th>
+      <th>Sub</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for publisher_sub_id <- @publisher_sub_ids do %>
+    <tr>
+      <td><%= publisher_sub_id.publisher_id %></td>
+      <td><%= publisher_sub_id.sub_id %></td>
+
+      <td class="text-right">
+        <%= link "Show", to: publisher_sub_id_path(@conn, :show, publisher_sub_id), class: "btn btn-default btn-xs" %>
+        <%= link "Edit", to: publisher_sub_id_path(@conn, :edit, publisher_sub_id), class: "btn btn-default btn-xs" %>
+        <%= link "Delete", to: publisher_sub_id_path(@conn, :delete, publisher_sub_id), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<%= link "New publisher sub id", to: publisher_sub_id_path(@conn, :new) %>
