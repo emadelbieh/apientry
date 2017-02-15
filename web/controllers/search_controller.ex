@@ -299,19 +299,32 @@ defmodule Apientry.SearchController do
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
   """
   def set_search_options(%{query_string: query_string} = conn, _) do
-    params = query_string
-    |> StringKeyword.from_query_string()
+    if search_engine?(conn) do
+      conn
+      |> assign(:valid, false)
+      |> render(:error, data: %{error: "Search Engine"})
+      |> halt()
+    else
+      params = query_string
+      |> StringKeyword.from_query_string()
 
-    format = get_format(conn)
-    endpoint = conn.params["endpoint"] || @default_endpoint
-    result = Searcher.search(format, endpoint, params, conn)
+      format = get_format(conn)
+      endpoint = conn.params["endpoint"] || @default_endpoint
+      result = Searcher.search(format, endpoint, params, conn)
 
-    result
-    |> Enum.reduce(conn, fn {key, val}, conn -> assign(conn, key, val) end)
+      result
+      |> Enum.reduce(conn, fn {key, val}, conn -> assign(conn, key, val) end)
+    end
   end
 
   def set_search_options(conn, _) do
     conn
     |> assign(:valid, false)
+  end
+
+  defp search_engine?(conn) do
+    Enum.any?(["yahoo", "google", "bing"], fn engine ->
+      conn.params["domain"] =~ engine
+    end)
   end
 end
