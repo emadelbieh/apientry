@@ -1,5 +1,5 @@
 defmodule Apientry.DownloadCouponWorker do
-  @endpoint "https://api.feeds4.com/coupons/?token=bl213euxg-scof-zq44-f3b4589h74&recordset=test&format=json"
+  @endpoint "https://api.feeds4.com/coupons/?token=bl213euxg-scof-zq44-f3b4589h74&recordset=all&format=json"
 
   alias HTTPoison.Response
   alias Apientry.Coupon
