@@ -35,9 +35,54 @@ defmodule Apientry.Coupon do
     |> validate_required([:id, :merchant, :merchantid, :offer, :url, :code, :startdate, :enddate, :category, :dealtype, :holiday, :network, :rating, :country, :logo, :website, :domain, :lastmodified])
   end
 
-  def by_domain_name(conn, domain) do
-    coupons = Apientry.Repo.all(from c in Apientry.Coupon, where: c.domain == ^domain)
+  def by_params(conn) do
+    params = conn.params
+
+    coupons = (from c in Apientry.Coupon)
+    |> by_domain(params)
+    |> by_network(params)
+    |> by_category(params)
+    |> by_dealtype(params)
+    |> by_holiday(params)
+    |> Apientry.Repo.all
+
     track(conn, coupons)
+  end
+
+  def by_domain(query, params) do
+    from c in query, where: c.domain == ^params["domain"]
+  end
+
+  def by_network(query, params) do
+    if params["network"] do
+      from c in query, where: c.network == ^params["network"]
+    else
+      query
+    end
+  end
+
+  def by_category(query, params) do
+    if params["category"] do
+      from c in query, where: c.category == ^params["category"]
+    else
+      query
+    end
+  end
+
+  def by_dealtype(query, params) do
+    if params["dealtype"] do
+      from c in query, where: c.dealtype == ^params["dealtype"]
+    else
+      query
+    end
+  end
+
+  def by_holiday(query, params) do
+    if params["holiday"] do
+      from c in query, where: c.holiday == ^params["holiday"]
+    else
+      query
+    end
   end
 
   def track(conn, coupons) do
