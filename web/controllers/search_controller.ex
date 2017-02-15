@@ -15,7 +15,7 @@ defmodule Apientry.SearchController do
   alias Apientry.ErrorReporter
   alias Apientry.StringKeyword
 
-  plug :set_search_options when action in [:search, :dry_search, :search_rerank]
+  plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons]
 
   @doc """
   Dry run of a search.
@@ -86,6 +86,13 @@ defmodule Apientry.SearchController do
     params
     |> Map.put("minPrice", min_price)
     |> Map.put("maxPrice", max_price)
+  end
+
+  def search_rerank_coupons(conn, params) do
+    assigns = conn.assigns
+    assigns = Map.put(assigns, :include_coupons, true)
+    conn = Map.put(conn, :assigns, assigns)
+    search_rerank(conn, params)
   end
 
   def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
@@ -173,7 +180,11 @@ defmodule Apientry.SearchController do
               items = put_in(items, ["items","item"], new_data)
               decoded = put_in(decoded, ["categories", "category"], [items])
 
-              resp = Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn.params["domain"]))})
+              resp = if conn.assigns[:include_coupons] do
+                Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn.params["domain"]))})
+              else
+                decoded
+              end
 
               conn
               |> put_status(status)
@@ -213,7 +224,11 @@ defmodule Apientry.SearchController do
             decoded = put_in(decoded, ["categories", "category"], [items])
           end
           
-          resp = Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn.params["domain"]))})
+          resp = if conn.assigns[:include_coupons] do
+            Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn.params["domain"]))})
+          else
+            decoded
+          end
 
           conn
           |> put_status(status)
