@@ -35,28 +35,28 @@ defmodule Apientry.Coupon do
     |> validate_required([:id, :merchant, :merchantid, :offer, :url, :code, :startdate, :enddate, :category, :dealtype, :holiday, :network, :rating, :country, :logo, :website, :domain, :lastmodified])
   end
 
-  def by_domain_name(domain) do
+  def by_domain_name(conn, domain) do
     coupons = Apientry.Repo.all(from c in Apientry.Coupon, where: c.domain == ^domain)
-    track(coupons)
+    track(conn, coupons)
   end
 
-  def track(coupons) do
+  def track(conn, coupons) do
     Enum.map(coupons, fn coupon ->
-      Map.put(coupon, :url, build_url(coupon))
+      Map.put(coupon, :url, build_url(conn, coupon))
     end)
   end
 
-  def build_url(coupon) do
+  def build_url(conn, coupon) do
     EbayJsonTransformer.build_url(coupon.url, %{
-        is_mobile: true,
+        is_mobile: conn.assigns[:is_mobile],
         params: %{
-          "keyword" => "",
-          "visitorIPAddress" => "",
-          "visitorUserAgent" => "Mozilla",
-          "domain" => "amazon.com"
+          "keyword" => conn.params["keyword"],
+          "visitorIPAddress" => conn.params["visitorIPAddress"],
+          "visitorUserAgent" => conn.params["visitorUserAgent"],
+          "domain" => conn.params["domain"]
         },
-        country: "US",
-        redirect_base: "http://localhost:4000/redirect/"
+        country: conn.assigns[:country],
+        redirect_base: conn.assigns[:redirect_base]
       },
       event: "CLICK_COUPON_URL",
       offer_name: coupon.offer,

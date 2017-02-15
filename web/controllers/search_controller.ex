@@ -181,7 +181,7 @@ defmodule Apientry.SearchController do
               decoded = put_in(decoded, ["categories", "category"], [items])
 
               resp = if conn.assigns[:include_coupons] do
-                Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn.params["domain"]))})
+                Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn, conn.params["domain"]))})
               else
                 decoded
               end
@@ -225,7 +225,7 @@ defmodule Apientry.SearchController do
           end
           
           resp = if conn.assigns[:include_coupons] do
-            Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn.params["domain"]))})
+            Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn, conn.params["domain"]))})
           else
             decoded
           end
