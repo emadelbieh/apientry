@@ -37,6 +37,7 @@ defmodule Apientry.Coupon do
 
   def by_domain_name(domain) do
     coupons = Apientry.Repo.all(from c in Apientry.Coupon, where: c.domain == ^domain)
+    track(coupons)
   end
 
   def track(coupons) do

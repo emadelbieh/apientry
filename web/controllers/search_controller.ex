@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.SearchController do
   @moduledoc """
   Takes in requests from /publisher.
@@ -175,10 +173,12 @@ defmodule Apientry.SearchController do
               items = put_in(items, ["items","item"], new_data)
               decoded = put_in(decoded, ["categories", "category"], [items])
 
+              resp = Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn.params["domain"]))})
+
               conn
               |> put_status(status)
               |> put_resp_content_type("application/#{request_format}")
-              |> render("index.xml", data: Poison.encode!(decoded))
+              |> render("index.xml", data: Poison.encode!(resp))
 
             {:error, %HTTPoison.Error{reason: reason} = error} ->
               ErrorReporter.track_httpoison_error(conn, error)
@@ -212,11 +212,13 @@ defmodule Apientry.SearchController do
             items = put_in(items, ["items","item"], new_data)
             decoded = put_in(decoded, ["categories", "category"], [items])
           end
+          
+          resp = Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_domain_name(conn.params["domain"]))})
 
           conn
           |> put_status(status)
           |> put_resp_content_type("application/#{request_format}")
-          |> render("index.xml", data: Poison.encode!(decoded))
+          |> render("index.xml", data: Poison.encode!(resp))
         end
       {:error, %HTTPoison.Error{reason: reason} = error} ->
         ErrorReporter.track_httpoison_error(conn, error)
