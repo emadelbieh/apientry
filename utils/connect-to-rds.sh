@@ -16,8 +16,8 @@ ssh-add "$KEYFILE" 2>/dev/null
 
 echo "Waiting for connection..." >&2
 
-ssh deployer@54.84.208.240 -N \
-  -L "20002:apientry-production.c1snflmeflqw.us-east-1.rds.amazonaws.com:5432" &
+ssh ubuntu@54.172.78.10 -N \
+  -L "20002:autoscale-apientry-rds.c1snflmeflqw.us-east-1.rds.amazonaws.com:5432" &
 SSH_PID=$!
 
 wait_for_psql 20002 apientry fxuJbaisGapsBacroarh apientry_production
