@@ -18,7 +18,8 @@ defmodule Apientry.DownloadCouponWorker do
               {:ok, coupon} ->
                 IO.puts("Coupon #{coupon.id} successfully updated")
               {:error, changeset} ->
-                IO.puts("Error saving coupon: #{changeset.id}")
+                IO.puts("Error saving coupon:")
+                IO.inspect changeset
             end
           else
             changeset = Coupon.changeset(%Coupon{}, coupon)
@@ -26,7 +27,8 @@ defmodule Apientry.DownloadCouponWorker do
               {:ok, coupon} ->
                 IO.puts("Coupon #{coupon.id} successfully saved")
               {:error, changeset} ->
-                IO.puts("Error saving coupon: #{changeset.id}")
+                IO.puts("Error saving coupon:")
+                IO.inspect changeset
             end
           end
         end)
