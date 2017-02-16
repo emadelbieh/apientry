@@ -1,5 +1,6 @@
 defmodule Apientry.PublisherSubIdControllerTest do
   use Apientry.ConnCase
+  use Apientry.MockBasicAuth
 
   alias Apientry.PublisherSubId
   @valid_attrs %{sub_id: "some content"}

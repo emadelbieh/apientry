@@ -3,7 +3,7 @@ defmodule Apientry.MerchantTest do
 
   alias Apientry.Merchant
 
-  @valid_attrs %{country: "some content", domain: "some content", feeds4_id: "some content", logo: "some content", merchant: "some content", network: "some content", slug: "some content", url: "some content", website: "some content"}
+  @valid_attrs %{country: "some content", domain: "some content", id: "1234", logo: "some content", merchant: "some content", network: "some content", slug: "some content", url: "some content", website: "some content"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

@@ -3,7 +3,7 @@ defmodule Apientry.CouponTest do
 
   alias Apientry.Coupon
 
-  @valid_attrs %{category: "some content", code: "some content", country: "some content", dealtype: "some content", domain: "some content", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchant_id: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
+  @valid_attrs %{id: "1234", category: "some content", code: "some content", country: "some content", dealtype: "some content", domain: "some content", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
