@@ -66,6 +66,7 @@ defmodule Apientry.Mixfile do
      {:parallel_stream, "~> 1.0.5"},
      {:crontab, "~> 1.0.0"},
      {:quantum, ">= 1.9.0"},
+     {:random_bytes, "~> 1.0"},
     ]
   end
 

@@ -46,6 +46,7 @@
   "providers": {:hex, :providers, "1.6.0", "db0e2f9043ae60c0155205fcd238d68516331d0e5146155e33d1e79dc452964a", [:rebar3], [{:getopt, "0.8.2", [hex: :getopt, optional: false]}]},
   "quantum": {:hex, :quantum, "1.9.0", "ec19ce81198a97ee5d5331c7c37ca81c3180884cacd65865de27a2db36c92440", [:mix], [{:calendar, "~> 0.16", [hex: :calendar, optional: false]}, {:crontab, "~> 1.0.0", [hex: :crontab, optional: false]}]},
   "ranch": {:hex, :ranch, "1.2.1", "a6fb992c10f2187b46ffd17ce398ddf8a54f691b81768f9ef5f461ea7e28c762", [:make], []},
+  "random_bytes": {:hex, :random_bytes, "1.0.0", "69258cad0aa5a0f2390912eb1e749781dbb9c75626308decf99113ccdec376dd", [:mix], []},
   "relx": {:hex, :relx, "3.20.0", "b515b8317d25b3a1508699294c3d1fa6dc0527851dffc87446661bce21a36710", [:rebar3], [{:bbmustache, "1.0.4", [hex: :bbmustache, optional: false]}, {:cf, "0.2.1", [hex: :cf, optional: false]}, {:erlware_commons, "0.21.0", [hex: :erlware_commons, optional: false]}, {:getopt, "0.8.2", [hex: :getopt, optional: false]}, {:providers, "1.6.0", [hex: :providers, optional: false]}]},
   "rollbax": {:hex, :rollbax, "0.7.0", "b1c194f4ce10b507898ece4d995d0aaab4da247e7fce0b1e9e76384b134ed41e", [:mix], [{:hackney, "~> 1.1", [hex: :hackney, optional: false]}, {:poison, "~> 1.4 or ~> 2.0", [hex: :poison, optional: false]}]},
   "slime": {:hex, :slime, "0.13.0", "fb9b1296b5ef3fe6aed09deec2794a146c94f5270b3bcd9f956c01d3660fc196", [:mix], []},
