@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.SearchControllerTest do
   use Apientry.ConnCase, async: true
   use MockEbay

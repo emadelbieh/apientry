@@ -11,5 +11,4 @@ defmodule Apientry.CouponSearchController do
     coupons = Coupon.by_params(conn)
     json conn, Coupon.to_map(coupons)
   end
-
 end
