@@ -2,7 +2,10 @@ defmodule Apientry.Coupon do
   use Apientry.Web, :model
 
   alias Apientry.EbayJsonTransformer
-
+  alias Apientry.Repo
+  alias Apientry.PublisherSubId
+  alias Apientry.Publisher
+  
   schema "coupons" do
     field :merchant, :string
     field :merchantid, :string
@@ -91,7 +94,15 @@ defmodule Apientry.Coupon do
     end)
   end
 
+  def get_publisher_from_sub_id(sub_id) do
+    {:ok, publisher_sub_id} = Repo.get(PublisherSubId, sub_id)
+    {:ok, publisher} = Repo.get(Publisher, publisher_sub_id.publisher_id)
+  end
+
   def build_url(conn, coupon) do
+    publisher_sub_id = Repo.one(from p in PublisherSubId, where: p.sub_id == ^conn.params["subid"])
+    publisher = Repo.get(Publisher, publisher_sub_id.publisher_id)
+
     EbayJsonTransformer.build_url(coupon.url, %{
         is_mobile: conn.assigns[:is_mobile],
         params: %{
@@ -110,7 +121,9 @@ defmodule Apientry.Coupon do
       network: coupon.network,
       category: coupon.category,
       code: coupon.code,
-      rating: coupon.rating)
+      rating: coupon.rating,
+      publisher: publisher.name,
+      subid: publisher_sub_id.sub_id)
   end
 
   def to_map(coupons) when is_list(coupons) do
