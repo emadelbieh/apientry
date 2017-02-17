@@ -55,6 +55,7 @@ defmodule Apientry.Router do
     get "/publisher/:endpoint", SearchController, :search
     get "/redirect/:fragment", RedirectController, :show
 
+    get "/subid/generate", SubIdController, :generate
     options "/publisher", SearchController, :search # for cors
 
     get "/__healthcheck", HealthCheckController, :index
