@@ -26,7 +26,7 @@ defmodule Apientry.Mixfile do
        :phoenix_ecto, :postgrex, :httpoison, :geolix,
        :phoenix_slime, :cors_plug, :phoenix_pubsub, :edeliver,
        :basic_auth, :inets, :rollbax, :xml_builder, :csv, :stemex,
-       :crontab, :quantum
+       :crontab, :quantum, :random_bytes
      ]]
   end
 
