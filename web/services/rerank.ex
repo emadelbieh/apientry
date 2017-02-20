@@ -51,7 +51,7 @@ defmodule Apientry.Rerank do
     
     regex_cache = Task.await(regex_cache)
     categories = Enum.map(categories, fn category ->
-      regex_string = CsvCache.get(regex_cache, category.cat_id)
+      regex_string = CsvCache.get(regex_cache, category.cat_id) || ""
       {:ok, regex} = regex_string |> Regex.compile()
 
       max_cat_price = get_max_cat_price(category)
