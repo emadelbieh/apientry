@@ -129,6 +129,7 @@ defmodule Apientry.SearchController do
         body = Poison.decode!(body)
 
         if length(category_data[:attribute_values]) == 0 &&
+          body["categories"] && body["categories"]["category"]  &&
           length(body["categories"]["category"]) == 1 do
 
           time1 = :os.system_time

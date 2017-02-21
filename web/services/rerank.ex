@@ -300,10 +300,14 @@ defmodule Apientry.Rerank do
   end
 
   def get_max_cat_price(category) do
-    most_expensive_offer = Enum.max_by(category.offers, fn offer ->
-      offer.price
-    end)
-    most_expensive_offer.price
+    if category.offers == [] do
+      0
+    else
+      most_expensive_offer = Enum.max_by(category.offers, fn offer ->
+        offer.price
+      end)
+      most_expensive_offer.price
+    end
   end
 
   def calculate_price_val(offer, max_cat_price) do
