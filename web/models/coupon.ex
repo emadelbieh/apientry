@@ -42,18 +42,42 @@ defmodule Apientry.Coupon do
     params = conn.params
 
     coupons = (from c in Apientry.Coupon)
+    |> by_key(params)
     |> by_domain(params)
     |> by_network(params)
     |> by_category(params)
     |> by_dealtype(params)
     |> by_holiday(params)
+    |> by_country(params)
     |> Apientry.Repo.all
 
     track(conn, coupons)
   end
 
+  def by_country(query, params) do
+    if params["country"] do
+      from c in query, where: ilike(c.country, ^params["country"])
+    else
+      query
+    end
+  end
+
+  def by_key(query, params) do
+    if params["key"] do
+      term = params["key"]
+      term = String.replace(term, "%", "\\%")
+      from c in query, where: ilike(c.offer, ^"%#{term}%")
+    else
+      query
+    end
+  end
+
   def by_domain(query, params) do
-    from c in query, where: c.domain == ^params["domain"]
+    if params["domain"] do
+      from c in query, where: c.domain == ^params["domain"]
+    else
+      query
+    end
   end
 
   def by_network(query, params) do
