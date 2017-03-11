@@ -66,7 +66,11 @@ defmodule Apientry.Coupon do
     if params["key"] do
       term = params["key"]
       term = String.replace(term, "%", "\\%")
-      from c in query, where: ilike(c.offer, ^"%#{term}%")
+      terms = String.split(term)
+
+      Enum.reduce(terms, query, fn term, query ->
+        from c in query, where: ilike(c.offer, ^"%#{term}%")
+      end)
     else
       query
     end
