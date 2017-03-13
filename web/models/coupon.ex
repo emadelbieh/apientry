@@ -78,7 +78,10 @@ defmodule Apientry.Coupon do
 
   def by_domain(query, params) do
     if params["domain"] do
-      from c in query, where: c.domain == ^params["domain"]
+      term = params["domain"]
+      term = String.replace(term, "%", "\\%")
+
+      from c in query, where: ilike(c.domain, ^"%#{term}%")
     else
       query
     end
