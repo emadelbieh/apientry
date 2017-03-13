@@ -9,7 +9,7 @@ defmodule Apientry.CouponSearchController do
     assigns = Map.put(assigns, :redirect_base, "#{conn.scheme}://#{conn.host}:#{conn.port}/redirect/")
     conn = Map.put(conn, :assigns, assigns)
 
-    country = conn.params["country"] || get_country(conn.params)
+    country = conn.params["country"] || get_country(conn)
     params = Map.put(conn.params, "country", country)
     conn = Map.put(conn, :params, params)
 
@@ -17,9 +17,11 @@ defmodule Apientry.CouponSearchController do
     json conn, Coupon.to_map(coupons)
   end
 
-  defp get_country(%{"visitorIPAddress" => ip}) do
+  def get_country(conn) do
+    ip = Enum.into(conn.req_headers, %{})["cf-connecting-ip"]
+
     case IpLookup.lookup(ip) do
-      nil -> {:error, :unknown_country, %{ip: ip}}
+      nil -> "US"
       country ->
         if country == "GB" do
           "UK"
@@ -27,9 +29,5 @@ defmodule Apientry.CouponSearchController do
           country
         end
     end
-  end
-
-  defp get_country(_) do
-    "US"
   end
 end
