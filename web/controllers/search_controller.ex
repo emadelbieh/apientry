@@ -107,7 +107,6 @@ defmodule Apientry.SearchController do
                     |> Apientry.CategoryChooser.init()
                     |> Apientry.CategoryChooser.get_category_data()
 
-    IO.inspect category_data
     url = append_category_data(url, category_data)
 
     time2 = :os.system_time
@@ -135,7 +134,7 @@ defmodule Apientry.SearchController do
           time1 = :os.system_time
 
           category = hd(body["categories"]["category"])
-          category_id = category["id"]
+          category_id = if (category["id"] in ["0", "", nil]), do: "", else: category["id"]
           cat_data = Apientry.StrongAttributeIDSelector.get_strong_attr_ids(%{
             "category_id" => category_id,
             "geo"         => String.downcase(conn.assigns.country),
