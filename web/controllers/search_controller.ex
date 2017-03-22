@@ -1,3 +1,5 @@
+require IEx
+
 defmodule Apientry.SearchController do
   @moduledoc """
   Takes in requests from /publisher.
@@ -15,7 +17,7 @@ defmodule Apientry.SearchController do
   alias Apientry.ErrorReporter
   alias Apientry.StringKeyword
 
-  plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons]
+  plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons, :extension_search]
 
   @doc """
   Dry run of a search.
@@ -182,6 +184,13 @@ defmodule Apientry.SearchController do
 
               resp = if conn.assigns[:include_coupons] do
                 Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_params(conn))})
+                format_data_for_extension(decoded)
+              else
+                decoded
+              end
+
+              resp = if conn.assigns[:format_for_extension] do
+                format_data_for_extension(decoded)
               else
                 decoded
               end
@@ -268,6 +277,38 @@ defmodule Apientry.SearchController do
     result
   end
 
+  defp format_data_for_extension(body) do
+    Map.each(body["categories"]["category"], fn category ->
+      Map.each(category["items"], fn item ->
+        %{
+          title: item.title,
+          product_image: item.image,
+          currency: item.currency_code,
+          affiliate_name: item.store_name,
+          affiliate_image: item.storeLogo,
+          url: item.url,
+          product_price: item.pre,
+          free_shipping: is_free_shipping(item),
+          saving: calculate_savings(item.price, original_price)
+        }
+      end)
+    end)
+  end
+
+  defp is_free_shipping(item) do
+    item.shippingCost && item.shippingCost.value && item.shippingCost.value == "0.00"
+  end
+
+  defp calculate_savings(item, original_price) do
+    if item.price && item.price < original_price do
+      percentage = (100 - item.price / original_price * 100)
+      percentage = "#{percentage}%"
+    else
+      ""
+    end
+  end
+
+
   defp transform_by_format(conn, body, format) do
     case format do
       "json" ->
@@ -293,6 +334,17 @@ defmodule Apientry.SearchController do
     |> put_status(400)
     |> render(:error, data: %{error: :unknown_error})
   end
+
+  def extension_search(conn, params) do
+    price = Regex.run(~r/\d+.{0,1}\d+/, params["price"])
+    # track data , probably use tracking.apientry.com
+
+    assigns = conn.assigns
+    assigns = Map.put(assigns, :format_for_extension, true)
+    conn = Map.put(conn, :assigns, assigns)
+    search_rerank(conn, params)
+  end
+
 
   @doc """
   Sets search options to be picked up by `search/2` (et al).
