@@ -97,7 +97,7 @@ defmodule Apientry.SearchController do
     search_rerank(conn, params)
   end
 
-  def search_rerank(%{assigns: %{url: url, format: format}} = conn, _) do
+  def search_rerank(%{assigns: %{url: url, format: format}} = conn, params) do
     overall_1 = :os.system_time
 
     conn = Map.put(conn, :params, add_min_max_price(conn.params))
@@ -184,13 +184,12 @@ defmodule Apientry.SearchController do
 
               resp = if conn.assigns[:include_coupons] do
                 Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_params(conn))})
-                format_data_for_extension(decoded)
               else
                 decoded
               end
 
               resp = if conn.assigns[:format_for_extension] do
-                format_data_for_extension(decoded)
+                format_data_for_extension(decoded, params["price"])
               else
                 decoded
               end
@@ -277,32 +276,41 @@ defmodule Apientry.SearchController do
     result
   end
 
-  defp format_data_for_extension(body) do
-    Map.each(body["categories"]["category"], fn category ->
-      Map.each(category["items"], fn item ->
-        %{
-          title: item.title,
-          product_image: item.image,
-          currency: item.currency_code,
-          affiliate_name: item.store_name,
-          affiliate_image: item.storeLogo,
-          url: item.url,
-          product_price: item.pre,
-          free_shipping: is_free_shipping(item),
-          saving: calculate_savings(item.price, original_price)
+  defp format_data_for_extension(body, original_price) do
+    Enum.flat_map(body["categories"]["category"], fn category ->
+      Enum.map(category["items"]["item"], fn item ->
+        product = item["offer"]
+
+        test = %{
+          title: product["name"],
+          product_image: product["store"]["name"],
+          currency: product["basePrice"]["currency"],
+          affiliate_name: product["store"]["name"],
+          affiliate_image: product["store"]["logo"]["sourceURL"],
+          url: product["offerURL"],
+          product_price: product["basePrice"]["value"],
+          free_shipping: is_free_shipping(product),
+          saving: calculate_savings(product["basePrice"]["value"], original_price)
         }
       end)
     end)
   end
 
-  defp is_free_shipping(item) do
-    item.shippingCost && item.shippingCost.value && item.shippingCost.value == "0.00"
+  defp get_product_image(product) do
+    hd(product["imageList"]["image"])["sourceURL"]
   end
 
-  defp calculate_savings(item, original_price) do
-    if item.price && item.price < original_price do
-      percentage = (100 - item.price / original_price * 100)
-      percentage = "#{percentage}%"
+  defp is_free_shipping(product) do
+    product["shipping_cost"]["value"] == "0.00"
+  end
+
+  defp calculate_savings(price, original_price) do
+    {price, _} = Float.parse(price)
+    {original_price, _} = Float.parse(original_price)
+
+    if price < original_price do
+      percentage = 100 - (price / original_price * 100)
+      "#{percentage}%"
     else
       ""
     end
