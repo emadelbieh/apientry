@@ -344,7 +344,16 @@ defmodule Apientry.SearchController do
   end
 
   def extension_search(conn, params) do
-    price = Regex.run(~r/\d+.{0,1}\d+/, params["price"])
+    price = String.downcase(params["price"])
+
+    price = if String.match?(price, ~r/(eur|gbp|£|€)/) do
+      price = String.replace(price, ~r/\./, "")
+      price = Regex.run(~r/\d+,{0,1}\d+/, price)
+    else
+      price = String.replace(price, ~r/,/, "")
+      price = Regex.run(~r/\d+\.{0,1}\d+/, price)
+    end
+
     # track data , probably use tracking.apientry.com
 
     assigns = conn.assigns
