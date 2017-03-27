@@ -281,7 +281,7 @@ defmodule Apientry.SearchController do
       Enum.map(category["items"]["item"], fn item ->
         product = item["offer"]
 
-        test = %{
+        %{
           title: product["name"],
           product_image: product["store"]["name"],
           currency: product["basePrice"]["currency"],
@@ -344,22 +344,29 @@ defmodule Apientry.SearchController do
   end
 
   def extension_search(conn, params) do
-    price = String.downcase(params["price"])
+    assigns = conn.assigns
+    assigns = Map.put(assigns, :format_for_extension, true)
+    conn = Map.put(conn, :assigns, assigns)
+    search_rerank(conn, params)
+  end
+
+  defp format_price(value) do
+    price = String.downcase(value)
 
     price = if String.match?(price, ~r/(eur|gbp|£|€)/) do
       price = String.replace(price, ~r/\./, "")
       price = Regex.run(~r/\d+,{0,1}\d+/, price)
+      price = Enum.map(price, fn price -> String.replace(price, ~r/,/, ".") end)
     else
       price = String.replace(price, ~r/,/, "")
       price = Regex.run(~r/\d+\.{0,1}\d+/, price)
     end
 
-    # track data , probably use tracking.apientry.com
-
-    assigns = conn.assigns
-    assigns = Map.put(assigns, :format_for_extension, true)
-    conn = Map.put(conn, :assigns, assigns)
-    search_rerank(conn, params)
+    if length(price) > 0 do
+      hd(price)
+    else
+      price
+    end
   end
 
 
@@ -376,6 +383,17 @@ defmodule Apientry.SearchController do
     else
       params = query_string
       |> StringKeyword.from_query_string()
+
+      params = Enum.map(params, fn {key, value} ->
+        if key == "price" do
+          {"price", format_price(value)}
+        else
+          {key, value}
+        end
+      end)
+
+      params = Enum.into(params, %{})
+      conn = Map.put(conn, :params, params)
 
       format = get_format(conn)
       endpoint = conn.params["endpoint"] || @default_endpoint
