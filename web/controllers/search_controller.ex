@@ -403,6 +403,24 @@ defmodule Apientry.SearchController do
       end)
 
       params = Enum.into(params, %{})
+      params = if params["visitorUserAgent"] do
+        params
+      else
+        req_headers = conn.req_headers |> Enum.into(%{})
+        Map.put(params, "visitorUserAgent", req_headers["user-agent"])
+      end
+
+      params = if params["visitorIPAddress"] do
+        params
+      else
+        req_headers = conn.req_headers |> Enum.into(%{})
+
+        {a,b,c,d} = conn.remote_ip
+        direct_ip = "#{a}.#{b}.#{c}.#{d}"
+
+        ip = req_headers["cf-connecting-ip"] || direct_ip
+        Map.put(params, "visitorIPAddress", ip)
+      end
       conn = Map.put(conn, :params, params)
 
       format = get_format(conn)
