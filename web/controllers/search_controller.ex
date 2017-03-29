@@ -277,23 +277,33 @@ defmodule Apientry.SearchController do
   end
 
   defp format_data_for_extension(body, original_price) do
-    Enum.flat_map(body["categories"]["category"], fn category ->
+    result = Enum.flat_map(body["categories"]["category"], fn category ->
       Enum.map(category["items"]["item"], fn item ->
-        product = item["offer"]
-
+        offer = item["offer"]
         %{
-          title: product["name"],
-          product_image: product["store"]["name"],
-          currency: product["basePrice"]["currency"],
-          affiliate_name: product["store"]["name"],
-          affiliate_image: product["store"]["logo"]["sourceURL"],
-          url: product["offerURL"],
-          product_price: product["basePrice"]["value"],
-          free_shipping: is_free_shipping(product),
-          saving: calculate_savings(product["basePrice"]["value"], original_price)
+          item_url: offer["offerURL"],
+          item_id: "",
+          item_title: offer["name"],
+          item_price: offer["basePrice"]["value"],
+          item_currency_code: offer["basePrice"]["currency"],
+          item_image: hd(offer["imageList"]["image"])["sourceURL"],
+          is_free_shipping: is_free_shipping(offer),
+          store_name: offer["store"]["name"],
+          pub_advert_subid: 9,
+          api_used: "ebay",
+          offer_id: offer["id"],
+          cpc: offer["cpc"],
+          store_logo: offer["store"]["logo"]["sourceURL"]
         }
       end)
     end)
+
+    %{
+      success: true,
+      info: %{
+        items: result
+      }
+    }
   end
 
   defp get_product_image(product) do
