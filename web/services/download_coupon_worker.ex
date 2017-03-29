@@ -10,6 +10,9 @@ defmodule Apientry.DownloadCouponWorker do
     case HTTPoison.get(@endpoint) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
+
+        Repo.delete_all(Coupon)
+
         Enum.each(body["data"], fn coupon ->
           if(db_coupon = Repo.get(Coupon, coupon["id"])) do
             coupon = Map.delete(coupon, "id")
