@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.SearchController do
   @moduledoc """
   Takes in requests from /publisher.
@@ -415,8 +413,10 @@ defmodule Apientry.SearchController do
       else
         req_headers = conn.req_headers |> Enum.into(%{})
 
-        {a,b,c,d} = conn.remote_ip
-        direct_ip = "#{a}.#{b}.#{c}.#{d}"
+        direct_ip = case conn.remote_ip do
+          {a,b,c,d} -> "#{a}.#{b}.#{c}.#{d}"
+          _ -> nil
+        end
 
         ip = req_headers["cf-connecting-ip"] || direct_ip
         Map.put(params, "visitorIPAddress", ip)

@@ -117,6 +117,8 @@ defmodule Apientry.Searcher do
   Returns the country as `{:ok, "US"}` or `{:error, message, details}`.
   """
   def get_country(%{"visitorIPAddress" => ip} = _params) do
+    ip = if ip=="127.0.0.1", do: "8.8.8.8", else: ip
+
     case IpLookup.lookup(ip) do
       nil -> {:error, :unknown_country, %{ip: ip}}
       country -> {:ok, country}
