@@ -236,6 +236,12 @@ defmodule Apientry.SearchController do
             decoded
           end
 
+          resp = if conn.assigns[:format_for_extension] do
+            format_data_for_extension(decoded, params["price"])
+          else
+            decoded
+          end
+
           conn
           |> put_status(status)
           |> put_resp_content_type("application/#{request_format}")
@@ -352,6 +358,14 @@ defmodule Apientry.SearchController do
   end
 
   def extension_search(conn, params) do
+    # publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
+    # tracking_id = Repo.get_by(Apientry.TrackingId, code: params["tracking_id"])
+    # publisher_api_key = Repo.get(Apientry.PublisherApiKey, tracking_id.publisher_api_key_id)
+    # find tracking_id
+    # find publisher_api_key
+    # find publisher
+    # assign publisher api key to search
+
     assigns = conn.assigns
     assigns = Map.put(assigns, :format_for_extension, true)
     conn = Map.put(conn, :assigns, assigns)
