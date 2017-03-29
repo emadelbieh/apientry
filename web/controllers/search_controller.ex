@@ -358,9 +358,6 @@ defmodule Apientry.SearchController do
   end
 
   def extension_search(conn, params) do
-    # publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
-    # tracking_id = Repo.get_by(Apientry.TrackingId, code: params["tracking_id"])
-    # publisher_api_key = Repo.get(Apientry.PublisherApiKey, tracking_id.publisher_api_key_id)
     # find tracking_id
     # find publisher_api_key
     # find publisher
@@ -435,8 +432,17 @@ defmodule Apientry.SearchController do
         ip = req_headers["cf-connecting-ip"] || direct_ip
         Map.put(params, "visitorIPAddress", ip)
       end
-      conn = Map.put(conn, :params, params)
 
+      params = if params["subid"] && !params["apiKey"] do
+        publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
+        tracking_id = Repo.get_by(Apientry.TrackingId, code: params["trackingId"])
+        publisher_api_key = Repo.get(Apientry.PublisherApiKey, tracking_id.publisher_api_key_id)
+        Map.put(params, "apiKey", publisher_api_key.value)
+      else
+        params
+      end
+
+      conn = Map.put(conn, :params, params)
       format = get_format(conn)
       endpoint = conn.params["endpoint"] || @default_endpoint
       result = Searcher.search(format, endpoint, params, conn)
