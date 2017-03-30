@@ -13,7 +13,9 @@ defmodule Apientry.DownloadCouponWorker do
 
         Repo.delete_all(Coupon)
 
-        Enum.each(body["data"], fn coupon ->
+        body["data"]
+        |> Stream.filter(fn coupon -> coupon["country"] == "US" end)
+        |> Enum.each(fn coupon ->
           if(db_coupon = Repo.get(Coupon, coupon["id"])) do
             coupon = Map.delete(coupon, "id")
             changeset = Coupon.changeset(db_coupon, coupon)
