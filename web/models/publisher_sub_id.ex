@@ -3,6 +3,7 @@ defmodule Apientry.PublisherSubId do
 
   schema "publisher_sub_ids" do
     field :sub_id, :string
+    field :reference_data, :string
     belongs_to :publisher, Apientry.Publisher
 
     timestamps()
