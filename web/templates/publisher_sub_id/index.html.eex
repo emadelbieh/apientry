@@ -13,7 +13,7 @@
   <tbody>
 <%= for publisher_sub_id <- @publisher_sub_ids do %>
     <tr>
-      <td><%= publisher_sub_id.publisher_id %></td>
+      <td><%= publisher_sub_id.publisher.name %></td>
       <td><%= publisher_sub_id.sub_id %></td>
       <td><%= publisher_sub_id.reference_data %></td>
 

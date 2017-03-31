@@ -4,7 +4,7 @@ defmodule Apientry.PublisherSubIdController do
   alias Apientry.PublisherSubId
 
   def index(conn, _params) do
-    publisher_sub_ids = Repo.all(PublisherSubId)
+    publisher_sub_ids = Repo.all(PublisherSubId) |> Repo.preload(:publisher)
     render(conn, "index.html", publisher_sub_ids: publisher_sub_ids)
   end
 
