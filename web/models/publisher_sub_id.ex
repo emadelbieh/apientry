@@ -14,7 +14,7 @@ defmodule Apientry.PublisherSubId do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:sub_id, :publisher_id])
+    |> cast(params, [:sub_id, :publisher_id, :reference_data])
     |> validate_required([:sub_id])
   end
 end
