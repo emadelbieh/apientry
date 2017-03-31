@@ -433,11 +433,22 @@ defmodule Apientry.SearchController do
         Map.put(params, "visitorIPAddress", ip)
       end
 
+      geo = req_headers["cp-ipcountry"] || "US"
+      params = Map.put(params, "_country", geo)
+
       params = if params["subid"] && !params["apiKey"] do
         publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
-        tracking_id = Repo.get_by(Apientry.TrackingId, code: params["trackingId"])
-        publisher_api_key = Repo.get(Apientry.PublisherApiKey, tracking_id.publisher_api_key_id)
-        Map.put(params, "apiKey", publisher_api_key.value)
+        geo = params["_country"]
+
+        [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
+                                                |> String.split(";")
+                                                |> Enum.filter(fn ref -> ref =~ geo end)
+                                                |> hd
+                                                |> String.split(",")
+
+        params
+        |> Map.put("apiKey", publisher_api_key)
+        |> Map.put("trackingId", tracking_id)
       else
         params
       end
