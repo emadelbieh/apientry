@@ -33,6 +33,9 @@ config :logger, :console, format: "[$level] $message\n"
 # and calculating stacktraces is usually expensive.
 config :phoenix, :stacktrace_depth, 20
 
+config :quantum, :apientry,
+  cron: []
+
 # Configure your database
 config :apientry, Apientry.Repo,
   adapter: Ecto.Adapters.Postgres,
