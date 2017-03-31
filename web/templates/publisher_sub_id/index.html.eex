@@ -5,6 +5,7 @@
     <tr>
       <th>Publisher</th>
       <th>Sub</th>
+      <th>Reference Data</th>
 
       <th></th>
     </tr>
@@ -14,6 +15,7 @@
     <tr>
       <td><%= publisher_sub_id.publisher_id %></td>
       <td><%= publisher_sub_id.sub_id %></td>
+      <td><%= publisher_sub_id.reference_data %></td>
 
       <td class="text-right">
         <%= link "Show", to: publisher_sub_id_path(@conn, :show, publisher_sub_id), class: "btn btn-default btn-xs" %>
