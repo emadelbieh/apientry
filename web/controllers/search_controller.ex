@@ -433,7 +433,7 @@ defmodule Apientry.SearchController do
         Map.put(params, "visitorIPAddress", ip)
       end
 
-      geo = req_headers["cp-ipcountry"] || "US"
+      geo = req_headers["cf-ipcountry"] || "US"
       params = Map.put(params, "_country", geo)
 
       params = if params["subid"] && !params["apiKey"] do
