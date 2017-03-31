@@ -13,8 +13,8 @@
         = for publisher_api_key <- @publisher_api_keys do
           tr
             td.icon
-              span.default-image.-size64[class="-v#{:erlang.phash2(publisher_api_key.value, 10)}"]
-                = publisher_api_key.value |> String.slice(0..0) |> String.upcase
+              span.default-image.-size64[class="-v#{:erlang.phash2(publisher_api_key.id, 10)}"]
+                = publisher_api_key.id
             td.name
               = publisher_api_key.value
               span.info

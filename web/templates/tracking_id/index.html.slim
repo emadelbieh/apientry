@@ -15,7 +15,7 @@
           tr
             td.icon
               span.default-image.-size64[class="-v#{:erlang.phash2(tracking_id.code, 10)}"]
-                = tracking_id.code |> String.slice(0..0) |> String.upcase
+                = tracking_id.id
             td.name
               = tracking_id.code
             td.actions.crud-actions
