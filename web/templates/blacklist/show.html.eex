@@ -1,0 +1,23 @@
+<h2>Show blacklist</h2>
+
+<ul>
+
+  <li>
+    <strong>Publisher sub:</strong>
+    <%= @blacklist.publisher_sub_id %>
+  </li>
+
+  <li>
+    <strong>Blacklist type:</strong>
+    <%= @blacklist.blacklist_type %>
+  </li>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @blacklist.value %>
+  </li>
+
+</ul>
+
+<%= link "Edit", to: blacklist_path(@conn, :edit, @blacklist) %>
+<%= link "Back", to: blacklist_path(@conn, :index) %>

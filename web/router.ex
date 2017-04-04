@@ -33,6 +33,7 @@ defmodule Apientry.Router do
     resources "/feeds", FeedController
     resources "/tracking_ids", TrackingIdController
     resources "/publisher_sub_ids", PublisherSubIdController
+    resources "/blacklist", BlacklistController
 
     get  "/assign/step1", AssignmentController, :step1
     post "/assign/step2", AssignmentController, :step2

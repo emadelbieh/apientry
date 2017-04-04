@@ -1,0 +1,6 @@
+<h2>New blacklist</h2>
+
+<%= render "form.html", changeset: @changeset,
+                        action: blacklist_path(@conn, :create) %>
+
+<%= link "Back", to: blacklist_path(@conn, :index) %>
