@@ -55,7 +55,7 @@ defmodule Apientry.BlacklistController do
       {:ok, blacklist} ->
         conn
         |> put_flash(:info, "Blacklist updated successfully.")
-        |> redirect(to: blacklist_path(conn, :show, blacklist))
+        |> redirect(to: blacklist_path(conn, :index))
       {:error, changeset} ->
         subids = load_publisher_sub_ids
         render(conn, "edit.html", blacklist: blacklist, changeset: changeset, subids: subids)
