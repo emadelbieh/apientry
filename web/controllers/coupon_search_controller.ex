@@ -13,6 +13,13 @@ defmodule Apientry.CouponSearchController do
     params = Map.put(conn.params, "country", country)
     conn = Map.put(conn, :params, params)
 
+    # naive implementation - make it work
+    publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params[:subid])
+    base_query = from b in Apientry.Blacklist, where: b.publisher_sub_id_id == ^publisher_sub_id.id
+    bldomains = Repo.all(from b in base_query, where: b.blacklist_type == ^"domain", select: b.value)
+    blnetwork = Repo.all(from b in base_query, where: b.blacklist_type == ^"network", select: b.value)
+    blcountry = Repo.all(from b in base_query, where: b.blacklist_type == ^"country", select: b.value)
+
     coupons = Coupon.by_params(conn)
     json conn, Coupon.to_map(coupons)
   end
