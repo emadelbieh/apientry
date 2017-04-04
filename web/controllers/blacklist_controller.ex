@@ -9,10 +9,14 @@ defmodule Apientry.BlacklistController do
     render(conn, "index.html", blacklists: blacklists)
   end
 
-  def new(conn, _params) do
+  defp load_publisher_sub_ids do
     subids = Repo.all(PublisherSubId)
              |> Repo.preload(:publisher)
              |> Enum.map(fn publisher_sub_id -> {"#{publisher_sub_id.publisher.name} - #{publisher_sub_id.sub_id}", publisher_sub_id.id} end)
+  end
+
+  def new(conn, _params) do
+    subids = load_publisher_sub_ids
     changeset = Blacklist.changeset(%Blacklist{})
     render(conn, "new.html", changeset: changeset, subids: subids)
   end
@@ -26,7 +30,8 @@ defmodule Apientry.BlacklistController do
         |> put_flash(:info, "Blacklist created successfully.")
         |> redirect(to: blacklist_path(conn, :index))
       {:error, changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        subids = load_publisher_sub_ids
+        render(conn, "new.html", changeset: changeset, subids: subids)
     end
   end
 
@@ -36,6 +41,7 @@ defmodule Apientry.BlacklistController do
   end
 
   def edit(conn, %{"id" => id}) do
+    subids = load_publisher_sub_ids
     blacklist = Repo.get!(Blacklist, id)
     changeset = Blacklist.changeset(blacklist)
     render(conn, "edit.html", blacklist: blacklist, changeset: changeset)
@@ -51,7 +57,8 @@ defmodule Apientry.BlacklistController do
         |> put_flash(:info, "Blacklist updated successfully.")
         |> redirect(to: blacklist_path(conn, :show, blacklist))
       {:error, changeset} ->
-        render(conn, "edit.html", blacklist: blacklist, changeset: changeset)
+        subids = load_publisher_sub_ids
+        render(conn, "edit.html", blacklist: blacklist, changeset: changeset, subids: subids)
     end
   end
 
