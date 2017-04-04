@@ -7,7 +7,7 @@
 
   <div class="form-group">
     <%= label f, :blacklist_type, class: "control-label" %>
-    <%= select f, :blacklist_type, ["Domain":"domain", "Network":"network", "Country":"country"], class: "form-control" %>
+    <%= select f, :blacklist_type, ["Domain": "domain", "Network": "network", "Country": "country"], class: "form-control" %>
     <%= error_tag f, :blacklist_type %>
   </div>
 
