@@ -44,7 +44,7 @@ defmodule Apientry.BlacklistController do
     subids = load_publisher_sub_ids
     blacklist = Repo.get!(Blacklist, id)
     changeset = Blacklist.changeset(blacklist)
-    render(conn, "edit.html", blacklist: blacklist, changeset: changeset)
+    render(conn, "edit.html", blacklist: blacklist, changeset: changeset, subids: subids)
   end
 
   def update(conn, %{"id" => id, "blacklist" => blacklist_params}) do

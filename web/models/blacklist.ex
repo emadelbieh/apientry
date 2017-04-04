@@ -4,7 +4,7 @@ defmodule Apientry.Blacklist do
   schema "blacklists" do
     field :blacklist_type, :string
     field :value, :string
-    belongs_to :publisher_sub, Apientry.PublisherSub
+    belongs_to :publisher_sub_id, Apientry.PublisherSubId
 
     timestamps()
   end
@@ -14,7 +14,7 @@ defmodule Apientry.Blacklist do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:blacklist_type, :value])
-    |> validate_required([:blacklist_type, :value])
+    |> cast(params, [:publisher_sub_id_id, :blacklist_type, :value])
+    |> validate_required([:publisher_sub_id_id, :blacklist_type, :value])
   end
 end

@@ -4,7 +4,7 @@
 
   <li>
     <strong>Publisher sub:</strong>
-    <%= @blacklist.publisher_sub_id %>
+    <%= @blacklist.publisher_sub_id_id %>
   </li>
 
   <li>

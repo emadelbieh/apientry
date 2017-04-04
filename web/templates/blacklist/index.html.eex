@@ -13,7 +13,7 @@
   <tbody>
 <%= for blacklist <- @blacklists do %>
     <tr>
-      <td><%= blacklist.publisher_sub_id %></td>
+      <td><%= blacklist.publisher_sub_id_id %></td>
       <td><%= blacklist.blacklist_type %></td>
       <td><%= blacklist.value %></td>
 
