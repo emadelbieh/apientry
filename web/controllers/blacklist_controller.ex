@@ -35,11 +35,6 @@ defmodule Apientry.BlacklistController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    blacklist = Repo.get!(Blacklist, id)
-    render(conn, "show.html", blacklist: blacklist)
-  end
-
   def edit(conn, %{"id" => id}) do
     subids = load_publisher_sub_ids
     blacklist = Repo.get!(Blacklist, id)

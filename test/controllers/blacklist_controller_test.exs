@@ -27,18 +27,6 @@ defmodule Apientry.BlacklistControllerTest do
     assert html_response(conn, 200) =~ "New blacklist"
   end
 
-  test "shows chosen resource", %{conn: conn} do
-    blacklist = Repo.insert! %Blacklist{}
-    conn = get conn, blacklist_path(conn, :show, blacklist)
-    assert html_response(conn, 200) =~ "Show blacklist"
-  end
-
-  test "renders page not found when id is nonexistent", %{conn: conn} do
-    assert_error_sent 404, fn ->
-      get conn, blacklist_path(conn, :show, -1)
-    end
-  end
-
   test "renders form for editing chosen resource", %{conn: conn} do
     blacklist = Repo.insert! %Blacklist{}
     conn = get conn, blacklist_path(conn, :edit, blacklist)
