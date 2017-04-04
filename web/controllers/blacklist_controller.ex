@@ -2,6 +2,7 @@ defmodule Apientry.BlacklistController do
   use Apientry.Web, :controller
 
   alias Apientry.Blacklist
+  alias Apientry.PublisherSubId
 
   def index(conn, _params) do
     blacklists = Repo.all(Blacklist)
@@ -9,8 +10,11 @@ defmodule Apientry.BlacklistController do
   end
 
   def new(conn, _params) do
+    subids = Repo.all(PublisherSubId)
+             |> Repo.preload(:publisher)
+             |> Enum.map(fn publisher_sub_id -> {"#{publisher_sub_id.publisher.name} - #{publisher_sub_id.sub_id}", publisher_sub_id.id} end)
     changeset = Blacklist.changeset(%Blacklist{})
-    render(conn, "new.html", changeset: changeset)
+    render(conn, "new.html", changeset: changeset, subids: subids)
   end
 
   def create(conn, %{"blacklist" => blacklist_params}) do
