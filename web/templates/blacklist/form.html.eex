@@ -7,13 +7,13 @@
 
   <div class="form-group">
     <%= label f, :publisher_sub_id_id, "Publisher", class: "control-label" %>
-    <%= select f, :publisher_sub_id_id, @subids, class: "form-control" %>
+    <%= select f, :publisher_sub_id_id, @subids, prompt: "-- Select Sub ID --", class: "form-control" %>
     <%= error_tag f, :publisher_sub_id_id %>
   </div>
 
   <div class="form-group">
     <%= label f, :blacklist_type, class: "control-label" %>
-    <%= select f, :blacklist_type, ["Domain": "domain", "Network": "network", "Country": "country"], class: "form-control" %>
+    <%= select f, :blacklist_type, ["Domain": "domain", "Network": "network", "Country": "country"], prompt: "-- Select Type of Blacklist --", class: "form-control" %>
     <%= error_tag f, :blacklist_type %>
   </div>
 
