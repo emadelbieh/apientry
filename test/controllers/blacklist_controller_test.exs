@@ -6,6 +6,14 @@ defmodule Apientry.BlacklistControllerTest do
   @valid_attrs %{blacklist_type: "some content", value: "some content"}
   @invalid_attrs %{}
 
+  alias Apientry.{Publisher, PublisherSubId}
+
+  setup do
+    publisher = Repo.insert!(Publisher.changeset(%Publisher{}, %{name: "test"}))
+    publisher_sub_id = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "001", publisher_id: publisher.id}))
+    {:ok, publisher_sub_id: publisher_sub_id}
+  end
+
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, blacklist_path(conn, :index)
     assert html_response(conn, 200) =~ "Listing blacklists"
@@ -16,8 +24,9 @@ defmodule Apientry.BlacklistControllerTest do
     assert html_response(conn, 200) =~ "New blacklist"
   end
 
-  test "creates resource and redirects when data is valid", %{conn: conn} do
-    conn = post conn, blacklist_path(conn, :create), blacklist: @valid_attrs
+  test "creates resource and redirects when data is valid", %{conn: conn, publisher_sub_id: publisher_sub_id} do
+    blacklist_params = Map.merge(@valid_attrs, %{publisher_sub_id_id: publisher_sub_id.id})
+    conn = post conn, blacklist_path(conn, :create), blacklist: blacklist_params
     assert redirected_to(conn) == blacklist_path(conn, :index)
     assert Repo.get_by(Blacklist, @valid_attrs)
   end
@@ -33,10 +42,11 @@ defmodule Apientry.BlacklistControllerTest do
     assert html_response(conn, 200) =~ "Edit blacklist"
   end
 
-  test "updates chosen resource and redirects when data is valid", %{conn: conn} do
+  test "updates chosen resource and redirects when data is valid", %{conn: conn, publisher_sub_id: publisher_sub_id} do
     blacklist = Repo.insert! %Blacklist{}
-    conn = put conn, blacklist_path(conn, :update, blacklist), blacklist: @valid_attrs
-    assert redirected_to(conn) == blacklist_path(conn, :show, blacklist)
+    blacklist_params = Map.merge(@valid_attrs, %{publisher_sub_id_id: publisher_sub_id.id})
+    conn = put conn, blacklist_path(conn, :update, blacklist), blacklist: blacklist_params
+    assert redirected_to(conn) == blacklist_path(conn, :index)
     assert Repo.get_by(Blacklist, @valid_attrs)
   end
 
