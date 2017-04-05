@@ -3,7 +3,7 @@ defmodule Apientry.BlacklistTest do
 
   alias Apientry.Blacklist
 
-  @valid_attrs %{blacklist_type: "some content", value: "some content"}
+  @valid_attrs %{publisher_sub_id_id: 1, blacklist_type: "some content", value: "some content"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
