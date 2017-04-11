@@ -254,7 +254,7 @@ defmodule Apientry.EbayJsonTransformer do
     |> safe_update_in(["offers", "offer"], fn offers ->
       offers
       |> Stream.filter(&filter_store(&1, assigns, ["store"]))
-      |> Stream.map(fn offer ->
+      |> Map.map(fn offer ->
         map_offer(offer, category, assigns)
       end)
     end)
