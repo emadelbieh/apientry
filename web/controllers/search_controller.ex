@@ -15,6 +15,7 @@ defmodule Apientry.SearchController do
   alias Apientry.ErrorReporter
   alias Apientry.StringKeyword
 
+  plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
   plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons, :extension_search]
 
   @doc """
@@ -472,5 +473,16 @@ defmodule Apientry.SearchController do
     Enum.any?(["yahoo", "google", "bing"], fn engine ->
       conn.params["domain"] =~ engine
     end)
+  end
+
+  defp validate_keyword(conn, _opts) do
+    if conn.params["keyword"] in ["", "null", nil] do
+      conn
+      |> assign(:valid, false)
+      |> render(:error, data: %{error: "invalid keyword"})
+      |> halt()
+    else
+      conn
+    end
   end
 end
