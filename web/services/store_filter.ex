@@ -52,7 +52,7 @@ defmodule Apientry.StoreFilter do
   defp domain_without_tld(domain) do
     split = String.downcase(domain) |> String.split(".")
 
-    if length(split)==2 do
+    if length(split) <= 2 do
       hd(split)
     else
       hd(tl(split))
