@@ -9,6 +9,7 @@ defmodule Apientry.Amplitude do
   """
 
   @amplitude Application.get_env(:apientry, :amplitude) |> Enum.into(%{})
+  @events    Application.get_env(:apientry, :events) |> Enum.into(%{})
 
   @event_names %{
     "CLICK_ATTRIBUTEVALUE_URL" => true,
@@ -49,8 +50,7 @@ defmodule Apientry.Amplitude do
       user_id: body[:publisher_name],
       event_type: "request",
       ip: body[:params]["visitorIPAddress"],
-      event_properties: Map.merge(body[:params], new_properties),
-      groups: %{
+      event_properties: Map.merge(body[:params], new_properties), groups: %{
         company_id: 1,
         company_name: "ebay"
       }
@@ -121,6 +121,31 @@ defmodule Apientry.Amplitude do
         {:error, reason} ->
           # TODO: track via rollbar
           IO.puts "\n\nAmplitude error: #{inspect reason}\n\n"
+      end
+    end
+  end
+
+  def send_request(:test, params) do
+    headers = %{"Content-Type": "application/json"}
+    data = {:form, [
+        type: "click",
+        data: "offer",
+        data_details: %{
+          "test1": "value1",
+        },
+        subid: @events.subid,
+        date: "2017-03-30 00:00:00",
+        url: "localhost:3000",
+        uuid: @events.uuid,
+        publisher_id: "1234"
+      ]}
+
+    Task.start fn ->
+      case HTTPoison.post("#{@events.url}/track", data, headers) do
+        {:ok, response} ->
+          IO.inspect(response)
+        {:error, _reason} ->
+          nil
       end
     end
   end

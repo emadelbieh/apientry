@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.Coupon do
   use Apientry.Web, :model
 
