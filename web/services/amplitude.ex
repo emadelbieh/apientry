@@ -124,29 +124,4 @@ defmodule Apientry.Amplitude do
       end
     end
   end
-
-  def send_request(:test, params) do
-    headers = %{"Content-Type": "application/json"}
-    data = {:form, [
-        type: "click",
-        data: "offer",
-        data_details: %{
-          "test1": "value1",
-        },
-        subid: @events.subid,
-        date: "2017-03-30 00:00:00",
-        url: "localhost:3000",
-        uuid: @events.uuid,
-        publisher_id: "1234"
-      ]}
-
-    Task.start fn ->
-      case HTTPoison.post("#{@events.url}/track", data, headers) do
-        {:ok, response} ->
-          IO.inspect(response)
-        {:error, _reason} ->
-          nil
-      end
-    end
-  end
 end
