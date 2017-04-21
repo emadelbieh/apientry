@@ -335,6 +335,7 @@ defmodule Apientry.EbayJsonTransformer do
       ip_address: assigns.params["visitorIPAddress"],
       country_code: assigns.country,
       user_agent: assigns.params["visitorUserAgent"],
+      publisher_id: get_publisher_id(assigns[:publisher_api_key_value]),
       request_domain: assigns.params["domain"]
     }
 
@@ -358,6 +359,18 @@ defmodule Apientry.EbayJsonTransformer do
       update_in(data, keys, fun)
     rescue
       _ -> data
+    end
+  end
+
+  def get_publisher_id(publisher_api_key_value) do
+    case Apientry.Searcher.get_publisher_api_key(%{"apiKey" => publisher_api_key_value}) do
+      {:ok, publisher_api_key} ->
+        case Apientry.Searcher.get_publisher(publisher_api_key) do
+          {:ok, publisher} -> publisher.id
+          {:error, _} -> nil
+        end
+      {:error, _} ->
+        nil
     end
   end
 end
