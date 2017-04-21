@@ -25,6 +25,9 @@ config :apientry, Apientry.Repo,
 
 config :apientry, :db_cache, interval: 30_000
 
+config :apientry, :events,
+  url: "https://events.apientry.com"
+
 # "http://sandbox.api.ebaycommercenetwork.com"
 config :apientry, :ebay_search_domain,
   "http://api.ebaycommercenetwork.com"

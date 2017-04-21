@@ -24,7 +24,7 @@ defmodule Apientry.Analytics do
       ]}
 
     Task.start fn ->
-      case HTTPoison.post("https://bsevents.ngrok.io/track", data, headers) do
+      case HTTPoison.post("#{@events.url}/track", data, headers) do
         {:ok, response} ->
           IO.inspect(response)
         {:error, reason} ->

@@ -52,9 +52,7 @@ config :apientry, :amplitude,
   secret_key: "a978ce4186ee60c202079ef56274222e"
 
 config :apientry, :events,
-  url: "https://bsevents.ngrok.com",
-  subid: "DEV",
-  uuid: "bee9be0d-b4da-47b5-8d20-0cdf7c5c4cfb"
+  url: "https://bsevents.ngrok.com"
 
 config :apientry, :ebay_search_domain,
   "http://api.ebaycommercenetwork.com"
