@@ -92,6 +92,7 @@ defmodule Apientry.Searcher do
         country: country,
         redirect_base: redirect_base_path(conn),
         publisher_api_key_value: publisher_api_key.value,
+        publisher_id: publisher.id,
         publisher_name: publisher.name,
         params: map_params,
         url: url

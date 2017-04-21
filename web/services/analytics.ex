@@ -1,3 +1,4 @@
+require IEx
 defmodule Apientry.Analytics do
   @moduledoc """
   Sends request to Blackswan Analytics (events.apientry.com)
@@ -6,25 +7,63 @@ defmodule Apientry.Analytics do
   @events Application.get_env(:apientry, :events) |> Enum.into(%{})
 
   def track_redirect(conn, body) do
+    body = %{
+      "type" => body["event"],
+      "data" => "offer",
+      "data_details" => Poison.encode!(body),
+      "platform" => "search",
+      "url" => body["link"],
+      "ip_address" => body["ip_address"],
+      "publisher_id" => body["publisher_id"]
+    }
+    send_request(conn, body)
+  end
+
+  def track_publisher(conn, body) do
+    new_properties = %{
+      "request_domain" => body[:params]["domain"],
+      "endpoint" => body[:params]["endpoint"] || "/",
+      "ip_address" => body[:params]["visitorIPAddress"],
+      "user_agent" => body[:params]["visitorUserAgent"],
+      "country_code" => body[:country],
+      "is_mobile" => body[:is_mobile],
+      "link" => body[:url],
+    }
+    
+    new_properties = Map.merge(body[:params], new_properties)
+
+    body = %{
+      "type" => "request",
+      "data" => "offer",
+      "data_details" => Poison.encode!(new_properties),
+      "platform" => "search",
+      "url" => body[:url],
+      "ip_address" => body[:params]["visitorIPAddress"],
+      "publisher_id" => body[:publisher_id]
+    }
+
     send_request(conn, body)
   end
 
   defp send_request(conn, body) do
     headers = %{"Content-Type": "application/json"}
     data = {:form, [
-        type: body["event"],
-        data: "offer",
-        data_details: Poison.encode!(body),
-        platform: "search",
-        subid: body["subid"],
+        type: body["type"],
+        data: body["data"],
+        data_details: body["data_details"],
+        platform: body["platform"],
+        subid: body["subid"] || "",
         date: now(),
-        url: body["link"],
+        url: body["url"],
         uuid: Apientry.UUIDGenerator.generate(body["ip_address"], body["publisher_id"]),
-        publisherid: body["publisher_id"]
+        publisherid: "#{body["publisher_id"]}"
       ]}
 
+
     Task.start fn ->
-      case HTTPoison.post("#{@events.url}/track", data, headers) do
+      url = "#{@events.url}/track/"
+      IEx.pry
+      case HTTPoison.post(url, data, headers) do
         {:ok, response} ->
           IO.inspect(response)
         {:error, reason} ->

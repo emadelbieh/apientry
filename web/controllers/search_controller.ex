@@ -44,7 +44,10 @@ defmodule Apientry.SearchController do
         body = transform_by_format(conn, body, request_format)
 
         if get_req_header(conn, "x-apientry-dnt") == [] do
-          Apientry.Amplitude.track_publisher(conn.assigns)
+          Task.start fn ->
+            Apientry.Amplitude.track_publisher(conn.assigns)
+            Apientry.Analytics.track_publisher(conn, conn.assigns)
+          end
         end
 
         conn
