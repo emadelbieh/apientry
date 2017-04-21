@@ -54,4 +54,5 @@
   "stemex": {:hex, :stemex, "0.1.1", "726d693b67c4ee82398ca6f1bfbacc8d7aad20861a0371e44e9c6f9dee1e042d", [:mix], []},
   "timex": {:hex, :timex, "3.1.12", "313a59d57134df60a85d8607a2af2a4a5efdf95c1008f09cd6f057e778065006", [:mix], [{:combine, "~> 0.7", [hex: :combine, optional: false]}, {:gettext, "~> 0.10", [hex: :gettext, optional: false]}, {:tzdata, "~> 0.1.8 or ~> 0.5", [hex: :tzdata, optional: false]}]},
   "tzdata": {:hex, :tzdata, "0.5.10", "087e8dfe8c0283473115ad8ca6974b898ecb55ca5c725427a142a79593391e90", [:mix], [{:hackney, "~> 1.0", [hex: :hackney, optional: false]}]},
+  "uuid": {:hex, :uuid, "1.1.7", "007afd58273bc0bc7f849c3bdc763e2f8124e83b957e515368c498b641f7ab69", [:mix], []},
   "xml_builder": {:hex, :xml_builder, "0.0.8", "dea10735e15c91e24582e41ee2d3282b7f0177a5b42d6268096a6221ba83226f", [:mix], []}}

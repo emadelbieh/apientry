@@ -26,7 +26,7 @@ defmodule Apientry.Mixfile do
        :phoenix_ecto, :postgrex, :httpoison, :geolix,
        :phoenix_slime, :cors_plug, :phoenix_pubsub, :edeliver,
        :basic_auth, :inets, :rollbax, :xml_builder, :csv, :stemex,
-       :crontab, :quantum, :random_bytes
+       :crontab, :quantum, :random_bytes, :uuid
      ]]
   end
 
@@ -67,6 +67,7 @@ defmodule Apientry.Mixfile do
      {:crontab, "~> 1.0.0"},
      {:quantum, ">= 1.9.0"},
      {:random_bytes, "~> 1.0"},
+     {:uuid, "~> 1.1"},
     ]
   end
 
