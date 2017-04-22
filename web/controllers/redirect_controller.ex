@@ -51,10 +51,10 @@ defmodule Apientry.RedirectController do
       :ok <- verify_event(map)
     do
       if get_req_header(conn, "x-apientry-dnt") == [] do
-        Task.start fn ->
+        #Task.start fn ->
           Apientry.Amplitude.track_redirect(map)
           Apientry.Analytics.track_redirect(conn, map)
-        end
+          #end
       end
 
       conn

@@ -1,4 +1,3 @@
-require IEx
 defmodule Apientry.Analytics do
   @moduledoc """
   Sends request to Blackswan Analytics (events.apientry.com)
@@ -6,19 +5,47 @@ defmodule Apientry.Analytics do
 
   @events Application.get_env(:apientry, :events) |> Enum.into(%{})
 
-  def track_redirect(conn, body) do
-    body = %{
-      "type" => body["event"],
-      "data" => "offer",
-      "data_details" => Poison.encode!(body),
+  @doc """
+  track redirect - coupons
+  """
+  def track_redirect(conn, %{"dealtype" => _} = body) do
+    data = Map.merge(get_common_data(body), %{
+      "data" => "coupon",
       "platform" => "search",
-      "url" => body["link"],
-      "ip_address" => body["ip_address"],
-      "publisher_id" => body["publisher_id"]
-    }
-    send_request(conn, body)
+      "subid" => body["subid"],
+    })
+
+    send_request(conn, data)
   end
 
+  @doc """
+  track redirect - offers
+  """
+  def track_redirect(conn, body) do
+    data = Map.merge(get_common_data(body), %{
+      "data" => "offer",
+      "platform" => "search",
+    })
+
+    send_request(conn, data)
+  end
+
+  @doc """
+  track redirect - common data between `offers` and `coupons`
+  """
+  defp get_common_data(body) do
+    %{
+      "type" => body["event"],
+      "data_details" => Poison.encode!(body),
+      "url" => body["link"],
+      "ip_address" => body["ip_address"],
+      "publisher_id" => body["publisher_id"],
+    }
+  end
+
+  @doc """
+  track publisher
+  """
   def track_publisher(conn, body) do
     new_properties = %{
       "request_domain" => body[:params]["domain"],
@@ -60,11 +87,12 @@ defmodule Apientry.Analytics do
       ]}
 
     Task.start fn ->
-      url = "#{@events.url}/track" # for easy debugging
+      url = "#{@events.url}/track"
       case HTTPoison.post(url, data, headers) do
-        {:ok, _response} ->
-          nil
+        {:ok, response} ->
+          IO.puts "Sent to analytics - #{url}"
         {:error, reason} ->
+          IO.puts "An error occured while sending to analytics"
           IO.inspect(reason)
       end
     end
@@ -73,10 +101,5 @@ defmodule Apientry.Analytics do
   defp now() do
     DateTime.utc_now
     |> DateTime.to_string
-  end
-
-  import Ecto.Query
-  def publisher_id_from_subid(subid) do
-    Apientry.Repo.one(from s in Apientry.PublisherSubId, select: s.publisher_id, where: s.sub_id == ^subid)
   end
 end
