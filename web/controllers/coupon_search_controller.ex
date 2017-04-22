@@ -4,30 +4,59 @@ defmodule Apientry.CouponSearchController do
   alias Apientry.Coupon
   import Ecto.Query
 
-  def search(conn, _) do
-    assigns = conn.assigns
-    assigns = Map.put(assigns, :redirect_base, "#{conn.scheme}://#{conn.host}:#{conn.port}/redirect/")
-    conn = Map.put(conn, :assigns, assigns)
+  plug :assign_request_uri
+  plug :assign_redirect_base
+  plug :assign_ip_address
+  plug :assign_country
 
-    country = conn.params["country"] || get_country(conn)
-    params = Map.put(conn.params, "country", country)
-    conn = Map.put(conn, :params, params)
-
+  def search(conn, params) do
+    track_coupon_search(conn, params)
     coupons = Coupon.by_params(conn)
     json conn, Coupon.to_map(coupons)
   end
 
-  def get_country(conn) do
+  defp assign_ip_address(conn, _opts) do
+    conn
+    |> assign(:ip_address, get_ip_address(conn))
+  end
+
+  defp assign_request_uri(conn, _opts) do
+    conn
+    |> assign(:request_uri, "#{conn.scheme}://#{conn.host}:#{conn.port}/#{conn.request_path}?#{conn.query_string}")
+  end
+
+  defp assign_redirect_base(conn, _opts) do
+    conn
+    |> assign(:redirect_base, "#{conn.scheme}://#{conn.host}:#{conn.port}/redirect/")
+  end
+
+  defp assign_country(conn, _opts) do
+    conn
+    |> assign(:country, get_country(conn))
+  end
+
+  defp get_country(%{params: %{"country" => country}}), do: country
+
+  defp get_country(conn) do
     ip = Enum.into(conn.req_headers, %{})["cf-connecting-ip"]
 
     case IpLookup.lookup(ip) do
       nil -> "US"
-      country ->
-        if country == "GB" do
-          "UK"
-        else
-          country
-        end
+      "GB" -> "GB"
+      country -> country
+    end
+  end
+
+  def track_coupon_search(conn, params) do
+    Apientry.Analytics.track_query(conn, params)
+  end
+
+  def get_ip_address(conn) do
+    case get_req_header(conn, "cf-connecting-ip") do
+      [ip | _] -> ip
+      [] ->
+        {a,b,c,d} = conn.remote_ip
+        "#{a}.#{b}.#{c}.#{d}"
     end
   end
 end

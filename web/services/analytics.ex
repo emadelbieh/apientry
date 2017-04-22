@@ -72,6 +72,24 @@ defmodule Apientry.Analytics do
     send_request(conn, body)
   end
 
+  @doc """
+  track query - coupon
+  """
+  def track_query(conn, params) do
+    data = %{
+      "type" => "query",
+      "data" => "coupon",
+      "data_details" => Poison.encode!(params),
+      "platform" => "search",
+      "subid" => params["subid"],
+      "url" => conn.assigns[:request_uri],
+      "ip_address" => conn.assigns[:ip_address],
+      "publisher_id" => ""
+    }
+
+    send_request(conn, data)
+  end
+
   defp send_request(conn, body) do
     headers = %{"Content-Type": "application/json"}
     data = {:form, [
