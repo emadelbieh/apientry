@@ -52,7 +52,7 @@ config :apientry, :amplitude,
   secret_key: "a978ce4186ee60c202079ef56274222e"
 
 config :apientry, :events,
-  url: "https://bsevents.ngrok.com"
+  url: "https://bsevents.ngrok.io"
 
 config :apientry, :ebay_search_domain,
   "http://api.ebaycommercenetwork.com"
