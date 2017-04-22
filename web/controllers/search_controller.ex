@@ -15,7 +15,10 @@ defmodule Apientry.SearchController do
   alias Apientry.ErrorReporter
   alias Apientry.StringKeyword
 
+  import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
+
   plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
+  plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
   plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons, :extension_search]
 
   @doc """
@@ -398,94 +401,70 @@ defmodule Apientry.SearchController do
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
   """
   def set_search_options(%{query_string: query_string} = conn, _) do
-    if search_engine?(conn) do
-      conn
-      |> assign(:valid, false)
-      |> render(:error, data: %{error: "Search Engine"})
-      |> halt()
+    params = query_string
+    |> StringKeyword.from_query_string()
+
+    params = Enum.map(params, fn {key, value} ->
+      if key == "price" do
+        {"price", format_price(value)}
+      else
+        {key, value}
+      end
+    end)
+
+    params = Enum.into(params, %{})
+    params = if params["visitorUserAgent"] do
+      params
     else
-      params = query_string
-      |> StringKeyword.from_query_string()
-
-      params = Enum.map(params, fn {key, value} ->
-        if key == "price" do
-          {"price", format_price(value)}
-        else
-          {key, value}
-        end
-      end)
-
-      params = Enum.into(params, %{})
-      params = if params["visitorUserAgent"] do
-        params
-      else
-        req_headers = conn.req_headers |> Enum.into(%{})
-        Map.put(params, "visitorUserAgent", req_headers["user-agent"])
-      end
-
-      params = if params["visitorIPAddress"] do
-        params
-      else
-        req_headers = conn.req_headers |> Enum.into(%{})
-
-        direct_ip = case conn.remote_ip do
-          {a,b,c,d} -> "#{a}.#{b}.#{c}.#{d}"
-          _ -> nil
-        end
-
-        ip = req_headers["cf-connecting-ip"] || direct_ip
-        Map.put(params, "visitorIPAddress", ip)
-      end
-
-      geo = req_headers["cf-ipcountry"] || "US"
-      params = Map.put(params, "_country", geo)
-
-      params = if params["subid"] && !params["apiKey"] do
-        publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
-        geo = params["_country"]
-
-        [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
-                                                |> String.split(";")
-                                                |> Enum.filter(fn ref -> ref =~ geo end)
-                                                |> hd
-                                                |> String.split(",")
-
-        params
-        |> Map.put("apiKey", publisher_api_key)
-        |> Map.put("trackingId", tracking_id)
-      else
-        params
-      end
-
-      conn = Map.put(conn, :params, params)
-      format = get_format(conn)
-      endpoint = conn.params["endpoint"] || @default_endpoint
-      result = Searcher.search(format, endpoint, params, conn)
-
-      result
-      |> Enum.reduce(conn, fn {key, val}, conn -> assign(conn, key, val) end)
+      req_headers = conn.req_headers |> Enum.into(%{})
+      Map.put(params, "visitorUserAgent", req_headers["user-agent"])
     end
+
+    params = if params["visitorIPAddress"] do
+      params
+    else
+      req_headers = conn.req_headers |> Enum.into(%{})
+
+      direct_ip = case conn.remote_ip do
+        {a,b,c,d} -> "#{a}.#{b}.#{c}.#{d}"
+        _ -> nil
+      end
+
+      ip = req_headers["cf-connecting-ip"] || direct_ip
+      Map.put(params, "visitorIPAddress", ip)
+    end
+
+    geo = req_headers["cf-ipcountry"] || "US"
+    params = Map.put(params, "_country", geo)
+
+    params = if params["subid"] && !params["apiKey"] do
+      publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
+      geo = params["_country"]
+
+      [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
+                                              |> String.split(";")
+                                              |> Enum.filter(fn ref -> ref =~ geo end)
+                                              |> hd
+                                              |> String.split(",")
+
+      params
+      |> Map.put("apiKey", publisher_api_key)
+      |> Map.put("trackingId", tracking_id)
+    else
+      params
+    end
+
+    conn = Map.put(conn, :params, params)
+    format = get_format(conn)
+    endpoint = conn.params["endpoint"] || @default_endpoint
+    result = Searcher.search(format, endpoint, params, conn)
+
+    result
+    |> Enum.reduce(conn, fn {key, val}, conn -> assign(conn, key, val) end)
   end
 
   def set_search_options(conn, _) do
     conn
     |> assign(:valid, false)
-  end
-
-  defp search_engine?(conn) do
-    Enum.any?(["yahoo", "google", "bing"], fn engine ->
-      conn.params["domain"] =~ engine
-    end)
-  end
-
-  defp validate_keyword(conn, _opts) do
-    if conn.params["keyword"] in ["", "null", nil] do
-      conn
-      |> assign(:valid, false)
-      |> render(:error, data: %{error: "invalid keyword"})
-      |> halt()
-    else
-      conn
-    end
   end
 end
