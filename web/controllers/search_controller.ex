@@ -37,8 +37,7 @@ defmodule Apientry.SearchController do
       GET /publisher?keyword=nikon
   """
   def search(%{assigns: %{url: url, format: format}} = conn, _) do
-    time1 = :os.system_time
-    result = case HTTPoison.get(url) do
+    case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
         ErrorReporter.track_ebay_response(conn, status, body, headers)
@@ -46,12 +45,7 @@ defmodule Apientry.SearchController do
         request_format = conn.params["format"] || "json"
         body = transform_by_format(conn, body, request_format)
 
-        if get_req_header(conn, "x-apientry-dnt") == [] do
-          Task.start fn ->
-            Apientry.Amplitude.track_publisher(conn.assigns)
-            Apientry.Analytics.track_publisher(conn, conn.assigns)
-          end
-        end
+        track_publisher(conn)
 
         conn
         |> put_status(status)
@@ -64,9 +58,6 @@ defmodule Apientry.SearchController do
         |> put_status(400)
         |> render(:error, data: %{error: reason})
     end
-    time2 = :os.system_time
-    IO.puts "#{time2 - time1} without rerank"
-    result
   end
 
   defp build_category_chooser_data(conn) do
@@ -169,9 +160,7 @@ defmodule Apientry.SearchController do
               request_format = conn.params["format"] || "json"
               body = transform_by_format(conn, body, request_format)
 
-              if get_req_header(conn, "x-apientry-dnt") == [] do
-                Apientry.Amplitude.track_publisher(conn.assigns)
-              end
+              track_publisher(conn)
 
               decoded = Poison.decode!(body)
               geo = conn.assigns.country |> String.downcase
@@ -217,9 +206,7 @@ defmodule Apientry.SearchController do
           request_format = conn.params["format"] || "json"
           body = transform_by_format(conn, body, request_format)
 
-          if get_req_header(conn, "x-apientry-dnt") == [] do
-            Apientry.Amplitude.track_publisher(conn.assigns)
-          end
+          track_publisher(conn)
 
           decoded = Poison.decode!(body)
           geo = conn.assigns.country |> String.downcase
@@ -467,4 +454,14 @@ defmodule Apientry.SearchController do
     conn
     |> assign(:valid, false)
   end
+
+  defp track_publisher(conn) do
+    if get_req_header(conn, "x-apientry-dnt") == [] do
+      Task.start fn ->
+        Apientry.Amplitude.track_publisher(conn.assigns)
+        Apientry.Analytics.track_publisher(conn, conn.assigns)
+      end
+    end
+  end
+
 end
