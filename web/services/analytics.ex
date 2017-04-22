@@ -59,15 +59,13 @@ defmodule Apientry.Analytics do
         publisherid: "#{body["publisher_id"]}"
       ]}
 
-
     Task.start fn ->
-      url = "#{@events.url}/track/"
-      IEx.pry
+      url = "#{@events.url}/track" # for easy debugging
       case HTTPoison.post(url, data, headers) do
-        {:ok, response} ->
-          IO.inspect(response)
+        {:ok, _response} ->
+          nil
         {:error, reason} ->
-          IO.puts(reason)
+          IO.inspect(reason)
       end
     end
   end

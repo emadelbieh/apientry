@@ -364,7 +364,7 @@ defmodule Apientry.EbayJsonTransformer do
   end
 
   def get_publisher_id(publisher_api_key_value) do
-    if Mix.env == :test do
+    if Mix.env == :test || publisher_api_key_value == nil do
       nil
     else
       case Apientry.Searcher.get_publisher_api_key(%{"apiKey" => publisher_api_key_value}) do
