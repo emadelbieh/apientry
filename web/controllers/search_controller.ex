@@ -17,6 +17,7 @@ defmodule Apientry.SearchController do
 
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
+  plug :assign_filter_duplicate_flag when action in [:search]
   plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
   plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
   plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons, :extension_search]
@@ -44,6 +45,20 @@ defmodule Apientry.SearchController do
 
         request_format = conn.params["format"] || "json"
         body = transform_by_format(conn, body, request_format)
+
+        # TODO: clean up
+        titles = Apientry.DuplicateTitleFilter.new
+        categories = Enum.map(body["categories"]["category"], fn category ->
+          items = Enum.filter(category["items"]["item"], fn item ->
+            product = item["offer"] || item["product"]
+            Apientry.DuplicateTitleFilter.unique?(titles, product["name"])
+          end)
+          update_in(category["items"]["item"], fn _ -> items end)
+        end)
+        body = update_in(body["categories"]["category"], fn _ -> categories end)
+        # ENDTODO: clean up
+
+        body = Poison.encode!(body)
 
         track_publisher(conn)
 
@@ -328,9 +343,14 @@ defmodule Apientry.SearchController do
   defp transform_by_format(conn, body, format) do
     case format do
       "json" ->
-        body
-        |> EbayTransformer.transform(conn.assigns, format)
-        |> Poison.encode!()
+        if conn.assigns[:filter_duplicate?] do
+          body
+          |> EbayTransformer.transform(conn.assigns, format)
+        else
+          body
+          |> EbayTransformer.transform(conn.assigns, format)
+          |> Poison.encode!()
+        end
       "xml" ->
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
@@ -462,6 +482,11 @@ defmodule Apientry.SearchController do
         Apientry.Analytics.track_publisher(conn, conn.assigns)
       end
     end
+  end
+
+  defp assign_filter_duplicate_flag(conn, _opts) do
+    conn
+    |> assign(:filter_duplicate?, true)
   end
 
 end
