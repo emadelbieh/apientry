@@ -2,9 +2,8 @@ defmodule Apientry.DuplicateTitleFilter do
   @moduledoc """
   Provides function for filtering duplicate titles
   """
-  def new do
+  def start_link do
     {:ok, agent} = Agent.start_link fn -> %{} end
-    agent
   end
 
   defp get(agent, title) do

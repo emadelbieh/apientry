@@ -45,6 +45,8 @@ defmodule Apientry.SearchController do
 
         request_format = conn.params["format"] || "json"
         body = transform_by_format(conn, body, request_format)
+        |> filter_duplicate_titles()
+        |> Poison.encode!()
 
         # TODO: clean up
         titles = Apientry.DuplicateTitleFilter.new
@@ -58,7 +60,6 @@ defmodule Apientry.SearchController do
         body = update_in(body["categories"]["category"], fn _ -> categories end)
         # ENDTODO: clean up
 
-        body = Poison.encode!(body)
 
         track_publisher(conn)
 
@@ -487,6 +488,26 @@ defmodule Apientry.SearchController do
   defp assign_filter_duplicate_flag(conn, _opts) do
     conn
     |> assign(:filter_duplicate?, true)
+  end
+
+  defp filter_duplicate_titles(body) do
+    {ok, titles} = Apientry.DuplicateTitleFilter.start_link
+
+    titles = Apientry.DuplicateTitleFilter.new
+
+    categories = Enum.map(body["categories"]["category"], fn category ->
+      items = Enum.filter(category["items"]["item"], fn item ->
+        product = item["offer"] || item["product"]
+        Apientry.DuplicateTitleFilter.unique?(titles, product["name"])
+      end)
+      update_in(category["items"]["item"], fn _ -> items end)
+    end)
+
+    body = update_in(body["categories"]["category"], fn _ -> categories end)
+
+    Apientry.DuplicateTitleFilter.stop
+
+    body
   end
 
 end
