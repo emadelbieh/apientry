@@ -64,12 +64,6 @@ config :rollbax,
 
 config :apientry, :rollbar_enabled, false
 
-config :quantum, :apientry,
-  cron: [
-      "* */6 * * *":  {"Apientry.DownloadMerchantWorker", :perform},
-      "9 */6 * * *":  {"Apientry.DownloadCouponWorker", :perform}
-  ]
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 
