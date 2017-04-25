@@ -50,7 +50,13 @@ defmodule Apientry.CouponSearchController do
   end
 
   def track_coupon_search(conn, params) do
-    Apientry.Analytics.track_query(conn, params)
+    country = params["country"] || Apientry.CloudflareService.get_country(conn)
+    data = Map.merge(params, %{
+      "ip_address" => Apientry.CloudflareService.get_ip_address(conn),
+      "geo" => country,
+      "country" => country
+    })
+    Apientry.Analytics.track_query(conn, data)
   end
 
   def get_ip_address(conn) do
