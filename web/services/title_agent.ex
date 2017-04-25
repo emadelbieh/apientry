@@ -26,5 +26,4 @@ defmodule Apientry.TitleAgent do
   defp store(agent, title) do
     Agent.update(agent, fn map -> Map.put(map, title, true) end)
   end
-
 end
