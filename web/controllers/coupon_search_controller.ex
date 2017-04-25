@@ -3,11 +3,13 @@ defmodule Apientry.CouponSearchController do
 
   alias Apientry.Coupon
   import Ecto.Query
+  import Apientry.ParameterValidators, only: [reject_search_engines: 2]
 
   plug :assign_request_uri
   plug :assign_redirect_base
   plug :assign_ip_address
   plug :assign_country
+  plug :reject_search_engines
 
   def search(conn, params) do
     track_coupon_search(conn, params)

@@ -57,15 +57,17 @@ defmodule Apientry.Coupon do
     |> by_category(params)
     |> by_dealtype(params)
     |> by_holiday(params)
-    |> by_country(params)
+    |> by_country(conn)
     |> Apientry.Repo.all
 
     track(conn, coupons)
   end
 
-  def by_country(query, params) do
-    if params["country"] do
-      from c in query, where: ilike(c.country, ^params["country"])
+  def by_country(query, conn) do
+    country = conn.params["country"] || conn.assigns[:country]
+
+    if country do
+      from c in query, where: ilike(c.country, ^country)
     else
       query
     end
