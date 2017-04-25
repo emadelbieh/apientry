@@ -1,54 +1,34 @@
 defmodule Apientry.TitleFilter do
-  @moduledoc """
-  Provides function for filtering duplicate titles
-  """
 
-  @doc """
-  Filters out duplicate titles
-  """
+  alias Apientry.TitleAgent
+
   def filter_duplicate(body) do
-    {ok, titles} = start_link
+    {ok, titles} = TitleAgent.start_link
 
-    categories = Enum.map(body["categories"]["category"], fn category ->
-      items = Enum.filter(category["items"]["item"], fn item ->
-        product = item["offer"] || item["product"]
-        unique?(titles, product["name"])
-      end)
+    categories = Enum.map(get_categories(body), fn category ->
+      items = Enum.filter(get_items(category), &(TitleAgent.unique?(titles, get_name(&1))))
       update_in(category["items"]["item"], fn _ -> items end)
     end)
 
     body = update_in(body["categories"]["category"], fn _ -> categories end)
 
-    stop(titles)
+
+    TitleAgent.stop(titles)
 
     body
   end
 
-  # Agent code: for storing state
+  ## private functions
 
-  defp start_link do
-    {:ok, agent} = Agent.start_link fn -> %{} end
+  defp get_categories(body) do
+    body["categories"]["category"]
   end
 
-  defp get(agent, title) do
-    Agent.get(agent, fn map -> map[title] end)
+  defp get_items(category) do
+    category["items"]["item"]
   end
 
-  defp put(agent, title) do
-    Agent.update(agent, fn map -> Map.put(map, title, true) end)
-  end
-
-  def unique?(agent, title) do
-    case get(agent, title) do
-      nil -> 
-        true
-      _ ->
-        put(agent, title)
-        false
-    end
-  end
-
-  def stop(agent) do
-    Agent.stop(agent)
+  defp get_name(item) do
+    (item["offer"] || item["product"])["name"]
   end
 end
