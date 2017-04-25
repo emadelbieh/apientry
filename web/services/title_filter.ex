@@ -1,5 +1,4 @@
 defmodule Apientry.TitleFilter do
-
   alias Apientry.TitleAgent
 
   def filter_duplicate(body) do
