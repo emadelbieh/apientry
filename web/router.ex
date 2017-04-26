@@ -24,6 +24,7 @@ defmodule Apientry.Router do
     pipe_through :browser
     pipe_through :secure
     get "/", PageController, :index
+    get "/cloudflare", PageController, :cloudflare_values
 
     resources "/merchants", MerchantController
     resources "/geos", GeoController
@@ -34,7 +35,7 @@ defmodule Apientry.Router do
     resources "/tracking_ids", TrackingIdController
     resources "/publisher_sub_ids", PublisherSubIdController
     resources "/blacklist", BlacklistController
-
+    
     get  "/assign/step1", AssignmentController, :step1
     post "/assign/step2", AssignmentController, :step2
     post "/assign/step3", AssignmentController, :step3

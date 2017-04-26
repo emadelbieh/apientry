@@ -3,11 +3,13 @@ defmodule Apientry.CouponSearchController do
 
   alias Apientry.Coupon
   import Ecto.Query
+  import Apientry.ParameterValidators, only: [reject_search_engines: 2]
 
   plug :assign_request_uri
   plug :assign_redirect_base
   plug :assign_ip_address
   plug :assign_country
+  plug :reject_search_engines
 
   def search(conn, params) do
     track_coupon_search(conn, params)
@@ -48,7 +50,13 @@ defmodule Apientry.CouponSearchController do
   end
 
   def track_coupon_search(conn, params) do
-    Apientry.Analytics.track_query(conn, params)
+    country = params["country"] || Apientry.CloudflareService.get_country(conn)
+    data = Map.merge(params, %{
+      "ip_address" => Apientry.CloudflareService.get_ip_address(conn),
+      "geo" => country,
+      "country" => country
+    })
+    Apientry.Analytics.track_query(conn, data)
   end
 
   def get_ip_address(conn) do
