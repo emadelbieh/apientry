@@ -6,9 +6,15 @@
   <% end %>
 
   <div class="form-group">
-    <%= label f, :publisher_sub_id_id, "Publisher", class: "control-label" %>
+    <%= label f, :publisher_sub_id_id, "Publisher Sub ID", class: "control-label" %>
     <%= select f, :publisher_sub_id_id, @subids, prompt: "-- Select Sub ID --", class: "form-control" %>
     <%= error_tag f, :publisher_sub_id_id %>
+  </div>
+
+  <div class="form-group">
+    <%= checkbox f, :all %>
+    <%= label f, :all, "Apply to all sub ids of the associated publisher?", class: "control-label" %>
+    <%= error_tag f, :all %>
   </div>
 
   <div class="form-group">

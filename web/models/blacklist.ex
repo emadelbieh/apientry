@@ -6,6 +6,8 @@ defmodule Apientry.Blacklist do
     field :value, :string
     belongs_to :publisher_sub_id, Apientry.PublisherSubId
 
+    field :all, :boolean, virtual: true
+
     timestamps()
   end
 
