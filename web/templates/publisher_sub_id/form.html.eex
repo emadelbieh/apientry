@@ -18,6 +18,12 @@
   </div>
 
   <div class="form-group">
+    <%= checkbox f, :visual_search %>
+    <%= label f, :visual_search, "Used for visual search?", class: "control-label" %>
+    <%= error_tag f, :visual_search %>
+  </div>
+
+  <div class="form-group">
     <%= label f, :reference_data, class: "control-label" %>
     <%= text_input f, :reference_data, class: "form-control" %>
     <%= error_tag f, :reference_data %>
