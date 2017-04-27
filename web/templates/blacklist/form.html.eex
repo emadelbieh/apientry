@@ -19,7 +19,7 @@
 
   <div class="form-group">
     <%= label f, :blacklist_type, class: "control-label" %>
-    <%= select f, :blacklist_type, ["Domain": "domain", "Network": "network", "Country": "country"], prompt: "-- Select Type of Blacklist --", class: "form-control" %>
+    <%= select f, :blacklist_type, ["Coupons - Domain": "domain", "Coupons - Network": "network", "Coupons - Country": "country", "Visual Search - Domain": "visual_search", "Topbar - Domain": "topbar"], prompt: "-- Select Type of Blacklist --", class: "form-control" %>
     <%= error_tag f, :blacklist_type %>
   </div>
 

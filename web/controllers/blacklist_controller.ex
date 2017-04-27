@@ -5,7 +5,7 @@ defmodule Apientry.BlacklistController do
   alias Apientry.PublisherSubId
 
   def index(conn, _params) do
-    blacklists = Repo.all(Blacklist)
+    blacklists = Repo.all(Blacklist) |> Repo.preload(publisher_sub_id: [:publisher])
     render(conn, "index.html", blacklists: blacklists)
   end
 
