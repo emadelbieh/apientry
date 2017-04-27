@@ -5,6 +5,7 @@ defmodule Apientry.BlacklistController do
   alias Apientry.PublisherSubId
 
   plug :validate_platforms when action in [:query]
+  plug :validate_input when action in [:create]
 
   def index(conn, _params) do
     blacklists = Repo.all(Blacklist) |> Repo.preload(publisher_sub_id: [:publisher])
@@ -47,16 +48,6 @@ defmodule Apientry.BlacklistController do
     conn
     |> put_flash(:info, "Blacklist created successfully.")
     |> redirect(to: blacklist_path(conn, :index))
-
-        #case Repo.insert(changeset) do
-      # #case {:ok, _blacklist} ->
-        #caseconn
-        #case|> put_flash(:info, "Blacklist created successfully.")
-        #case|> redirect(to: blacklist_path(conn, :index))
-      #{#case:error, changeset} ->
-        #casesubids = load_publisher_sub_ids
-        #caserender(conn, "new.html", changeset: changeset, subids: subids)
-        #end
   end
 
   def create(conn, %{"blacklist" => %{"all" => "true"}} = params) do
@@ -145,6 +136,30 @@ defmodule Apientry.BlacklistController do
       conn
       |> halt()
       |> json(%{error: "invalid platform"})
+    end
+  end
+
+  def validate_input(conn, _opts) do
+    blacklist_params = conn.params["blacklist"]
+
+    blacklist_params = if blacklist_params["file"] do
+      Map.merge(blacklist_params, %{ "value" =>
+        "To make form valid. This will be discarded bec file is preferred."})
+    else
+      blacklist_params
+    end
+
+    changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+
+    case changeset.valid? do
+      true ->
+        conn
+      false ->
+        subids = load_publisher_sub_ids
+        conn
+        |> halt()
+        |> put_flash(:error, "Please check your input")
+        |> render("new.html", changeset: changeset, subids: subids)
     end
   end
 end
