@@ -26,17 +26,33 @@ defmodule Apientry.BlacklistController do
   def create(conn, %{"blacklist" => %{"all" => "false"}} = params) do
     blacklist_params = params["blacklist"]
 
-    changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+    f = blacklist_params["file"].path
+    domains = File.read!(f) |> String.split("\n")
+    Enum.each(domains, fn domain ->
+      case domain do
+        "" ->
+          nil
+        value ->
+          blacklist_params = Map.merge(blacklist_params, %{"value" => value})
+          changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+          Repo.insert!(changeset)
+      end
+    end)
 
-    case Repo.insert(changeset) do
-      {:ok, _blacklist} ->
-        conn
-        |> put_flash(:info, "Blacklist created successfully.")
-        |> redirect(to: blacklist_path(conn, :index))
-      {:error, changeset} ->
-        subids = load_publisher_sub_ids
-        render(conn, "new.html", changeset: changeset, subids: subids)
-    end
+    changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+    conn
+    |> put_flash(:info, "Blacklist created successfully.")
+    |> redirect(to: blacklist_path(conn, :index))
+
+        #case Repo.insert(changeset) do
+      # #case {:ok, _blacklist} ->
+        #caseconn
+        #case|> put_flash(:info, "Blacklist created successfully.")
+        #case|> redirect(to: blacklist_path(conn, :index))
+      #{#case:error, changeset} ->
+        #casesubids = load_publisher_sub_ids
+        #caserender(conn, "new.html", changeset: changeset, subids: subids)
+        #end
   end
 
   def create(conn, %{"blacklist" => %{"all" => "true"}} = params) do
