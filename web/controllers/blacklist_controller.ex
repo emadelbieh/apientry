@@ -49,24 +49,14 @@ defmodule Apientry.BlacklistController do
 
     Enum.each(publisher_sub_ids, fn psubid ->
       if blacklist_params["file"] do
-        f = blacklist_params["file"].path
-        domains = File.read!(f) |> String.split("\n")
-        Enum.each(domains, fn domain ->
-          case domain do
-            "" ->
-              nil
-            value ->
-              blacklist_params = Map.merge(blacklist_params, %{"value" => value, "publisher_sub_id_id" => psubid.id})
-              changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
-              Repo.insert!(changeset)
-          end
-        end)
+        blacklist_params
+        |> prepare_changesets(psubid)
+        |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
       else
         changeset = Blacklist.changeset(%Blacklist{}, Map.merge(blacklist_params, %{"publisher_sub_id_id" => psubid.id}))
         Repo.insert!(changeset)
       end
     end)
-
     conn
     |> put_flash(:info, "All subids for the associated publisher has been blacklisted")
     |> redirect(to: blacklist_path(conn, :index))
@@ -152,6 +142,16 @@ defmodule Apientry.BlacklistController do
         |> put_flash(:error, "Please check your input")
         |> render("new.html", changeset: changeset, subids: subids)
     end
+  end
+
+  defp prepare_changesets(blacklist_params, subid) do
+    blacklist_params
+    |> get_domains()
+    |> Stream.reject(&(&1 == ""))
+    |> Enum.map(fn domain ->
+      blacklist_params = Map.merge(blacklist_params, %{"value" => domain, "publisher_sub_id_id" => subid.id})
+      changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+    end)
   end
 
   defp prepare_changesets(blacklist_params) do
