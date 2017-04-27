@@ -75,4 +75,41 @@ defmodule Apientry.BlacklistControllerTest do
     assert redirected_to(conn) == blacklist_path(conn, :index)
     refute Repo.get(Blacklist, blacklist.id)
   end
+
+  test "creates blacklist for each domain in the uploaded file",
+      %{conn: conn, publisher_sub_id: publisher_sub_id} do
+    file = %Plug.Upload{path: "test/fixtures/blacklist.txt", filename: "blacklist.txt"}
+
+    blacklist_params = %{"publisher_sub_id_id" => publisher_sub_id.id,
+                         "blacklist_type" => "visual_search",
+                         "file" => file, "all" => "false"}
+
+    conn = post conn, blacklist_path(conn, :create), blacklist: blacklist_params
+    assert redirected_to(conn) == blacklist_path(conn, :index)
+
+    blacklisted_subdomains = Repo.all(Blacklist) |> Enum.map(&(&1.value))
+    assert "amazon.com" in blacklisted_subdomains
+    assert "ebay.com" in blacklisted_subdomains
+  end
+
+  test "creates blacklist for each subid for each domain each domain in uploaded file",
+      %{conn: conn, publisher_sub_id: publisher_sub_id, psubid2: psubid2, psubid3: psubid3} do
+
+    file = %Plug.Upload{path: "test/fixtures/blacklist.txt", filename: "blacklist.txt"}
+
+    blacklist_params = %{"publisher_sub_id_id" => psubid3.id,
+                         "blacklist_type" => "visual_search",
+                         "file" => file, "all" => "true"}
+
+    conn = post conn, blacklist_path(conn, :create), blacklist: blacklist_params
+    assert redirected_to(conn) == blacklist_path(conn, :index)
+
+    blacklisted = Repo.all(Blacklist) |> Enum.map(&("#{&1.publisher_sub_id_id}-#{&1.value}"))
+    assert "#{publisher_sub_id.id}-amazon.com" in blacklisted
+    assert "#{psubid2.id}-amazon.com" in blacklisted
+    assert "#{psubid3.id}-amazon.com" in blacklisted
+    assert "#{publisher_sub_id.id}-ebay.com" in blacklisted
+    assert "#{psubid2.id}-ebay.com" in blacklisted
+    assert "#{psubid3.id}-ebay.com" in blacklisted
+  end
 end
