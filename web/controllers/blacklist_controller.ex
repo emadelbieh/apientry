@@ -4,8 +4,10 @@ defmodule Apientry.BlacklistController do
   alias Apientry.Blacklist
   alias Apientry.PublisherSubId
 
+  plug :validate_platforms when action in [:query]
+
   def index(conn, _params) do
-    blacklists = Repo.all(Blacklist)
+    blacklists = Repo.all(Blacklist) |> Repo.preload(publisher_sub_id: [:publisher])
     render(conn, "index.html", blacklists: blacklists)
   end
 
@@ -21,7 +23,9 @@ defmodule Apientry.BlacklistController do
     render(conn, "new.html", changeset: changeset, subids: subids)
   end
 
-  def create(conn, %{"blacklist" => blacklist_params}) do
+  def create(conn, %{"blacklist" => %{"all" => "false"}} = params) do
+    blacklist_params = params["blacklist"]
+
     changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
 
     case Repo.insert(changeset) do
@@ -33,6 +37,22 @@ defmodule Apientry.BlacklistController do
         subids = load_publisher_sub_ids
         render(conn, "new.html", changeset: changeset, subids: subids)
     end
+  end
+
+  def create(conn, %{"blacklist" => %{"all" => "true"}} = params) do
+    blacklist_params = params["blacklist"]
+
+    publisher_sub_id = Repo.get(PublisherSubId, blacklist_params["publisher_sub_id_id"])
+    publisher_sub_ids = Repo.all(PublisherSubId, publisher_id: publisher_sub_id.publisher_id)
+
+    Enum.each(publisher_sub_ids, fn psubid ->
+      changeset = Blacklist.changeset(%Blacklist{}, Map.merge(blacklist_params, %{"publisher_sub_id_id" => psubid.id}))
+      Repo.insert!(changeset)
+    end)
+
+    conn
+    |> put_flash(:info, "All subids for the associated publisher has been blacklisted")
+    |> redirect(to: blacklist_path(conn, :index))
   end
 
   def edit(conn, %{"id" => id}) do
@@ -67,5 +87,29 @@ defmodule Apientry.BlacklistController do
     conn
     |> put_flash(:info, "Blacklist deleted successfully.")
     |> redirect(to: blacklist_path(conn, :index))
+  end
+
+  def query(conn, %{"platform" => platform, "domain" => domain}) do
+    blacklists = Repo.all(from b in Blacklist,
+                          where: b.blacklist_type == ^platform
+                          and b.value == ^domain)
+    case blacklists do
+      [] ->
+        json(conn, %{blacklist: false})
+      [_ | _] ->
+        json(conn, %{blacklist: true})
+    end
+  end
+
+  defp validate_platforms(conn, _opts) do
+    platform = conn.params["platform"]
+
+    if platform && (platform in ["visual_search", "topbar"]) do
+      conn
+    else
+      conn
+      |> halt()
+      |> json(%{error: "invalid platform"})
+    end
   end
 end

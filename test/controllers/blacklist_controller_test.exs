@@ -11,7 +11,9 @@ defmodule Apientry.BlacklistControllerTest do
   setup do
     publisher = Repo.insert!(Publisher.changeset(%Publisher{}, %{name: "test"}))
     publisher_sub_id = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "001", publisher_id: publisher.id}))
-    {:ok, publisher_sub_id: publisher_sub_id}
+    publisher_sub_id2 = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "002", publisher_id: publisher.id}))
+    publisher_sub_id3 = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "003", publisher_id: publisher.id}))
+    {:ok, publisher_sub_id: publisher_sub_id, psubid2: publisher_sub_id2, psubid3: publisher_sub_id3}
   end
 
   test "lists all entries on index", %{conn: conn} do
@@ -25,14 +27,25 @@ defmodule Apientry.BlacklistControllerTest do
   end
 
   test "creates resource and redirects when data is valid", %{conn: conn, publisher_sub_id: publisher_sub_id} do
-    blacklist_params = Map.merge(@valid_attrs, %{publisher_sub_id_id: publisher_sub_id.id})
+    blacklist_params = Map.merge(@valid_attrs, %{publisher_sub_id_id: publisher_sub_id.id, all: "false"})
     conn = post conn, blacklist_path(conn, :create), blacklist: blacklist_params
     assert redirected_to(conn) == blacklist_path(conn, :index)
     assert Repo.get_by(Blacklist, @valid_attrs)
   end
 
+  test "creates resource for all subids when 'all' is 'true'", %{conn: conn, publisher_sub_id: publisher_sub_id, psubid2: psubid2, psubid3: psubid3} do
+    blacklist_params = Map.merge(@valid_attrs, %{publisher_sub_id_id: publisher_sub_id.id, all: "true"})
+    conn = post conn, blacklist_path(conn, :create), blacklist: blacklist_params
+    assert redirected_to(conn) == blacklist_path(conn, :index)
+
+    blacklisted = Enum.map(Repo.all(Blacklist), &(&1.publisher_sub_id_id))
+    assert publisher_sub_id.id in blacklisted
+    assert psubid2.id in blacklisted
+    assert psubid3.id in blacklisted
+  end
+
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    conn = post conn, blacklist_path(conn, :create), blacklist: @invalid_attrs
+    conn = post conn, blacklist_path(conn, :create), blacklist: Map.merge(@invalid_attrs, %{all: "false"})
     assert html_response(conn, 200) =~ "New blacklist"
   end
 
