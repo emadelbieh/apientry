@@ -26,20 +26,24 @@ defmodule Apientry.BlacklistController do
   def create(conn, %{"blacklist" => %{"all" => "false"}} = params) do
     blacklist_params = params["blacklist"]
 
-    f = blacklist_params["file"].path
-    domains = File.read!(f) |> String.split("\n")
-    Enum.each(domains, fn domain ->
-      case domain do
-        "" ->
-          nil
-        value ->
-          blacklist_params = Map.merge(blacklist_params, %{"value" => value})
-          changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
-          Repo.insert!(changeset)
-      end
-    end)
+    if blacklist_params["file"] do
+      f = blacklist_params["file"].path
+      domains = File.read!(f) |> String.split("\n")
+      Enum.each(domains, fn domain ->
+        case domain do
+          "" ->
+            nil
+          value ->
+            blacklist_params = Map.merge(blacklist_params, %{"value" => value})
+            changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+            Repo.insert!(changeset)
+        end
+      end)
+    else
+      changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+      Repo.insert!(changeset)
+    end
 
-    changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
     conn
     |> put_flash(:info, "Blacklist created successfully.")
     |> redirect(to: blacklist_path(conn, :index))
