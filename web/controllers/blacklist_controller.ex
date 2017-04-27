@@ -62,8 +62,20 @@ defmodule Apientry.BlacklistController do
     publisher_sub_ids = Repo.all(PublisherSubId, publisher_id: publisher_sub_id.publisher_id)
 
     Enum.each(publisher_sub_ids, fn psubid ->
-      changeset = Blacklist.changeset(%Blacklist{}, Map.merge(blacklist_params, %{"publisher_sub_id_id" => psubid.id}))
-      Repo.insert!(changeset)
+      f = blacklist_params["file"].path
+      domains = File.read!(f) |> String.split("\n")
+      Enum.each(domains, fn domain ->
+        case domain do
+          "" ->
+            nil
+          value ->
+            blacklist_params = Map.merge(blacklist_params, %{"value" => value, "publisher_sub_id_id" => psubid.id})
+            changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+            Repo.insert!(changeset)
+        end
+      end)
+      #changeset = Blacklist.changeset(%Blacklist{}, Map.merge(blacklist_params, %{"publisher_sub_id_id" => psubid.id}))
+      #Repo.insert!(changeset)
     end)
 
     conn
