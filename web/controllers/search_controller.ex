@@ -383,10 +383,9 @@ defmodule Apientry.SearchController do
       price = Regex.run(~r/\d+\.{0,1}\d+/, price)
     end
 
-    if length(price) > 0 do
-      hd(price)
-    else
-      price
+    price = case price do
+      [price | _] -> price
+      price -> price
     end
   end
 

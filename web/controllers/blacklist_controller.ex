@@ -5,6 +5,7 @@ defmodule Apientry.BlacklistController do
   alias Apientry.PublisherSubId
 
   plug :validate_platforms when action in [:query]
+  plug :validate_input when action in [:create]
 
   def index(conn, _params) do
     blacklists = Repo.all(Blacklist) |> Repo.preload(publisher_sub_id: [:publisher])
@@ -26,30 +27,36 @@ defmodule Apientry.BlacklistController do
   def create(conn, %{"blacklist" => %{"all" => "false"}} = params) do
     blacklist_params = params["blacklist"]
 
-    changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
-
-    case Repo.insert(changeset) do
-      {:ok, _blacklist} ->
-        conn
-        |> put_flash(:info, "Blacklist created successfully.")
-        |> redirect(to: blacklist_path(conn, :index))
-      {:error, changeset} ->
-        subids = load_publisher_sub_ids
-        render(conn, "new.html", changeset: changeset, subids: subids)
+    if blacklist_params["file"] do
+      blacklist_params
+      |> prepare_changesets()
+      |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
+    else
+      changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+      Repo.insert!(changeset)
     end
+
+    conn
+    |> put_flash(:info, "Blacklist created successfully.")
+    |> redirect(to: blacklist_path(conn, :index))
   end
 
   def create(conn, %{"blacklist" => %{"all" => "true"}} = params) do
     blacklist_params = params["blacklist"]
 
     publisher_sub_id = Repo.get(PublisherSubId, blacklist_params["publisher_sub_id_id"])
-    publisher_sub_ids = Repo.all(PublisherSubId, publisher_id: publisher_sub_id.publisher_id)
+    publisher_sub_ids = Repo.all(from p in PublisherSubId, where: p.publisher_id == ^publisher_sub_id.publisher_id)
 
     Enum.each(publisher_sub_ids, fn psubid ->
-      changeset = Blacklist.changeset(%Blacklist{}, Map.merge(blacklist_params, %{"publisher_sub_id_id" => psubid.id}))
-      Repo.insert!(changeset)
+      if blacklist_params["file"] do
+        blacklist_params
+        |> prepare_changesets(psubid)
+        |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
+      else
+        changeset = Blacklist.changeset(%Blacklist{}, Map.merge(blacklist_params, %{"publisher_sub_id_id" => psubid.id}))
+        Repo.insert!(changeset)
+      end
     end)
-
     conn
     |> put_flash(:info, "All subids for the associated publisher has been blacklisted")
     |> redirect(to: blacklist_path(conn, :index))
@@ -111,5 +118,55 @@ defmodule Apientry.BlacklistController do
       |> halt()
       |> json(%{error: "invalid platform"})
     end
+  end
+
+  def validate_input(conn, _opts) do
+    blacklist_params = conn.params["blacklist"]
+
+    blacklist_params = if blacklist_params["file"] do
+      Map.merge(blacklist_params, %{ "value" =>
+        "To make form valid. This will be discarded bec file is preferred."})
+    else
+      blacklist_params
+    end
+
+    changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+
+    case changeset.valid? do
+      true ->
+        conn
+      false ->
+        subids = load_publisher_sub_ids
+        conn
+        |> halt()
+        |> put_flash(:error, "Please check your input")
+        |> render("new.html", changeset: changeset, subids: subids)
+    end
+  end
+
+  defp prepare_changesets(blacklist_params, subid) do
+    blacklist_params
+    |> get_domains()
+    |> Stream.reject(&(&1 == ""))
+    |> Enum.map(fn domain ->
+      blacklist_params = Map.merge(blacklist_params, %{"value" => domain, "publisher_sub_id_id" => subid.id})
+      changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+    end)
+  end
+
+  defp prepare_changesets(blacklist_params) do
+    blacklist_params
+    |> get_domains()
+    |> Stream.reject(&(&1 == ""))
+    |> Enum.map(fn domain ->
+      blacklist_params = Map.merge(blacklist_params, %{"value" => domain})
+      changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+    end)
+  end
+
+  defp get_domains(blacklist_params) do
+    blacklist_params["file"].path
+    |> File.read!()
+    |> String.split("\n")
   end
 end
