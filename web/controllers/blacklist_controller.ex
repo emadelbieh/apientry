@@ -28,18 +28,9 @@ defmodule Apientry.BlacklistController do
     blacklist_params = params["blacklist"]
 
     if blacklist_params["file"] do
-      f = blacklist_params["file"].path
-      domains = File.read!(f) |> String.split("\n")
-      Enum.each(domains, fn domain ->
-        case domain do
-          "" ->
-            nil
-          value ->
-            blacklist_params = Map.merge(blacklist_params, %{"value" => value})
-            changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
-            Repo.insert!(changeset)
-        end
-      end)
+      blacklist_params
+      |> prepare_changesets()
+      |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
     else
       changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
       Repo.insert!(changeset)
@@ -161,5 +152,21 @@ defmodule Apientry.BlacklistController do
         |> put_flash(:error, "Please check your input")
         |> render("new.html", changeset: changeset, subids: subids)
     end
+  end
+
+  defp prepare_changesets(blacklist_params) do
+    blacklist_params
+    |> get_domains()
+    |> Stream.reject(&(&1 == ""))
+    |> Enum.map(fn domain ->
+      blacklist_params = Map.merge(blacklist_params, %{"value" => domain})
+      changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+    end)
+  end
+
+  defp get_domains(blacklist_params) do
+    blacklist_params["file"].path
+    |> File.read!()
+    |> String.split("\n")
   end
 end
