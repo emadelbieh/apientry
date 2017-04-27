@@ -4,6 +4,8 @@ defmodule Apientry.BlacklistController do
   alias Apientry.Blacklist
   alias Apientry.PublisherSubId
 
+  plug :validate_platforms when action in [:query]
+
   def index(conn, _params) do
     blacklists = Repo.all(Blacklist) |> Repo.preload(publisher_sub_id: [:publisher])
     render(conn, "index.html", blacklists: blacklists)
@@ -85,5 +87,29 @@ defmodule Apientry.BlacklistController do
     conn
     |> put_flash(:info, "Blacklist deleted successfully.")
     |> redirect(to: blacklist_path(conn, :index))
+  end
+
+  def query(conn, %{"platform" => platform, "domain" => domain}) do
+    blacklists = Repo.all(from b in Blacklist,
+                          where: b.blacklist_type == ^platform
+                          and b.value == ^domain)
+    case blacklists do
+      [] ->
+        json(conn, %{blacklist: false})
+      [_ | _] ->
+        json(conn, %{blacklist: true})
+    end
+  end
+
+  defp validate_platforms(conn, _opts) do
+    platform = conn.params["platform"]
+
+    if platform && (platform in ["visual_search", "topbar"]) do
+      conn
+    else
+      conn
+      |> halt()
+      |> json(%{error: "invalid platform"})
+    end
   end
 end
