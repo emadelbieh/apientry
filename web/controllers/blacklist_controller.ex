@@ -54,7 +54,7 @@ defmodule Apientry.BlacklistController do
     blacklist_params = params["blacklist"]
 
     publisher_sub_id = Repo.get(PublisherSubId, blacklist_params["publisher_sub_id_id"])
-    publisher_sub_ids = Repo.all(PublisherSubId, publisher_id: publisher_sub_id.publisher_id)
+    publisher_sub_ids = Repo.all(from p in PublisherSubId, where: p.publisher_id == ^publisher_sub_id.publisher_id)
 
     Enum.each(publisher_sub_ids, fn psubid ->
       if blacklist_params["file"] do
