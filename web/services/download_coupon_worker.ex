@@ -55,10 +55,13 @@ defmodule Apientry.DownloadCouponWorker do
   end
 
   def should_refresh?(hour_modified, hour_now) do
-    if (hour_now in [0,6,12,18]) && (hour_modified < hour_now)  do
-      true
-    else
-      false
+    cond do
+      (hour_now in [6,12,18]) && (hour_modified < hour_now) ->
+        true
+      (hour_now == 0) && (hour_modified in 18..23) ->
+        true
+      true ->
+        false
     end
   end
 

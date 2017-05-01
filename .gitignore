@@ -18,3 +18,6 @@ erl_crash.dump
 /.deliver/releases
 /config/*.override.exs
 /doc
+
+merchants_cache
+coupons_cache
