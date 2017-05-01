@@ -3,6 +3,7 @@ defmodule Apientry.PublisherSubId do
 
   schema "publisher_sub_ids" do
     field :sub_id, :string
+    field :visual_search, :boolean
     field :reference_data, :string
     belongs_to :publisher, Apientry.Publisher
 
