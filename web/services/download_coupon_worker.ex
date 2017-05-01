@@ -7,8 +7,9 @@ defmodule Apientry.DownloadCouponWorker do
   alias Apientry.Repo
 
   def perform do
-    @endpoint
-    |> query()
+    result = @cache_path
+    |> analyze_attributes()
+    |> query(@endpoint)
     |> save_to_file(@cache_path)
 
     @cache_path
@@ -17,17 +18,51 @@ defmodule Apientry.DownloadCouponWorker do
     |> cache_to_database()
   end
 
-  defp query(endpoint) do
-    case HTTPoison.get(@endpoint) do
-      {:ok,  %Response{status_code: status, body: body, headers: headers} = response} ->
-        body
-      {:error, %HTTPoison.Error{reason: reason} = error} ->
-        IO.inspect(error)
-        nil
+  def analyze_attributes(cache_file) do
+    case File.stat(cache_file) do
+      {:ok, stats} ->
+        case should_refresh?(time_modified(stats), time_now()) do
+          true -> {:miss, cache_file}
+          false -> {:hit, cache_file}
+        end
+      {:error, :enoent} ->
+        {:miss, cache_file}
     end
   end
 
-  defp save_to_file(data, cache_path) do
+  def query({:miss, cache_path}, endpoint) do
+    case HTTPoison.get(@endpoint) do
+      {:ok,  %Response{status_code: status, body: body, headers: headers} = response} ->
+        {:miss, body}
+      {:error, %HTTPoison.Error{reason: reason} = error} ->
+        IO.inspect(error)
+        {:miss, Poison.encode(%{})}
+    end
+  end
+
+  def query({:hit, cache_path}, _endpoint) do
+    {:hit, cache_path}
+  end
+
+  def time_now do
+    {_, {hour,_,_}} = Timex.to_erl(Timex.now)
+    hour
+  end
+
+  def time_modified(%File.Stat{mtime: mtime}) do
+    {_, {hour,_,_}} = mtime
+    hour
+  end
+
+  def should_refresh?(hour_modified, hour_now) do
+    if (hour_now in [0,6,12,18]) && (hour_modified < hour_now)  do
+      true
+    else
+      false
+    end
+  end
+
+  def save_to_file({:miss, data}, cache_path) do
     case File.open(cache_path, [:write]) do
       {:ok, file} ->
         IO.binwrite file, data
@@ -38,6 +73,10 @@ defmodule Apientry.DownloadCouponWorker do
     end
   end
 
+  def save_to_file({:hit, _}, _) do
+    true
+  end
+
   def read_contents(cache_path) do
     case File.read(cache_path) do
       {:ok, data} -> data
@@ -45,18 +84,18 @@ defmodule Apientry.DownloadCouponWorker do
     end
   end
 
-  defp parse_contents(response) do
+  def parse_contents(response) do
     Poison.decode!(response)["data"]
   end
 
-  defp cache_to_database(coupons_data) do
+  def cache_to_database(coupons_data) do
     Repo.delete_all(Coupon)
     Enum.each(coupons_data, fn coupon_attrs ->
       create_record(coupon_attrs)
     end)
   end
 
-  defp create_record(coupon_attrs) do
+  def create_record(coupon_attrs) do
     changeset = Coupon.changeset(%Coupon{}, coupon_attrs)
     case Repo.insert(changeset) do
       {:ok, coupon} ->
