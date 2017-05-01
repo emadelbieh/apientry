@@ -62,4 +62,9 @@ defmodule Apientry.PublisherSubIdController do
     |> put_flash(:info, "Publisher sub deleted successfully.")
     |> redirect(to: publisher_sub_id_path(conn, :index))
   end
+
+  def query(conn, params) do
+    subids = Repo.all(from p in PublisherSubId, where: p.visual_search == ^true)
+    json(conn, %{subids: subids})
+  end
 end

@@ -58,26 +58,12 @@ defmodule Apientry.Router do
     get "/publisher/:endpoint", SearchController, :search
     get "/redirect/:fragment", RedirectController, :show
     get "/blacklisted/:platform/:domain", BlacklistController, :query
+    get "/vssubids", PublisherSubIdController, :query
 
     get "/subid/generate", SubIdController, :generate
     options "/publisher", SearchController, :search # for cors
 
     get "/__healthcheck", HealthCheckController, :index
-
-    get "/loaderio-b86e3ad1127445bea97f60fc77392f9c", LoaderVerificationController, :show_b86e3ad1
-    get "/loaderio-b86e3ad1127445bea97f60fc77392f9c.html", LoaderVerificationController, :show_b86e3ad1
-    get "/loaderio-b86e3ad1127445bea97f60fc77392f9c.txt", LoaderVerificationController, :show_b86e3ad1
-    get "/loaderio-694461ab4a923d21b45b975c4032b9ff", LoaderVerificationController, :show_694461ab
-    get "/loaderio-694461ab4a923d21b45b975c4032b9ff.html", LoaderVerificationController, :show_694461ab
-    get "/loaderio-694461ab4a923d21b45b975c4032b9ff.txt", LoaderVerificationController, :show_694461ab
-
-    get "/loaderio-ed96d28cb6cb372defb0748d98689a27", LoaderVerificationController, :show_ed96d28c
-    get "/loaderio-ed96d28cb6cb372defb0748d98689a27.html", LoaderVerificationController, :show_ed96d28c
-    get "/loaderio-ed96d28cb6cb372defb0748d98689a27.txt", LoaderVerificationController, :show_ed96d28c
-
-    get "/loaderio-7554f28861c6c058e54aaa267c439680", LoaderVerificationController, :show_7554f288
-    get "/loaderio-7554f28861c6c058e54aaa267c439680.html", LoaderVerificationController, :show_7554f288
-    get "/loaderio-7554f28861c6c058e54aaa267c439680.txt", LoaderVerificationController, :show_7554f288
 
     get "/loaderio-dd9715bade6eb23cec502a38f3bfa865", LoaderVerificationController, :show_dd9715ba
     get "/loaderio-dd9715bade6eb23cec502a38f3bfa865", LoaderVerificationController, :show_dd9715ba

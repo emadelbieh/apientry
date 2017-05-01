@@ -5,6 +5,7 @@
     <tr>
       <th>Publisher</th>
       <th>Sub</th>
+      <th>Visual Search?</th>
       <th>Reference Data</th>
 
       <th></th>
@@ -15,6 +16,7 @@
     <tr>
       <td><%= publisher_sub_id.publisher.name %></td>
       <td><%= publisher_sub_id.sub_id %></td>
+      <td><%= publisher_sub_id.visual_search %></td>
       <td><%= publisher_sub_id.reference_data %></td>
 
       <td class="text-right">
