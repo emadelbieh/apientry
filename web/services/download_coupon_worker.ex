@@ -1,6 +1,6 @@
 defmodule Apientry.DownloadCouponWorker do
-  @cache_path "hello"
-  @endpoint "https://api.feeds4.com/coupons/?token=bl213euxg-scof-zq44-f3b4589h74&recordset=test&format=json"
+  @cache_path "coupons_cache"
+  @endpoint "https://api.feeds4.com/coupons/?token=bl213euxg-scof-zq44-f3b4589h74&recordset=all&format=json"
 
   alias HTTPoison.Response
   alias Apientry.Coupon
