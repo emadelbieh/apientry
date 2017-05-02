@@ -57,7 +57,7 @@ defmodule Apientry.Router do
     get "/dos", SearchController, :search_rerank_coupons
     get "/publisher/:endpoint", SearchController, :search
     get "/redirect/:fragment", RedirectController, :show
-    get "/blacklisted/:platform/:domain", BlacklistController, :query
+    get "/blacklisted", BlacklistController, :query
     get "/vssubids", PublisherSubIdController, :query
 
     get "/subid/generate", SubIdController, :generate
