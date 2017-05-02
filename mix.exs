@@ -68,6 +68,7 @@ defmodule Apientry.Mixfile do
      {:quantum, ">= 1.9.0"},
      {:random_bytes, "~> 1.0"},
      {:uuid, "~> 1.1"},
+     {:timex, "~> 3.0"},
     ]
   end
 
