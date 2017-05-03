@@ -96,10 +96,12 @@ defmodule Apientry.BlacklistController do
     |> redirect(to: blacklist_path(conn, :index))
   end
 
-  def query(conn, %{"platform" => platform, "domain" => domain}) do
+  def query(conn, %{"platform" => platform, "domain" => domain, "subid" => subid}) do
+    subid = Repo.get_by(PublisherSubId, sub_id: subid)
     blacklists = Repo.all(from b in Blacklist,
                           where: b.blacklist_type == ^platform
-                          and b.value == ^domain)
+                          and b.value == ^domain
+                          and b.publisher_sub_id_id == ^subid.id)
     case blacklists do
       [] ->
         json(conn, %{blacklist: false})
