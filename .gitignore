@@ -19,5 +19,5 @@ erl_crash.dump
 /config/*.override.exs
 /doc
 
-merchants_cache
 coupons_cache
+merchants_cache

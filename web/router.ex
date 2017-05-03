@@ -26,7 +26,6 @@ defmodule Apientry.Router do
     get "/", PageController, :index
     get "/cloudflare", PageController, :cloudflare_values
 
-    resources "/merchants", MerchantController
     resources "/geos", GeoController
     resources "/accounts", AccountController
     resources "/ebay_api_keys", EbayApiKeyController
@@ -54,6 +53,7 @@ defmodule Apientry.Router do
     get "/publisher", SearchController, :search
     get "/alpha/publisher", SearchController, :search_rerank
     get "/coupons", CouponSearchController, :search
+    get "/merchants", MerchantController, :index
     get "/dos", SearchController, :search_rerank_coupons
     get "/publisher/:endpoint", SearchController, :search
     get "/redirect/:fragment", RedirectController, :show

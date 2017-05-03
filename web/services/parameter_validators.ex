@@ -26,7 +26,8 @@ defmodule Apientry.ParameterValidators do
   A plug that checks whether request is coming from search engines.
   """
   def reject_search_engines(conn, _opts) do
-    case @search_engines |> Enum.any?(&(conn.params["domain"] =~ &1)) do
+    domain = conn.params["domain"] || ""
+    case @search_engines |> Enum.any?(&(domain =~ &1)) do
       true ->
         conn
         |> assign(:valid, false)
