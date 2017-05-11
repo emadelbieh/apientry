@@ -2,12 +2,17 @@ defmodule Apientry.DownloadCouponWorker do
   @cache_path "coupons_cache"
   @endpoint "https://api.feeds4.com/coupons/?token=bl213euxg-scof-zq44-f3b4589h74&recordset=all&format=json"
 
+  @min_coupons_desired 10_000
+  @initial_delay_factor 1
+  @max_delay_factor 512
+  @one_second 1_000
+
   alias HTTPoison.Response
   alias Apientry.Coupon
   alias Apientry.Repo
 
   def perform do
-    result = @cache_path
+    @cache_path
     |> analyze_attributes()
     |> query(@endpoint)
     |> save_to_file(@cache_path)
@@ -30,17 +35,35 @@ defmodule Apientry.DownloadCouponWorker do
     end
   end
 
-  def query({:miss, cache_path}, endpoint) do
-    case HTTPoison.get(@endpoint) do
+  #
+  # Queries the Feeds4 API coupons endpoint. If it contains 10,000 coupons or
+  # more, we will return the raw data `body` for caching to file. If we got
+  # less than 10k coupons, we'll query the api again for up to 10 times with
+  # longer delay in between them. If we fail to get 10k coupons after 10 tries,
+  # we return what we have for caching.
+  #
+  def query({:miss, cache_path}, endpoint, delay_factor \\ @initial_delay_factor) do
+    case HTTPoison.get(endpoint) do
       {:ok,  %Response{status_code: status, body: body, headers: headers} = response} ->
-        {:miss, body}
+        count = body
+        |> parse_contents()
+        |> Enum.count()
+
+        cond do
+          count >= @min_coupons_desired ->
+            {:miss, body}
+          delay_factor > @max_delay_factor ->
+            {:miss, body}
+          true ->
+            :timer.sleep(@one_second * delay_factor)
+            query({:miss, cache_path}, endpoint, delay_factor * 2)
+        end
       {:error, %HTTPoison.Error{reason: reason} = error} ->
-        IO.inspect(error)
-        {:miss, Poison.encode(%{})}
+        {:error, error}
     end
   end
 
-  def query({:hit, cache_path}, _endpoint) do
+  def query({:hit, cache_path}, _endpoint, _delay_factor) do
     {:hit, cache_path}
   end
 
@@ -77,7 +100,11 @@ defmodule Apientry.DownloadCouponWorker do
   end
 
   def save_to_file({:hit, _}, _) do
-    true
+    # do nothing
+  end
+
+  def save_to_file({:error, error}) do
+    IO.inspect error
   end
 
   def read_contents(cache_path) do
@@ -93,9 +120,9 @@ defmodule Apientry.DownloadCouponWorker do
 
   def cache_to_database(coupons_data) do
     Repo.delete_all(Coupon)
-    Enum.each(coupons_data, fn coupon_attrs ->
-      create_record(coupon_attrs)
-    end)
+    coupons_data
+    |> Stream.filter(&(&1["country"] == "US"))
+    |> Enum.each(&(create_record(&1)))
   end
 
   def create_record(coupon_attrs) do
