@@ -29,7 +29,7 @@ defmodule Apientry.CouponCopy do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:merchant, :merchantid, :offer, :restriction, :url, :code, :startdate, :enddate, :category, :dealtype, :holiday, :network, :rating, :country, :logo, :website, :domain, :lastmodified])
+    |> cast(params, [:id, :merchant, :merchantid, :offer, :restriction, :url, :code, :startdate, :enddate, :category, :dealtype, :holiday, :network, :rating, :country, :logo, :website, :domain, :lastmodified])
     |> validate_required([:id, :merchant, :merchantid, :url, :code, :startdate, :enddate, :category, :dealtype, :holiday, :network, :rating, :country, :logo, :website, :domain, :lastmodified])
   end
 end
