@@ -1,9 +1,9 @@
 defmodule Apientry.DownloadCouponCopyWorker do
   @cache_path "coupons_cache"
-  @recordset "test"
+  @recordset "all"
   @endpoint "https://api.feeds4.com/coupons/?token=bl213euxg-scof-zq44-f3b4589h74&recordset=#{@recordset}&format=json"
 
-  @min_coupons_desired 1#0_000
+  @min_coupons_desired 10_000
   @initial_delay_factor 1
   @max_delay_factor 512
   @one_second 1_000

@@ -10,12 +10,11 @@ defmodule Apientry.DownloadCouponWorker do
 
   alias HTTPoison.Response
   alias Apientry.Coupon
-  alias Apientry.CouponCopy
   alias Apientry.Repo
   alias Apientry.Slack
 
   def perform do
-    Slack.send_message("Downloading #{base_model()}...")
+    Slack.send_message("Downloading coupons...")
 
     @cache_path
     |> analyze_attributes()
@@ -27,7 +26,7 @@ defmodule Apientry.DownloadCouponWorker do
     |> parse_contents()
     |> cache_to_database()
 
-    count = Repo.all(base_model()) |> Enum.count
+    count = Repo.all(Coupon) |> Enum.count
     Slack.send_message("Saved *#{count} US coupons* to the database.")
   end
 
@@ -129,42 +128,20 @@ defmodule Apientry.DownloadCouponWorker do
   end
 
   def cache_to_database(coupons_data) do
-    Repo.delete_all(base_model())
+    Repo.delete_all(Coupon)
     coupons_data
     |> Stream.filter(&(&1["country"] == "US"))
     |> Enum.each(&(create_record(&1)))
   end
 
   def create_record(coupon_attrs) do
-    changeset = base_model().changeset(base_struct(), coupon_attrs)
+    changeset = Coupon.changeset(%Coupon{}, coupon_attrs)
     case Repo.insert(changeset) do
       {:ok, coupon} ->
-        IO.puts("#{base_model()} #{coupon.id} successfully saved")
+        IO.puts("Coupon #{coupon.id} successfully saved")
       {:error, changeset} ->
         IO.puts("Error saving coupon:")
         IO.inspect changeset
     end
-  end
-
-  def base_model do
-    {hour, minute, _} = utc_time_now()
-    if (hour in [0,6,12,18]) && (minute in 0.30) do
-      Coupon
-    else
-      CouponCopy
-    end
-  end
-
-  def base_struct do
-    {hour, minute, _} = utc_time_now()
-    if (hour in [0,6,12,18]) && (minute in 0.30) do
-      %Coupon{}
-    else
-      %CouponCopy{}
-    end
-  end
-
-  defp utc_time_now do
-    DateTime.utc_now() |> Time.to_erl()
   end
 end
