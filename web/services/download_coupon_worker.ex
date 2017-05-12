@@ -15,7 +15,7 @@ defmodule Apientry.DownloadCouponWorker do
   alias Apientry.Slack
 
   def perform do
-    Slack.send_message("Downloading coupons...")
+    Slack.send_message("Downloading #{base_model()}...")
 
     @cache_path
     |> analyze_attributes()
