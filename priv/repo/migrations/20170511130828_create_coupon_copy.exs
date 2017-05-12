@@ -5,8 +5,8 @@ defmodule Apientry.Repo.Migrations.CreateCouponCopy do
     create table(:coupon_copies) do
       add :merchant, :string
       add :merchantid, :string
-      add :offer, :string
-      add :restriction, :string
+      add :offer, :text
+      add :restriction, :text
       add :url, :string
       add :code, :string
       add :startdate, :string
