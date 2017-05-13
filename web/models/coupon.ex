@@ -48,16 +48,12 @@ defmodule Apientry.Coupon do
   end
 
   def base_model do
-    {hour, minute, _} = utc_time_now()
+    {_, {hour, minute, _}} = Timex.to_erl(Timex.now())
     if (hour in [0,6,12,18]) && (minute in 0.30) do
       Apientry.CouponCopy
     else
       Apientry.Coupon
     end
-  end
-
-  defp utc_time_now do
-    DateTime.utc_now() |> Time.to_erl()
   end
 
   def by_params(conn) do
