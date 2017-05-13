@@ -30,8 +30,9 @@ config :apientry, Apientry.Repo,
 
 config :quantum, :apientry,
   cron: [
-      "15 * * * *":  {"Apientry.DownloadCouponCopyWorker", :perform},
-      "* */6 * * *":  {"Apientry.DownloadCouponWorker", :perform}
+      "46 * * * *": {"Timex", :now},
+      "5 */6 * * *": {"Apientry.DownloadCouponWorker", :perform},
+      "31 */6 * * *": {"Apientry.DownloadCouponCopyWorker", :perform},
   ]
 
 # Load remotely in AWS, because the local .mmdb file is not available when
