@@ -33,8 +33,14 @@ config :logger, :console, format: "[$level] $message\n"
 # and calculating stacktraces is usually expensive.
 config :phoenix, :stacktrace_depth, 20
 
-config :quantum, :apientry,
-  cron: []
+if System.get_env("CRON_ROLE") == "CRON_RUNNER" do
+  config :quantum, :apientry,
+    cron: [
+        "45 */7 * * *":  {"Apientry.DownloadCouponCopyWorker", :perform},
+        "* */6 * * *":  {"Apientry.DownloadCouponWorker", :perform},
+        "31 */6 * * *":  {"Apientry.DownloadCouponCopyWorker", :perform}
+    ]
+end
 
 # Configure your database
 config :apientry, Apientry.Repo,

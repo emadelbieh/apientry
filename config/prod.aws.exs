@@ -28,11 +28,14 @@ config :apientry, Apientry.Repo,
   pool_size: 10,
   ssl: true
 
-  #config :quantum, :apientry,
-  #  cron: [
-  #      "*  */6 * * *":  {"Apientry.DownloadCouponWorker", :perform},
-  #      "31 */6 * * *":  {"Apientry.DownloadCouponCopyWorker", :perform}
-  #  ]
+if System.get_env("CRON_ROLE") == "CRON_RUNNER" do
+  config :quantum, :apientry,
+    cron: [
+        "45 */7 * * *":  {"Apientry.DownloadCouponCopyWorker", :perform},
+        "* */6 * * *":  {"Apientry.DownloadCouponWorker", :perform},
+        "31 */6 * * *":  {"Apientry.DownloadCouponCopyWorker", :perform}
+    ]
+end
 
 # Load remotely in AWS, because the local .mmdb file is not available when
 # building an exrm release.
