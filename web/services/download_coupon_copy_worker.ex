@@ -14,20 +14,22 @@ defmodule Apientry.DownloadCouponCopyWorker do
   alias Apientry.Slack
 
   def perform do
-    Slack.send_message("Downloading coupon copies...")
+    if System.get_env("CRON_ROLE") == "CRON_RUNNER" do
+      Slack.send_message("Downloading coupon copies...")
 
-    @cache_path
-    |> analyze_attributes()
-    |> query(@endpoint)
-    |> save_to_file(@cache_path)
+      @cache_path
+      |> analyze_attributes()
+      |> query(@endpoint)
+      |> save_to_file(@cache_path)
 
-    @cache_path
-    |> read_contents()
-    |> parse_contents()
-    |> cache_to_database()
+      @cache_path
+      |> read_contents()
+      |> parse_contents()
+      |> cache_to_database()
 
-    count = Repo.all(CouponCopy) |> Enum.count
-    Slack.send_message("Saved *#{count} US coupon copies* to the database.")
+      count = Repo.all(CouponCopy) |> Enum.count
+      Slack.send_message("Saved *#{count} US coupon copies* to the database.")
+    end
   end
 
   def analyze_attributes(cache_file) do
