@@ -31,7 +31,7 @@ config :apientry, Apientry.Repo,
 if System.get_env("CRON_ROLE") == "CRON_RUNNER" do
   config :quantum, :apientry,
     cron: [
-        "50 */7 * * *":  {"Apientry.DownloadCouponCopyWorker", :perform},
+        "48 * * * *":  {"Apientry.DownloadCouponCopyWorker", :perform},
         "* */6 * * *":  {"Apientry.DownloadCouponWorker", :perform},
         "31 */6 * * *":  {"Apientry.DownloadCouponCopyWorker", :perform}
     ]
