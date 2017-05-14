@@ -30,7 +30,7 @@ config :apientry, Apientry.Repo,
 
 config :quantum, :apientry,
   cron: [
-      "46 * * * *": {"Timex", :now},
+      "* */6 * * *": {"Timex", :now},
       "5 */6 * * *": {"Apientry.DownloadCouponWorker", :perform},
       "31 */6 * * *": {"Apientry.DownloadCouponCopyWorker", :perform},
   ]
