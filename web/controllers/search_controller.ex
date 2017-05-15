@@ -389,6 +389,20 @@ defmodule Apientry.SearchController do
     end
   end
 
+  def check_price(%{"params" => %{"minPrice" => _, "maxPrice" => _}} = conn, _) do
+    conn
+  end
+
+  def check_price(%{"params" => %{"price" => price}}, _) do
+    price |> Apientry.PriceCleaner.clean(price)
+  end
+
+  def check_price(conn, _opts) do
+    conn
+    |> assign(:valid, false)
+    |> render(:error, data: %{error: "invalid price"})
+    |> halt()
+  end
 
   @doc """
   Sets search options to be picked up by `search/2` (et al).
