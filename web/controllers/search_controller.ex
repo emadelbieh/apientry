@@ -17,11 +17,12 @@ defmodule Apientry.SearchController do
 
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
-  plug :assign_filter_duplicate_flag when action in [:search]
   plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
+  plug :assign_filter_duplicate_flag when action in [:search]
+  plug :assign_override_price_flag when action in [:extension_search]
+  plug :check_price when action in [:extension_search]
   plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
   plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons, :extension_search]
-  plug :assign_override_price_flag when action in [:extension_search]
 
   @doc """
   Dry run of a search.
@@ -365,20 +366,20 @@ defmodule Apientry.SearchController do
     # find publisher_api_key
     # find publisher
     # assign publisher api key to search
-
     assigns = conn.assigns
     assigns = Map.put(assigns, :format_for_extension, true)
     conn = Map.put(conn, :assigns, assigns)
     search_rerank(conn, params)
   end
 
-  def check_price(%{"params" => %{"minPrice" => min, "maxPrice" => max}} = conn, _) do
+
+  def check_price(%{params: %{"minPrice" => min, "maxPrice" => max}} = conn, _) do
     conn
     |> assign(:minPrice, min)
     |> assign(:maxPrice, max)
   end
 
-  def check_price(%{"params" => %{"price" => price}} = conn, _) do
+  def check_price(%{params:  %{"price" => price}} = conn, _) do
     [min, max] = price
                   |> Apientry.PriceCleaner.clean()
                   |> Apientry.PriceGenerator.get_min_max()
@@ -398,6 +399,7 @@ defmodule Apientry.SearchController do
   defp add_price_details(string_keyword, conn) do
     if conn.assigns[:should_override_price] do
       string_keyword
+      |> StringKeyword.delete("price")
       |> StringKeyword.put("minPrice", conn.assigns.minPrice)
       |> StringKeyword.put("maxPrice", conn.assigns.maxPrice)
     else
