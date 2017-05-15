@@ -1,6 +1,6 @@
 defmodule Apientry.PriceCleaner do
   def clean(price) do
-    price
+    {price, _} = price
     |> get_lower_bound()
     |> String.trim()
     |> String.codepoints()
@@ -14,6 +14,8 @@ defmodule Apientry.PriceCleaner do
     |> Enum.reject(fn char -> char == "," end)
     |> List.to_string()
     |> Float.parse()
+
+    price
   end
 
   defp get_lower_bound(price) do
@@ -25,7 +27,10 @@ defmodule Apientry.PriceCleaner do
   
   defp fix_decimal_delimiter([_, _, delimiter | _] = reversed_codepoints) when delimiter in ["€", ","] do
     reversed_codepoints
-    > List.replace_at(2, ".")
+    |> Enum.map(fn char ->
+      if char == ".", do: ",", else: char
+    end)
+    |> List.replace_at(2, ".")
   end
 
   defp fix_decimal_delimiter(codepoints) do
@@ -33,7 +38,7 @@ defmodule Apientry.PriceCleaner do
   end
 
   defp substring_from_first_digit(codepoints) do
-    index = codepoints |> Enum.find(&(&1 =~ ~r/[0-9]/))
+    index = codepoints |> Enum.find_index(&(&1 =~ ~r/[0-9]/))
     Enum.slice(codepoints, index..-1)
   end
 end
