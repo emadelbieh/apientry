@@ -1,4 +1,4 @@
-defmodule Apientry.DownloadCouponWorker do
+defmodule Apientry.DownloadCouponCopyWorker do
   @cache_path "coupons_cache"
   @recordset "all"
   @endpoint "https://api.feeds4.com/coupons/?token=bl213euxg-scof-zq44-f3b4589h74&recordset=#{@recordset}&format=json"
@@ -9,13 +9,13 @@ defmodule Apientry.DownloadCouponWorker do
   @one_second 1_000
 
   alias HTTPoison.Response
-  alias Apientry.Coupon
+  alias Apientry.CouponCopy
   alias Apientry.Repo
   alias Apientry.Slack
 
   def perform do
     if System.get_env("CRON_ROLE") == "CRON_RUNNER" do
-      Slack.send_message("Downloading coupons...")
+      Slack.send_message("Downloading coupon copies...")
 
       @cache_path
       |> analyze_attributes()
@@ -27,8 +27,8 @@ defmodule Apientry.DownloadCouponWorker do
       |> parse_contents()
       |> cache_to_database()
 
-      count = Repo.all(Coupon) |> Enum.count
-      Slack.send_message("Saved *#{count} US coupons* to the database.")
+      count = Repo.all(CouponCopy) |> Enum.count
+      Slack.send_message("Saved *#{count} US coupon copies* to the database.")
     end
   end
 
@@ -55,8 +55,8 @@ defmodule Apientry.DownloadCouponWorker do
     case HTTPoison.get(endpoint) do
       {:ok,  %Response{status_code: status, body: body, headers: headers} = response} ->
         count = body
-        |> parse_contents()
-        |> Enum.count()
+                |> parse_contents()
+                |> Enum.count()
 
         cond do
           count >= @min_coupons_desired ->
@@ -79,8 +79,7 @@ defmodule Apientry.DownloadCouponWorker do
 
   def time_now do
     {_, {hour,_,_}} = Timex.to_erl(Timex.now)
-    hour
-  end
+    hour end
 
   def time_modified(%File.Stat{mtime: mtime}) do
     {_, {hour,_,_}} = mtime
@@ -130,14 +129,14 @@ defmodule Apientry.DownloadCouponWorker do
   end
 
   def cache_to_database(coupons_data) do
-    Repo.delete_all(Coupon)
+    Repo.delete_all(CouponCopy)
     coupons_data
     |> Stream.filter(&(&1["country"] == "US"))
     |> Enum.each(&(create_record(&1)))
   end
 
   def create_record(coupon_attrs) do
-    changeset = Coupon.changeset(%Coupon{}, coupon_attrs)
+    changeset = CouponCopy.changeset(%CouponCopy{}, coupon_attrs)
     case Repo.insert(changeset) do
       {:ok, coupon} ->
         IO.puts("Coupon #{coupon.id} successfully saved")
