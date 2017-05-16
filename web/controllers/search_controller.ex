@@ -363,16 +363,11 @@ defmodule Apientry.SearchController do
   end
 
   def extension_search(conn, params) do
-    # find tracking_id
-    # find publisher_api_key
-    # find publisher
-    # assign publisher api key to search
     assigns = conn.assigns
     assigns = Map.put(assigns, :format_for_extension, true)
     conn = Map.put(conn, :assigns, assigns)
     search_rerank(conn, params)
   end
-
 
   def check_price(%{params: %{"minPrice" => min, "maxPrice" => max}} = conn, _) do
     conn
@@ -448,6 +443,13 @@ defmodule Apientry.SearchController do
     |> StringKeyword.put("visitorIPAddress", ip_address)
   end
 
+  def infer_geo(string_keyword, conn) do
+    geo = req_headers["cf-ipcountry"] || "US"
+
+    string_keyword
+    |> StringKeyword.put("_country", geo)
+  end
+
   @doc """
   Sets search options to be picked up by `search/2` (et al).
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
@@ -459,10 +461,7 @@ defmodule Apientry.SearchController do
     |> replace_keyword_with_cleaned(conn)
     |> infer_user_agent_unless_provided(conn)
     |> infer_ip_address_unless_provided(conn)
-
-
-    geo = req_headers["cf-ipcountry"] || "US"
-    params = Map.put(params, "_country", geo)
+    |> infer_geo(conn)
 
     params = if params["subid"] && !params["apiKey"] do
       publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
