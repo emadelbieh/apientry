@@ -460,22 +460,6 @@ defmodule Apientry.SearchController do
     |> String.split(",")
   end
 
-  def retrieve_query_credentials_from_subid(string_keyword, conn) do
-    if conn.params["subid"] && !conn.params["apiKey"] do
-      publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: conn.params["subid"])
-      geo = StringKeyword.get(string_keyword, "_country")
-
-      [^geo, publisher_api_key, tracking_id] =
-          get_api_key_and_tracking_id_from_ref_data(publisher_sub_id, geo)
-
-      string_keyword
-      |> StringKeyword.put("apiKey", publisher_api_key)
-      |> StringKeyword.put("trackingId", tracking_id)
-    else
-      string_keyword
-    end
-  end
-
   @doc """
   Sets search options to be picked up by `search/2` (et al).
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
@@ -488,7 +472,7 @@ defmodule Apientry.SearchController do
     |> infer_user_agent_unless_provided(conn)
     |> infer_ip_address_unless_provided(conn)
     |> infer_geo(conn)
-    |> retrieve_query_credentials_from_subid(conn)
+    |> Apientry.ExtensionServices.extract_subid_data(conn)
 
     conn = Map.put(conn, :params, params)
     format = get_format(conn)
