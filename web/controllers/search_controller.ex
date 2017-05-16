@@ -444,6 +444,7 @@ defmodule Apientry.SearchController do
   end
 
   def infer_geo(string_keyword, conn) do
+    req_headers = conn.req_headers |> Enum.into(%{})
     geo = req_headers["cf-ipcountry"] || "US"
 
     string_keyword
