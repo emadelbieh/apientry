@@ -17,8 +17,10 @@ defmodule Apientry.SearchController do
 
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
-  plug :assign_filter_duplicate_flag when action in [:search]
   plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
+  plug :assign_filter_duplicate_flag when action in [:search]
+  plug :assign_override_price_flag when action in [:extension_search]
+  plug :check_price when action in [:extension_search]
   plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
   plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons, :extension_search]
 
@@ -364,31 +366,51 @@ defmodule Apientry.SearchController do
     # find publisher_api_key
     # find publisher
     # assign publisher api key to search
-
     assigns = conn.assigns
     assigns = Map.put(assigns, :format_for_extension, true)
     conn = Map.put(conn, :assigns, assigns)
     search_rerank(conn, params)
   end
 
-  defp format_price(value) do
-    price = String.downcase(value)
 
-    price = if String.match?(price, ~r/(eur|gbp|£|€)/) do
-      price = String.replace(price, ~r/\./, "")
-      price = Regex.run(~r/\d+,{0,1}\d+/, price)
-      price = Enum.map(price, fn price -> String.replace(price, ~r/,/, ".") end)
+  def check_price(%{params: %{"minPrice" => min, "maxPrice" => max}} = conn, _) do
+    conn
+    |> assign(:minPrice, min)
+    |> assign(:maxPrice, max)
+  end
+
+  def check_price(%{params:  %{"price" => price}} = conn, _) do
+    [min, max] = price
+                  |> Apientry.PriceCleaner.clean()
+                  |> Apientry.PriceGenerator.get_min_max()
+
+    conn
+    |> assign(:minPrice, min)
+    |> assign(:maxPrice, max)
+  end
+
+  def check_price(conn, _opts) do
+    conn
+    |> assign(:valid, false)
+    |> render(:error, data: %{error: "invalid price"})
+    |> halt()
+  end
+
+  defp add_price_details(string_keyword, conn) do
+    if conn.assigns[:should_override_price] do
+      string_keyword
+      |> StringKeyword.delete("price")
+      |> StringKeyword.put("minPrice", conn.assigns.minPrice)
+      |> StringKeyword.put("maxPrice", conn.assigns.maxPrice)
     else
-      price = String.replace(price, ~r/,/, "")
-      price = Regex.run(~r/\d+\.{0,1}\d+/, price)
-    end
-
-    price = case price do
-      [price | _] -> price
-      price -> price
+      string_keyword
     end
   end
 
+  defp assign_override_price_flag(conn, _) do
+    conn
+    |> assign(:should_override_price, true)
+  end
 
   @doc """
   Sets search options to be picked up by `search/2` (et al).
@@ -397,14 +419,7 @@ defmodule Apientry.SearchController do
   def set_search_options(%{query_string: query_string} = conn, _) do
     params = query_string
     |> StringKeyword.from_query_string()
-
-    params = Enum.map(params, fn {key, value} ->
-      if key == "price" do
-        {"price", format_price(value)}
-      else
-        {key, value}
-      end
-    end)
+    |> add_price_details(conn)
 
     params = Enum.into(params, %{})
     params = if params["visitorUserAgent"] do

@@ -1,41 +1,43 @@
 defmodule Apientry.PriceCleaner do
-  def new(price) do
+  def clean(price) do
+    {price, _} = price
+    |> get_lower_bound()
+    |> String.trim()
+    |> String.codepoints()
+    |> Enum.reverse()
+    |> substring_from_first_digit()
+    |> fix_decimal_delimiter()
+    |> Enum.reverse()
+    |> substring_from_first_digit()
+    |> Enum.reject(fn char -> char =~ ~r/\s+/ end)
+    |> Enum.reject(fn char -> char == "," end)
+    |> List.to_string()
+    |> Float.parse()
+
     price
   end
 
-  def clean(price) do
-    cond do
-      price == nil || price == 0 ->
-        nil
-      is_float(price) && price>0 ->
-        price
-      true ->
-        logic_from_js(price)
+  defp get_lower_bound(price) do
+    case String.split(price, "-") do
+      [lower | _higher] -> lower
+      [price] -> price
     end
   end
-
-  defp logic_from_js(price) do
-    price = String.trim(price)
-    length = String.length(price)
-
-    pos = length - 3
-
-    price = if String.at(price, pos) == "€" do
-      replace(price, pos, ".")
-    else
-      price
-    end
-
-    price = if String.at(price, pos) == "," do
-      replace(price, pos, ".")
-    else
-      price
-    end
+  
+  defp fix_decimal_delimiter([_, _, delimiter | _] = reversed_codepoints) when delimiter in ["€", ","] do
+    reversed_codepoints
+    |> Enum.map(fn char ->
+      if char == ".", do: ",", else: char
+    end)
+    |> List.replace_at(2, ".")
   end
 
-  defp replace(price, position, with) do
-    {first, last} = String.split_at(position)
-    last = String.slice(last, 1, String.length(last)-1)
-    "#{first}#{with}#{last}"
+  defp fix_decimal_delimiter(codepoints) do
+    codepoints
+  end
+
+  defp substring_from_first_digit(codepoints) do
+    index = codepoints |> Enum.find_index(&(&1 =~ ~r/[0-9]/))
+    Enum.slice(codepoints, index..-1)
   end
 end
