@@ -425,17 +425,7 @@ defmodule Apientry.SearchController do
     |> StringKeyword.put("visitorUserAgent", visitor_user_agent)
   end
 
-  @doc """
-  Sets search options to be picked up by `search/2` (et al).
-  Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
-  """
-  def set_search_options(%{query_string: query_string} = conn, _) do
-    params = query_string
-    |> StringKeyword.from_query_string()
-    |> add_price_details(conn)
-    |> replace_keyword_with_cleaned(conn)
-    |> infer_user_agent_unless_provided(conn)
-
+  def infer_ip_address_unless_provided(string_keyword, conn) do
     params = if params["visitorIPAddress"] do
       params
     else
@@ -449,6 +439,20 @@ defmodule Apientry.SearchController do
       ip = req_headers["cf-connecting-ip"] || direct_ip
       Map.put(params, "visitorIPAddress", ip)
     end
+  end
+
+  @doc """
+  Sets search options to be picked up by `search/2` (et al).
+  Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
+  """
+  def set_search_options(%{query_string: query_string} = conn, _) do
+    params = query_string
+    |> StringKeyword.from_query_string()
+    |> add_price_details(conn)
+    |> replace_keyword_with_cleaned(conn)
+    |> infer_user_agent_unless_provided(conn)
+    |> infer_ip_address_unless_provided(conn)
+
 
     geo = req_headers["cf-ipcountry"] || "US"
     params = Map.put(params, "_country", geo)
