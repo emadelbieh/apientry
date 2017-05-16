@@ -451,15 +451,6 @@ defmodule Apientry.SearchController do
     |> StringKeyword.put("_country", geo)
   end
 
-
-  def get_api_key_and_tracking_id_from_ref_data(publisher_sub_id, geo) do
-    publisher_sub_id.reference_data
-    |> String.split(";")
-    |> Enum.filter(fn ref -> ref =~ geo end)
-    |> hd
-    |> String.split(",")
-  end
-
   @doc """
   Sets search options to be picked up by `search/2` (et al).
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
