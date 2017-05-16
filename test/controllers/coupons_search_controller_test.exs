@@ -5,6 +5,8 @@ defmodule Apientry.CouponSearchControllerTest do
   alias Apientry.Publisher
   alias Apientry.PublisherSubId
 
+  import Apientry.CouponHelper
+
   @apientry %{id: "1", category: "some content", code: "some content", country: "US", dealtype: "some content", domain: "apientry.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @apientry_with_category %{id: "2", category: "gift", code: "some content", country: "US", dealtype: "some content", domain: "apientry.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @apientry_with_holiday %{id: "3", category: "some content", code: "some content", country: "US", dealtype: "some content", domain: "apientry.com", enddate: "some content", holiday: "valentinesday", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
@@ -12,27 +14,26 @@ defmodule Apientry.CouponSearchControllerTest do
   @apientry_with_dealtype %{id: "5", category: "some content", code: "some content", country: "US", dealtype: "coupon", domain: "apientry.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @another %{id: "6", category: "some content", code: "some content", country: "US", dealtype: "some content", domain: "another.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
 
-
   setup do
     {:ok, publisher} = Repo.insert(Publisher.changeset(%Publisher{}, %{name: "PubName"}))
     Repo.insert(PublisherSubId.changeset(%PublisherSubId{}, %{publisher_id: publisher.id, sub_id: "001"}))
 
-    changeset = Coupon.changeset(%Coupon{}, @apientry)
+    changeset = base_model().changeset(base_struct(), @apientry)
     {:ok, coupon} = Repo.insert(changeset)
 
-    changeset = Coupon.changeset(%Coupon{}, @apientry_with_category)
+    changeset = base_model().changeset(base_struct(), @apientry_with_category)
     {:ok, coupon} = Repo.insert(changeset)
 
-    changeset = Coupon.changeset(%Coupon{}, @apientry_with_holiday)
+    changeset = base_model().changeset(base_struct(), @apientry_with_holiday)
     {:ok, coupon} = Repo.insert(changeset)
 
-    changeset = Coupon.changeset(%Coupon{}, @apientry_with_network)
+    changeset = base_model().changeset(base_struct(), @apientry_with_network)
     {:ok, coupon} = Repo.insert(changeset)
 
-    changeset = Coupon.changeset(%Coupon{}, @apientry_with_dealtype)
+    changeset = base_model().changeset(base_struct(), @apientry_with_dealtype)
     {:ok, coupon} = Repo.insert(changeset)
 
-    changeset = Coupon.changeset(%Coupon{}, @another)
+    changeset = base_model().changeset(base_struct(), @another)
     {:ok, coupon} = Repo.insert(changeset)
 
     %{}

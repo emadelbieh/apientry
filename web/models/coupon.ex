@@ -5,6 +5,7 @@ defmodule Apientry.Coupon do
   alias Apientry.Repo
   alias Apientry.PublisherSubId
   alias Apientry.Publisher
+  alias Apientry.CouponHelper
   
   schema "coupons" do
     field :merchant, :string
@@ -44,16 +45,7 @@ defmodule Apientry.Coupon do
     bldomains = Repo.all(from b in base_query, where: b.blacklist_type == ^"domain", select: b.value)
     blnetworks = Repo.all(from b in base_query, where: b.blacklist_type == ^"network", select: b.value)
     blcountries = Repo.all(from b in base_query, where: b.blacklist_type == ^"country", select: b.value)
-    from c in base_model(), where: not c.domain in ^bldomains and not c.network in ^blnetworks and not c.country in ^blcountries
-  end
-
-  def base_model do
-    {_, {hour, minute, _}} = Timex.to_erl(Timex.now())
-    if (hour in [0,6,12,18]) && (minute in 0..30) do
-      Apientry.CouponCopy
-    else
-      Apientry.Coupon
-    end
+    from c in CouponHelper.base_model(), where: not c.domain in ^bldomains and not c.network in ^blnetworks and not c.country in ^blcountries
   end
 
   def by_params(conn) do
