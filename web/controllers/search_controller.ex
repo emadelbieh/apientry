@@ -450,22 +450,28 @@ defmodule Apientry.SearchController do
     |> StringKeyword.put("_country", geo)
   end
 
+
+  def get_api_key_and_tracking_id_from_ref_data(publisher_sub_id, geo) do
+    publisher_sub_id.reference_data
+    |> String.split(";")
+    |> Enum.filter(fn ref -> ref =~ geo end)
+    |> hd
+    |> String.split(",")
+  end
+
   def retrieve_query_credentials_from_subid(string_keyword, conn) do
     if conn.params["subid"] && !conn.params["apiKey"] do
       publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: conn.params["subid"])
-      geo = conn.params["_country"]
+      geo = StringKeyword.get(string_keyword, "_country")
 
-      [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
-                                              |> String.split(";")
-                                              |> Enum.filter(fn ref -> ref =~ geo end)
-                                              |> hd
-                                              |> String.split(",")
+      [^geo, publisher_api_key, tracking_id] =
+          get_api_key_and_tracking_id_from_ref_data(publisher_sub_id, geo)
 
-      conn.params
-      |> Map.put("apiKey", publisher_api_key)
-      |> Map.put("trackingId", tracking_id)
+      string_keyword
+      |> StringKeyword.put("apiKey", publisher_api_key)
+      |> StringKeyword.put("trackingId", tracking_id)
     else
-      conn.params
+      string_keyword
     end
   end
 
