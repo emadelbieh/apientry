@@ -1,5 +1,5 @@
 defmodule Apientry.PriceCleanerTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case
 
   alias Apientry.PriceCleaner
 
