@@ -5,31 +5,14 @@ defmodule Apientry.CouponSearchControllerTest do
   alias Apientry.Publisher
   alias Apientry.PublisherSubId
 
+  import Apientry.CouponHelper
+
   @apientry %{id: "1", category: "some content", code: "some content", country: "US", dealtype: "some content", domain: "apientry.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @apientry_with_category %{id: "2", category: "gift", code: "some content", country: "US", dealtype: "some content", domain: "apientry.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @apientry_with_holiday %{id: "3", category: "some content", code: "some content", country: "US", dealtype: "some content", domain: "apientry.com", enddate: "some content", holiday: "valentinesday", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @apientry_with_network %{id: "4", category: "some content", code: "some content", country: "US", dealtype: "some content", domain: "apientry.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "cj", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @apientry_with_dealtype %{id: "5", category: "some content", code: "some content", country: "US", dealtype: "coupon", domain: "apientry.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
   @another %{id: "6", category: "some content", code: "some content", country: "US", dealtype: "some content", domain: "another.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
-
-
-  def base_model do
-    {_, {hour, minute, _}} = Timex.to_erl(Timex.now())
-    if (hour in [0,6,12,18]) && (minute in 0..30) do
-      Apientry.CouponCopy
-    else
-      Apientry.Coupon
-    end
-  end
-
-  def base_struct do
-    {_, {hour, minute, _}} = Timex.to_erl(Timex.now())
-    if (hour in [0,6,12,18]) && (minute in 0..30) do
-      %Apientry.CouponCopy{}
-    else
-      %Apientry.Coupon{}
-    end
-  end
 
   setup do
     {:ok, publisher} = Repo.insert(Publisher.changeset(%Publisher{}, %{name: "PubName"}))
