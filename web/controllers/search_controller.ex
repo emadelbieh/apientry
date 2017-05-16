@@ -425,20 +425,22 @@ defmodule Apientry.SearchController do
     |> StringKeyword.put("visitorUserAgent", visitor_user_agent)
   end
 
-  def infer_ip_address_unless_provided(string_keyword, conn) do
-    params = if params["visitorIPAddress"] do
-      params
-    else
-      req_headers = conn.req_headers |> Enum.into(%{})
+  def get_ip_address(conn) do
+    req_headers = conn.req_headers |> Enum.into(%{})
 
-      direct_ip = case conn.remote_ip do
-        {a,b,c,d} -> "#{a}.#{b}.#{c}.#{d}"
-        _ -> nil
-      end
-
-      ip = req_headers["cf-connecting-ip"] || direct_ip
-      Map.put(params, "visitorIPAddress", ip)
+    direct_ip = case conn.remote_ip do
+      {a,b,c,d} -> "#{a}.#{b}.#{c}.#{d}"
+      _ -> nil
     end
+
+    ip = req_headers["cf-connecting-ip"] || direct_ip
+  end
+
+  def infer_ip_address_unless_provided(string_keyword, conn) do
+    ip_address = conn.params["visitorIPAddress"] || get_ip_address(conn)
+
+    string_keyword
+    |> StringKeyword.put("visitorIPAddress", ip_address)
   end
 
   @doc """
