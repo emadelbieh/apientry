@@ -450,6 +450,25 @@ defmodule Apientry.SearchController do
     |> StringKeyword.put("_country", geo)
   end
 
+  def retrieve_query_credentials_from_subid(string_keyword, conn) do
+    if conn.params["subid"] && !conn.params["apiKey"] do
+      publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: conn.params["subid"])
+      geo = conn.params["_country"]
+
+      [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
+                                              |> String.split(";")
+                                              |> Enum.filter(fn ref -> ref =~ geo end)
+                                              |> hd
+                                              |> String.split(",")
+
+      conn.params
+      |> Map.put("apiKey", publisher_api_key)
+      |> Map.put("trackingId", tracking_id)
+    else
+      conn.params
+    end
+  end
+
   @doc """
   Sets search options to be picked up by `search/2` (et al).
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
@@ -462,23 +481,7 @@ defmodule Apientry.SearchController do
     |> infer_user_agent_unless_provided(conn)
     |> infer_ip_address_unless_provided(conn)
     |> infer_geo(conn)
-
-    params = if params["subid"] && !params["apiKey"] do
-      publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
-      geo = params["_country"]
-
-      [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
-                                              |> String.split(";")
-                                              |> Enum.filter(fn ref -> ref =~ geo end)
-                                              |> hd
-                                              |> String.split(",")
-
-      params
-      |> Map.put("apiKey", publisher_api_key)
-      |> Map.put("trackingId", tracking_id)
-    else
-      params
-    end
+    |> retrieve_query_credentials_from_subid(conn)
 
     conn = Map.put(conn, :params, params)
     format = get_format(conn)
