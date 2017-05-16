@@ -20,6 +20,6 @@ defmodule Apientry.PriceGeneratorTest do
   end
 
   test "get_min_max returns minimum lower bound of 0 and minimum higher bound of 15" do
-    assert PriceGenerator.get_min_max(1) == [0.00, 15.00]
+    assert PriceGenerator.get_min_max(0) == [0.00, 15.00]
   end
 end
