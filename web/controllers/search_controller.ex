@@ -413,6 +413,18 @@ defmodule Apientry.SearchController do
     |> assign(:should_override_price, true)
   end
 
+  def get_user_agent(conn) do
+    req_headers = conn.req_headers |> Enum.into(%{})
+    req_headers["user-agent"]
+  end
+
+  def infer_user_agent_unless_provided(string_keyword, conn) do
+    visitor_user_agent = params["visitorUserAgent"] || get_user_agent(conn)
+
+    string_keyword
+    |> StringKeyword.put("visitorUserAgent", visitor_user_agent)
+  end
+
   @doc """
   Sets search options to be picked up by `search/2` (et al).
   Done so that you have the same stuff in `/publisher` and `/dryrun/publisher`.
@@ -421,15 +433,8 @@ defmodule Apientry.SearchController do
     params = query_string
     |> StringKeyword.from_query_string()
     |> add_price_details(conn)
-    |> replace_keyword_with_cleaned()
-
-    params = Enum.into(params, %{})
-    params = if params["visitorUserAgent"] do
-      params
-    else
-      req_headers = conn.req_headers |> Enum.into(%{})
-      Map.put(params, "visitorUserAgent", req_headers["user-agent"])
-    end
+    |> replace_keyword_with_cleaned(conn)
+    |> infer_user_agent_unless_provided(conn)
 
     params = if params["visitorIPAddress"] do
       params
