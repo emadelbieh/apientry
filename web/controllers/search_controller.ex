@@ -494,7 +494,11 @@ defmodule Apientry.SearchController do
   end
 
   def clean_keyword(conn, _opts) do
+    keyword = conn.params[:keyword]
+    cleaned = Apientry.TitleCleaner.clean(keyword)
+
     conn
+    |> assign(:cleaned_keyword, cleaned)
   end
 
   def replace_keyword_with_cleaned(conn, opts) do
