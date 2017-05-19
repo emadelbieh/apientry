@@ -13,6 +13,10 @@
             = gettext "Name"
             = ": "
             = @publisher.name
+          p
+            = gettext "Revenue Share"
+            = ": "
+            = @publisher.revenue_share
           a.btn.btn-accent.btn-sm[href="#{publisher_path(@conn, :edit, @publisher)}"] Update
 
       .form-fieldset
