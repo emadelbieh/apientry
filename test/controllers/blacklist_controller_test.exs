@@ -9,7 +9,7 @@ defmodule Apientry.BlacklistControllerTest do
   alias Apientry.{Publisher, PublisherSubId}
 
   setup do
-    publisher = Repo.insert!(Publisher.changeset(%Publisher{}, %{name: "test"}))
+    publisher = Repo.insert!(Publisher.changeset(%Publisher{}, %{name: "test", revenue_share: 0.10}))
     publisher_sub_id = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "001", publisher_id: publisher.id}))
     publisher_sub_id2 = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "002", publisher_id: publisher.id}))
     publisher_sub_id3 = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "003", publisher_id: publisher.id}))

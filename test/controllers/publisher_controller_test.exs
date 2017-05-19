@@ -3,7 +3,7 @@ defmodule Apientry.PublisherControllerTest do
   use Apientry.MockBasicAuth
 
   alias Apientry.Publisher
-  @valid_attrs %{name: "Test Publisher"}
+  @valid_attrs %{name: "Test Publisher", revenue_share: 0.8}
   @invalid_attrs %{}
 
   test "lists all entries on index", %{conn: conn} do
@@ -57,12 +57,5 @@ defmodule Apientry.PublisherControllerTest do
     conn = delete conn, publisher_path(conn, :delete, publisher)
     assert redirected_to(conn) == publisher_path(conn, :index)
     refute Repo.get(Publisher, publisher.id)
-  end
-
-  test "api key regeneration", %{conn: conn} do
-    publisher = Repo.insert! %Publisher{name: "Test Publisher", api_key: "testkey"}
-    conn = put conn, publisher_path(conn, :regenerate, publisher)
-    assert redirected_to(conn) == publisher_path(conn, :show, publisher)
-    refute Repo.get_by(Publisher, api_key: "testkey")
   end
 end

@@ -15,7 +15,7 @@ defmodule Apientry.CouponSearchControllerTest do
   @another %{id: "6", category: "some content", code: "some content", country: "US", dealtype: "some content", domain: "another.com", enddate: "some content", holiday: "some content", lastmodified: "some content", logo: "some content", merchant: "some content", merchantid: "some content", network: "some content", offer: "some content", rating: "some content", restriction: "some content", startdate: "some content", url: "some content", website: "some content"}
 
   setup do
-    {:ok, publisher} = Repo.insert(Publisher.changeset(%Publisher{}, %{name: "PubName"}))
+    {:ok, publisher} = Repo.insert(Publisher.changeset(%Publisher{}, %{name: "PubName", revenue_share: 0.5}))
     Repo.insert(PublisherSubId.changeset(%PublisherSubId{}, %{publisher_id: publisher.id, sub_id: "001"}))
 
     changeset = base_model().changeset(base_struct(), @apientry)
