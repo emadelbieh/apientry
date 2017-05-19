@@ -69,7 +69,11 @@ defmodule Apientry.Router do
     get "/loaderio-dd9715bade6eb23cec502a38f3bfa865", LoaderVerificationController, :show_dd9715ba
     get "/loaderio-dd9715bade6eb23cec502a38f3bfa865", LoaderVerificationController, :show_dd9715ba
 
-    get "/direct", SearchController, :direct
+  end
+
+  scope "/intern", Apientry, as: :intern do
+    pipe_through :api
+    resources "publishers", Intern.PublisherController, except: [:new, :edit]
   end
 
   scope "/", Apientry do
