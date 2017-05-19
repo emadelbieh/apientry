@@ -13,7 +13,7 @@ defmodule Apientry.Publisher do
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, [:name, :revenue_share])
+    |> validate_required([:name, :revenue_share])
   end
 end
