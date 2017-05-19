@@ -48,6 +48,8 @@
                     = for tracking_id <- api_key.tracking_ids do
                       = tracking_id.code
                       br
+                      ' (#{tracking_id.subplacement})
+                      br
 
 
           a.btn.btn-accent.btn-sm[href="#{publisher_api_key_path(@conn, :index, publisher_id: @publisher.id)}"] Manage Publisher API Keys

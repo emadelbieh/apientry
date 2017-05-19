@@ -16,9 +16,9 @@
               span.default-image.-size64
                 = @geo.name
             td.name
-              = link (ebay_api_key.title || ""), to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
+              = link ebay_api_key.value, to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
               span.info
-                = link ebay_api_key.value, to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
+                = link (ebay_api_key.title || ""), to: ebay_api_key_path(@conn, :show, ebay_api_key, account_id: @account.id)
             td.actions.crud-actions
               = link "Edit", to: ebay_api_key_path(@conn, :edit, ebay_api_key), class: "btn btn-sm btn-default"
               /.dropdown.more-actions
@@ -44,6 +44,8 @@
                 = @geo.name
             td.name
               = tracking_id.code
+              span.info
+                = tracking_id.subplacement
             td.actions.crud-actions
               span.info
                 ' eBay API Key:
