@@ -58,11 +58,4 @@ defmodule Apientry.PublisherControllerTest do
     assert redirected_to(conn) == publisher_path(conn, :index)
     refute Repo.get(Publisher, publisher.id)
   end
-
-  test "api key regeneration", %{conn: conn} do
-    publisher = Repo.insert! %Publisher{name: "Test Publisher", api_key: "testkey"}
-    conn = put conn, publisher_path(conn, :regenerate, publisher)
-    assert redirected_to(conn) == publisher_path(conn, :show, publisher)
-    refute Repo.get_by(Publisher, api_key: "testkey")
-  end
 end
