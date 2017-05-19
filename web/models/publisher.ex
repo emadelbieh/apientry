@@ -3,7 +3,7 @@ defmodule Apientry.Publisher do
 
   schema "publishers" do
     field :name, :string
-    field :api_key, :string
+    field :revenue_share, :float
 
     has_many :api_keys, Apientry.PublisherApiKey
     has_many :tracking_ids, Apientry.TrackingId
