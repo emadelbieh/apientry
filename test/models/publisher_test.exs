@@ -3,13 +3,12 @@ defmodule Apientry.PublisherTest do
 
   alias Apientry.Publisher
 
-  @valid_attrs %{name: "Test Publisher"}
+  @valid_attrs %{name: "Test Publisher", revenue_share: 0.8}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
     changeset = Publisher.changeset(%Publisher{}, @valid_attrs)
     assert changeset.valid?
-    refute changeset.changes.api_key == nil
   end
 
   test "changeset with invalid attributes" do
