@@ -3,7 +3,7 @@ defmodule Apientry.TrackingIdTest do
 
   alias Apientry.TrackingId
 
-  @valid_attrs %{code: "some content", ebay_api_key_id: 999}
+  @valid_attrs %{subplacement: "Blackswan01", code: "12345678", ebay_api_key_id: 999}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

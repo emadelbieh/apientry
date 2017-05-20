@@ -23,7 +23,7 @@ defmodule Apientry.TrackingIdControllerTest do
   end
 
   test "creates resource and redirects when data is valid", %{conn: conn, ebay_api_key: ebay_api_key, account: account} do
-    conn = post conn, tracking_id_path(conn, :create, account_id: account.id), tracking_id: %{code: "valid", ebay_api_key_id: ebay_api_key.id}
+    conn = post conn, tracking_id_path(conn, :create, account_id: account.id), tracking_id: %{subplacement: "Blackswan001", code: "valid", ebay_api_key_id: ebay_api_key.id}
     assert redirected_to(conn) == ebay_api_key_path(conn, :index, account_id: account.id)
     assert Repo.get_by(TrackingId, @valid_attrs)
   end
@@ -31,12 +31,6 @@ defmodule Apientry.TrackingIdControllerTest do
   test "does not create resource and renders errors when data is invalid", %{conn: conn, account: account} do
     conn = post conn, tracking_id_path(conn, :create, account_id: account.id), tracking_id: @invalid_attrs
     assert html_response(conn, 200) =~ "New Tracking ID"
-  end
-
-  test "renders form for editing chosen resource", %{conn: conn, publisher: publisher} do
-    tracking_id = Repo.insert! %TrackingId{}
-    conn = get conn, publisher_tracking_id_path(conn, :edit, publisher, tracking_id)
-    assert html_response(conn, 200) =~ "Edit"
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, ebay_api_key: ebay_api_key, account: account} do
