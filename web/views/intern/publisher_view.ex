@@ -12,6 +12,7 @@ defmodule Apientry.Intern.PublisherView do
   def render("publisher.json", %{publisher: publisher}) do
     %{id: publisher.id,
       name: publisher.name,
-      revenue_share: publisher.revenue_share}
+      revenue_share: publisher.revenue_share,
+      report_receivers: publisher.report_receivers}
   end
 end
