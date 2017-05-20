@@ -2,15 +2,18 @@
   .container
     .left
       ul.top-links
-        li(class="#{assigns[:active] == :home && "-active" || ""}")
-          a[href="/"]
-            = gettext "Home"
         li(class="#{assigns[:active] == :geos && "-active" || ""}")
           a[href="#{geo_path(@conn, :index)}"]
             = gettext "Geo"
         li(class="#{assigns[:active] == :publishers && "-active" || ""}")
           a[href="#{publisher_path(@conn, :index)}"]
             = gettext "Publishers"
+        li(class="#{assigns[:active] == :publisher_sub_ids && "-active" || ""}")
+          a[href="#{publisher_sub_id_path(@conn, :index)}"]
+            = gettext "Subids"
+        li(class="#{assigns[:active] == :blacklists && "-active" || ""}")
+          a[href="#{blacklist_path(@conn, :index)}"]
+            = gettext "Blacklist"
     .center
       a.top-brand[href="/"] Apientry
     .right
