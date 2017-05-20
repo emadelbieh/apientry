@@ -60,7 +60,7 @@ defmodule Apientry.PublisherController do
 
     case Repo.update(changeset) do
       {:ok, _publisher} ->
-        #DbCache.update(:publisher)
+        DbCache.update(:publisher)
         conn
         |> put_flash(:info, "Publisher updated successfully.")
         conn
