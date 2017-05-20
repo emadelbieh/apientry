@@ -22,7 +22,6 @@
                 = " api keys"
             td.actions.crud-actions
               span.info
-              = link "Tracking IDs", to: publisher_tracking_id_path(@conn, :index, publisher), class: "btn btn-sm btn-default"
               = link "Edit", to: publisher_path(@conn, :edit, publisher), class: "btn btn-sm btn-default"
               .dropdown.more-actions
                 button.toggle(data-toggle="dropdown" title="More actions...")

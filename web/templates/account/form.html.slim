@@ -12,9 +12,10 @@
 
       .form
         .form-group
+          = hidden_input f, :geo_id
           = label f, :name
           = text_input f, :name, class: "form-control", autofocus: true
-          = hidden_input f, :geo_id
+          = error_tag f, :name
 
     .form-fieldset
       .form

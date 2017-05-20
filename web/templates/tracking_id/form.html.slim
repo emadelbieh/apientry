@@ -17,8 +17,12 @@
         = select f, :ebay_api_key_id, @ebay_api_keys, class: "form-control"
         = error_tag f, :ebay_api_key_id
       .form-group
+        = label f, :subplacement, class: "control-label"
+        = text_input f, :subplacement, class: "form-control"
+        = error_tag f, :subplacement
+      .form-group
         = label f, :code
-        = text_input f, :code, class: "form-control", autofocus: true
+        = text_input f, :code, class: "form-control"
         = error_tag f, :code
       .form-group
         = submit "Submit", class: "btn btn-primary"
