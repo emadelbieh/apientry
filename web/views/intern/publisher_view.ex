@@ -13,7 +13,7 @@ defmodule Apientry.Intern.PublisherView do
     %{id: publisher.id,
       name: publisher.name,
       revenue_share: publisher.revenue_share,
-      receivers: publisher.report_receivers,
+      report_receivers: publisher.report_receivers,
       subplacements: subplacements_for(publisher)}
   end
 
