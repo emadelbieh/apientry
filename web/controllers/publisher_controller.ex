@@ -55,18 +55,18 @@ defmodule Apientry.PublisherController do
   end
 
   def update(conn, %{"id" => id, "publisher" => publisher_params}) do
-    publisher = Repo.get!(Publisher, id) |> Repo.preload(:tracking_ids)
+    publisher = Repo.get!(Publisher, id)
     changeset = Publisher.changeset(publisher, publisher_params)
 
     case Repo.update(changeset) do
       {:ok, _publisher} ->
-        DbCache.update(:publisher)
+        #DbCache.update(:publisher)
         conn
         |> put_flash(:info, "Publisher updated successfully.")
         conn
         |> redirect(to: publisher_path(conn, :show, publisher))
       {:error, changeset} ->
-        render(conn, "edit.html", publisher: publisher, changeset: changeset, tracking_ids: publisher.tracking_ids)
+        render(conn, "edit.html", publisher: publisher, changeset: changeset)
     end
   end
 
