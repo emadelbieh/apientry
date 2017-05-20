@@ -4,7 +4,7 @@ defmodule Apientry.Intern.PublisherController do
   alias Apientry.Publisher
 
   def index(conn, _params) do
-    publishers = Repo.all(Publisher)
+    publishers = Repo.all(Publisher) |> Repo.preload(publisher_api_keys: [:tracking_ids])
     render(conn, "index.json", publishers: publishers)
   end
 
