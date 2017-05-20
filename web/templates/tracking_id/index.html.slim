@@ -18,10 +18,14 @@
                 = tracking_id.id
             td.name
               = tracking_id.code
+              span.info
+                = tracking_id.subplacement
+              span.info
+                = tracking_id.publisher_api_key.title
             td.actions.crud-actions
               span.info
-                ' #{tracking_id.ebay_api_key.title}
+                ' #{tracking_id.ebay_api_key.account.name}
               span.info
-                ' #{tracking_id.publisher_api_key.title}
+                ' #{tracking_id.ebay_api_key.title}
               ' &nbsp;
               = link "Unassign", to: assignment_path(@conn, :unassign, tracking_id, publisher_id: @publisher.id), class: "btn btn-sm btn-default", method: :patch, data: [confirm: "Are you sure?"]

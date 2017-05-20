@@ -48,7 +48,6 @@
                 = tracking_id.subplacement
             td.actions.crud-actions
               span.info
-                ' eBay API Key:
                 = tracking_id.ebay_api_key.title
               = link "Edit", to: tracking_id_path(@conn, :edit, tracking_id, account_id: @account.id), class: "btn btn-sm btn-default"
               .dropdown.more-actions

@@ -32,7 +32,7 @@ defmodule Apientry.TrackingIdController do
   def index(conn, %{"publisher_id" => pub_id}) do
     publisher    = Repo.get!(Publisher, pub_id)
     api_keys     = Repo.all(assoc(publisher, :api_keys))
-    tracking_ids = Repo.all(assoc(api_keys, :tracking_ids))|> Repo.preload([:publisher_api_key, :ebay_api_key])
+    tracking_ids = Repo.all(assoc(api_keys, :tracking_ids))|> Repo.preload([:publisher_api_key, ebay_api_key: [:account]])
     render(conn, "index.html", publisher: publisher, tracking_ids: tracking_ids)
   end
 
