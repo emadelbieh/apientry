@@ -2,7 +2,7 @@ defmodule Apientry.Intern.PublisherControllerTest do
   use Apientry.ConnCase
 
   alias Apientry.Publisher
-  @valid_attrs %{name: "some content", revenue_share: "120.5"}
+  @valid_attrs %{name: "some content", revenue_share: "0.20"}
   @invalid_attrs %{}
 
   setup %{conn: conn} do
@@ -19,7 +19,8 @@ defmodule Apientry.Intern.PublisherControllerTest do
     conn = get conn, intern_publisher_path(conn, :show, publisher)
     assert json_response(conn, 200)["data"] == %{"id" => publisher.id,
       "name" => publisher.name,
-      "revenue_share" => publisher.revenue_share}
+      "revenue_share" => publisher.revenue_share,
+      "report_receivers" => publisher.report_receivers}
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do
