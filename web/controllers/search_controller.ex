@@ -65,6 +65,19 @@ defmodule Apientry.SearchController do
     end
   end
 
+  def search(%{assigns: %{error: error, details: details}} = conn, _) do
+    conn
+    |> put_status(400)
+    |> render(:error, data: %{error: error, details: details})
+  end
+
+  def search(conn, _) do
+    conn
+    |> put_status(400)
+    |> render(:error, data: %{error: :unknown_error})
+  end
+
+
   defp build_category_chooser_data(conn) do
     country = conn.assigns.country |> String.downcase
 
@@ -329,7 +342,6 @@ defmodule Apientry.SearchController do
     end
   end
 
-
   defp transform_by_format(conn, body, format) do
     case format do
       "json" ->
@@ -349,18 +361,6 @@ defmodule Apientry.SearchController do
     end
   end
 
-  def search(%{assigns: %{error: error, details: details}} = conn, _) do
-    conn
-    |> put_status(400)
-    |> render(:error, data: %{error: error, details: details})
-  end
-
-  def search(conn, _) do
-    conn
-    |> put_status(400)
-    |> render(:error, data: %{error: :unknown_error})
-  end
-
   def extension_search(conn, params) do
     # find tracking_id
     # find publisher_api_key
@@ -371,7 +371,6 @@ defmodule Apientry.SearchController do
     conn = Map.put(conn, :assigns, assigns)
     search_rerank(conn, params)
   end
-
 
   def check_price(%{params: %{"minPrice" => min, "maxPrice" => max}} = conn, _) do
     conn

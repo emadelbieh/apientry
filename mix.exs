@@ -3,7 +3,7 @@ defmodule Apientry.Mixfile do
 
   def project do
     [app: :apientry,
-     version: git_version,
+     version: git_version(),
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -11,9 +11,9 @@ defmodule Apientry.Mixfile do
      start_permanent: Mix.env == :prod,
      source_url: "https://github.com/blackswan-ventures/apientry",
      homepage_url: "https://github.com/blackswan-ventures/apientry",
-     aliases: aliases,
-     deps: deps,
-     docs: docs]
+     aliases: aliases(),
+     deps: deps(),
+     docs: docs()]
   end
 
   # Configuration for the OTP application.
@@ -95,7 +95,7 @@ defmodule Apientry.Mixfile do
 
   def docs do
     [
-      source_ref: "v#{git_version}",
+      source_ref: "v#{git_version()}",
       main: "main",
       extras:
         Path.wildcard("*.md") ++
