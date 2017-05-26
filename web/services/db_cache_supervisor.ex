@@ -11,6 +11,7 @@ defmodule Apientry.DbCacheSupervisor do
   alias Apientry.EbayApiKey
   alias Apientry.TrackingId
   alias Apientry.PublisherSubId
+  alias Apientry.Blacklist
 
   def start_link(opts \\ []) do
     children = [
@@ -48,7 +49,14 @@ defmodule Apientry.DbCacheSupervisor do
         query: PublisherSubId,
         indices: [
           sub_id: &(&1.sub_id)
-        ]]], id: :publisher_sub_id)
+        ]]], id: :publisher_sub_id),
+      worker(DbCache, [[
+        name: :blacklist,
+        repo: Repo,
+        query: Blacklist,
+        indices: [
+          blacklist_type: &(&1.blacklist_type)
+        ]]], id: :blacklist)
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: opts[:name])
@@ -65,5 +73,6 @@ defmodule Apientry.DbCacheSupervisor do
     DbCache.update(:publisher_api_key)
     DbCache.update(:tracking_id)
     DbCache.update(:publisher_sub_id)
+    DbCache.update(:blacklist)
   end
 end
