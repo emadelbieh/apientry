@@ -20,6 +20,7 @@ defmodule Apientry.SearchController do
   plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
   plug :assign_filter_duplicate_flag when action in [:search]
   plug :assign_override_price_flag when action in [:extension_search]
+  plug :assign_num_items_flag when action in [:extension_search]
   plug :check_price when action in [:extension_search]
   plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
   plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons, :extension_search]
@@ -64,6 +65,19 @@ defmodule Apientry.SearchController do
         |> render(:error, data: %{error: reason})
     end
   end
+
+  def search(%{assigns: %{error: error, details: details}} = conn, _) do
+    conn
+    |> put_status(400)
+    |> render(:error, data: %{error: error, details: details})
+  end
+
+  def search(conn, _) do
+    conn
+    |> put_status(400)
+    |> render(:error, data: %{error: :unknown_error})
+  end
+
 
   defp build_category_chooser_data(conn) do
     country = conn.assigns.country |> String.downcase
@@ -329,7 +343,6 @@ defmodule Apientry.SearchController do
     end
   end
 
-
   defp transform_by_format(conn, body, format) do
     case format do
       "json" ->
@@ -349,18 +362,6 @@ defmodule Apientry.SearchController do
     end
   end
 
-  def search(%{assigns: %{error: error, details: details}} = conn, _) do
-    conn
-    |> put_status(400)
-    |> render(:error, data: %{error: error, details: details})
-  end
-
-  def search(conn, _) do
-    conn
-    |> put_status(400)
-    |> render(:error, data: %{error: :unknown_error})
-  end
-
   def extension_search(conn, params) do
     # find tracking_id
     # find publisher_api_key
@@ -371,7 +372,6 @@ defmodule Apientry.SearchController do
     conn = Map.put(conn, :assigns, assigns)
     search_rerank(conn, params)
   end
-
 
   def check_price(%{params: %{"minPrice" => min, "maxPrice" => max}} = conn, _) do
     conn
@@ -407,6 +407,15 @@ defmodule Apientry.SearchController do
     end
   end
 
+  defp add_num_items(string_keyword, conn) do
+    if conn.assigns[:set_num_items?] do
+      string_keyword
+      |> StringKeyword.put("numItems", 25)
+    else
+      string_keyword
+    end
+  end
+
   defp assign_override_price_flag(conn, _) do
     conn
     |> assign(:should_override_price, true)
@@ -420,6 +429,7 @@ defmodule Apientry.SearchController do
     params = query_string
     |> StringKeyword.from_query_string()
     |> add_price_details(conn)
+    |> add_num_items(conn)
 
     params = Enum.into(params, %{})
     params = if params["visitorUserAgent"] do
@@ -489,5 +499,10 @@ defmodule Apientry.SearchController do
   defp assign_filter_duplicate_flag(conn, _opts) do
     conn
     |> assign(:filter_duplicate?, true)
+  end
+
+  def assign_num_items_flag(conn, _opts) do
+    conn
+    |> assign(:set_num_items?, true)
   end
 end

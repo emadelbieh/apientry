@@ -1,6 +1,6 @@
 defmodule Apientry.TitleAgent do
   def start_link do
-    {:ok, agent} = Agent.start_link fn -> %{} end
+    Agent.start_link fn -> %{} end
   end
 
   def unique?(agent, title) do
