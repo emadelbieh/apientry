@@ -42,10 +42,14 @@ defmodule Apientry.Coupon do
   def with_blacklists(conn, params) do
     publisher_sub_id = DbCache.lookup(:publisher_sub_id, :sub_id, params["subid"])
 
-    base_query = from b in Apientry.Blacklist, where: b.publisher_sub_id_id == ^publisher_sub_id.id
-    bldomains = Repo.all(from b in base_query, where: b.blacklist_type == ^"domain", select: b.value)
-    blnetworks = Repo.all(from b in base_query, where: b.blacklist_type == ^"network", select: b.value)
-    blcountries = Repo.all(from b in base_query, where: b.blacklist_type == ^"country", select: b.value)
+    bldomains = DbCache.lookup_all(:blacklist, :subid_and_type, {publisher_sub_id.id, "domain"})
+      |> Enum.map(&(&1.value))
+
+    blnetworks = DbCache.lookup_all(:blacklist, :subid_and_type, {publisher_sub_id.id, "network"})
+      |> Enum.map(&(&1.value))
+    blcountries = DbCache.lookup_all(:blacklist, :subid_and_type, {publisher_sub_id.id, "country"})
+      |> Enum.map(&(&1.value))
+
     from c in CouponHelper.base_model(), where: not c.domain in ^bldomains and not c.network in ^blnetworks and not c.country in ^blcountries
   end
 
