@@ -55,7 +55,7 @@ defmodule Apientry.DbCacheSupervisor do
         repo: Repo,
         query: Blacklist,
         indices: [
-          blacklist_type: &(&1.blacklist_type)
+          subid_and_type: &({&1.publisher_sub_id_id, &1.blacklist_type})
         ]]], id: :blacklist)
     ]
 
