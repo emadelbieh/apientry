@@ -40,7 +40,8 @@ defmodule Apientry.Coupon do
   end
 
   def with_blacklists(conn, params) do
-    publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
+    publisher_sub_id = DbCache.lookup(:publisher_sub_id, :sub_id, params["subid"])
+
     base_query = from b in Apientry.Blacklist, where: b.publisher_sub_id_id == ^publisher_sub_id.id
     bldomains = Repo.all(from b in base_query, where: b.blacklist_type == ^"domain", select: b.value)
     blnetworks = Repo.all(from b in base_query, where: b.blacklist_type == ^"network", select: b.value)

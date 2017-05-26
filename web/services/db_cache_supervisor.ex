@@ -10,6 +10,7 @@ defmodule Apientry.DbCacheSupervisor do
   alias Apientry.PublisherApiKey
   alias Apientry.EbayApiKey
   alias Apientry.TrackingId
+  alias Apientry.PublisherSubId
 
   def start_link(opts \\ []) do
     children = [
@@ -40,7 +41,14 @@ defmodule Apientry.DbCacheSupervisor do
         query: TrackingId,
         indices: [
           publisher_code: &({&1.publisher_api_key_id, &1.code})
-        ]]], id: :tracking_id)
+        ]]], id: :tracking_id),
+      worker(DbCache, [[
+        name: :publisher_sub_id,
+        repo: Repo,
+        query: PublisherSubId,
+        indices: [
+          sub_id: &(&1.sub_id)
+        ]]], id: :publisher_sub_id)
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: opts[:name])
@@ -56,5 +64,6 @@ defmodule Apientry.DbCacheSupervisor do
     DbCache.update(:publisher)
     DbCache.update(:publisher_api_key)
     DbCache.update(:tracking_id)
+    DbCache.update(:publisher_sub_id)
   end
 end
