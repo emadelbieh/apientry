@@ -17,6 +17,7 @@ defmodule Apientry.CouponSearchControllerTest do
   setup do
     {:ok, publisher} = Repo.insert(Publisher.changeset(%Publisher{}, %{name: "PubName", revenue_share: 0.5}))
     Repo.insert(PublisherSubId.changeset(%PublisherSubId{}, %{publisher_id: publisher.id, sub_id: "001"}))
+    DbCache.update(:publisher_sub_id)
 
     changeset = base_model().changeset(base_struct(), @apientry)
     {:ok, coupon} = Repo.insert(changeset)
