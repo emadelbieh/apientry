@@ -431,7 +431,7 @@ defmodule Apientry.SearchController do
     |> StringKeyword.from_query_string()
     |> add_price_details(conn)
     |> add_num_items(conn)
-    |> replace_keyword_with_cleaned()
+    |> replace_keyword_with_cleaned(conn)
 
     params = Enum.into(params, %{})
     params = if params["visitorUserAgent"] do
@@ -509,7 +509,7 @@ defmodule Apientry.SearchController do
   end
 
   def clean_keyword(conn, _opts) do
-    keyword = conn.params[:keyword]
+    keyword = conn.params["keyword"]
     cleaned = Apientry.TitleCleaner.clean(keyword)
 
     conn
