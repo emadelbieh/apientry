@@ -18,6 +18,7 @@ defmodule Apientry.SearchController do
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
   plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
+  plug :clean_keyword when action in [:extension_search]
   plug :assign_filter_duplicate_flag when action in [:search]
   plug :assign_override_price_flag when action in [:extension_search]
   plug :assign_num_items_flag when action in [:extension_search]
@@ -430,6 +431,7 @@ defmodule Apientry.SearchController do
     |> StringKeyword.from_query_string()
     |> add_price_details(conn)
     |> add_num_items(conn)
+    |> replace_keyword_with_cleaned(conn)
 
     params = Enum.into(params, %{})
     params = if params["visitorUserAgent"] do
@@ -504,5 +506,18 @@ defmodule Apientry.SearchController do
   def assign_num_items_flag(conn, _opts) do
     conn
     |> assign(:set_num_items?, true)
+  end
+
+  def clean_keyword(conn, _opts) do
+    keyword = conn.params["keyword"]
+    cleaned = Apientry.TitleCleaner.clean(keyword)
+
+    conn
+    |> assign(:cleaned_keyword, cleaned)
+  end
+
+  def replace_keyword_with_cleaned(string_keyword, conn) do
+    string_keyword
+    |> StringKeyword.put("keyword", conn.assigns.cleaned_keyword)
   end
 end
