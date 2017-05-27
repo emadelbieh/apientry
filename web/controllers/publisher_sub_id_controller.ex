@@ -18,6 +18,7 @@ defmodule Apientry.PublisherSubIdController do
 
     case Repo.insert(changeset) do
       {:ok, _publisher_sub_id} ->
+        DbCache.update(:publisher_sub_id)
         conn
         |> put_flash(:info, "Publisher sub created successfully.")
         |> redirect(to: publisher_sub_id_path(conn, :index))
@@ -43,6 +44,7 @@ defmodule Apientry.PublisherSubIdController do
 
     case Repo.update(changeset) do
       {:ok, publisher_sub_id} ->
+        DbCache.update(:publisher_sub_id)
         conn
         |> put_flash(:info, "Publisher sub updated successfully.")
         |> redirect(to: publisher_sub_id_path(conn, :show, publisher_sub_id))
@@ -57,6 +59,7 @@ defmodule Apientry.PublisherSubIdController do
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(publisher_sub_id)
+    DbCache.update(:publisher_sub_id)
 
     conn
     |> put_flash(:info, "Publisher sub deleted successfully.")

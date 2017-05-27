@@ -9,7 +9,6 @@ defmodule Apientry.Amplitude do
   """
 
   @amplitude Application.get_env(:apientry, :amplitude) |> Enum.into(%{})
-  @events    Application.get_env(:apientry, :events) |> Enum.into(%{})
 
   @event_names %{
     "CLICK_ATTRIBUTEVALUE_URL" => true,

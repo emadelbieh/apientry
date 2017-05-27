@@ -36,6 +36,8 @@ defmodule Apientry.BlacklistController do
       Repo.insert!(changeset)
     end
 
+    DbCache.update(:blacklist)
+
     conn
     |> put_flash(:info, "Blacklist created successfully.")
     |> redirect(to: blacklist_path(conn, :index))
@@ -57,6 +59,9 @@ defmodule Apientry.BlacklistController do
         Repo.insert!(changeset)
       end
     end)
+
+    DbCache.update(:blacklist)
+
     conn
     |> put_flash(:info, "All subids for the associated publisher has been blacklisted")
     |> redirect(to: blacklist_path(conn, :index))
@@ -75,6 +80,7 @@ defmodule Apientry.BlacklistController do
 
     case Repo.update(changeset) do
       {:ok, blacklist} ->
+        DbCache.update(:blacklist)
         conn
         |> put_flash(:info, "Blacklist updated successfully.")
         |> redirect(to: blacklist_path(conn, :index))
@@ -90,6 +96,7 @@ defmodule Apientry.BlacklistController do
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(blacklist)
+    DbCache.update(:blacklist)
 
     conn
     |> put_flash(:info, "Blacklist deleted successfully.")
