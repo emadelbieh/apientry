@@ -78,7 +78,7 @@ defmodule Apientry.Analytics do
   """
   def track_query(conn, params) do
     data = %{
-      "type" => "query",
+      "type" => "request",
       "data" => "coupon",
       "data_details" => Poison.encode!(params),
       "platform" => "search",
