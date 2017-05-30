@@ -158,6 +158,7 @@ defmodule Apientry.EbayJsonTransformer do
       build_url(url, assigns,
        event: "click",
        sub_event: "CLICK_CATEGORY_URL",
+       subid: assigns.params["subid"],
        category_name: cat["name"])
     end)
     |> safe_update_in(["attributes", "attribute"], fn attributes ->
@@ -228,6 +229,7 @@ defmodule Apientry.EbayJsonTransformer do
       build_url(url, assigns,
        event: "click",
        sub_event: "CLICK_OFFER_URL",
+       subid: assigns.params["subid"],
        offer_name: offer["name"],
        manufacturer: offer["manufacturer"],
        used: offer["used"],
@@ -266,6 +268,7 @@ defmodule Apientry.EbayJsonTransformer do
     build_url(url, assigns,
      event: "click",
      sub_event: "CLICK_PRODUCT_URL",
+     subid: assigns.params["subid"],
      product_name: product["name"],
      category_name: category["name"],
      on_sale: product["onSale"],
@@ -285,6 +288,7 @@ defmodule Apientry.EbayJsonTransformer do
       build_url(url, assigns,
        event: "click",
        sub_event: "CLICK_REVIEW_URL",
+       subid: assigns.params["subid"],
        store: store["name"],
        trusted: store["trusted"],
        authorized_reseller: store["authorizedReseller"])
@@ -302,6 +306,7 @@ defmodule Apientry.EbayJsonTransformer do
       build_url(url, assigns,
        event: "click",
        sub_event: "CLICK_ATTRIBUTE_URL",
+       subid: assigns.params["subid"],
        category_name: category["name"],
        attribute_name: attribute["name"])
     end)
@@ -323,6 +328,7 @@ defmodule Apientry.EbayJsonTransformer do
       build_url(url, assigns,
        event: "click",
        sub_event: "CLICK_ATTRIBUTEVALUE_URL",
+       subid: assigns.params["subid"],
        category_name: category["name"],
        attribute_name: attribute["name"],
        attribute_value_name: attribute_value["name"])

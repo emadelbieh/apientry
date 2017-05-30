@@ -25,6 +25,7 @@ defmodule Apientry.Analytics do
     data = Map.merge(get_common_data(body), %{
       "data" => "offer",
       "platform" => "search",
+      "subid" => body["subid"],
     })
 
     send_request(conn, data)
