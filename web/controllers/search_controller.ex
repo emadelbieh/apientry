@@ -517,7 +517,11 @@ defmodule Apientry.SearchController do
   end
 
   def replace_keyword_with_cleaned(string_keyword, conn) do
-    string_keyword
-    |> StringKeyword.put("keyword", conn.assigns.cleaned_keyword)
+    if conn.assigns[:cleaned_keyword] do
+      string_keyword
+      |> StringKeyword.put("keyword", conn.assigns.cleaned_keyword)
+    else
+      string_keyword
+    end
   end
 end
