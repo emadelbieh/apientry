@@ -156,7 +156,8 @@ defmodule Apientry.EbayJsonTransformer do
     cat
     |> Map.update("categoryURL", nil, fn url ->
       build_url(url, assigns,
-       event: "CLICK_CATEGORY_URL",
+       event: "click",
+       sub_event: "CLICK_CATEGORY_URL",
        category_name: cat["name"])
     end)
     |> safe_update_in(["attributes", "attribute"], fn attributes ->
@@ -225,7 +226,8 @@ defmodule Apientry.EbayJsonTransformer do
     offer
     |> Map.update("offerURL", nil, fn url ->
       build_url(url, assigns,
-       event: "CLICK_OFFER_URL",
+       event: "click",
+       sub_event: "CLICK_OFFER_URL",
        offer_name: offer["name"],
        manufacturer: offer["manufacturer"],
        used: offer["used"],
@@ -262,7 +264,8 @@ defmodule Apientry.EbayJsonTransformer do
 
   def build_product_url(url, assigns, product, category) do
     build_url(url, assigns,
-     event: "CLICK_PRODUCT_URL",
+     event: "click",
+     sub_event: "CLICK_PRODUCT_URL",
      product_name: product["name"],
      category_name: category["name"],
      on_sale: product["onSale"],
@@ -280,7 +283,8 @@ defmodule Apientry.EbayJsonTransformer do
     store
     |> safe_update_in(["ratingInfo", "reviewURL"], fn url ->
       build_url(url, assigns,
-       event: "CLICK_REVIEW_URL",
+       event: "click",
+       sub_event: "CLICK_REVIEW_URL",
        store: store["name"],
        trusted: store["trusted"],
        authorized_reseller: store["authorizedReseller"])
@@ -296,7 +300,8 @@ defmodule Apientry.EbayJsonTransformer do
     attribute
     |> Map.update("attributeURL", nil, fn url ->
       build_url(url, assigns,
-       event: "CLICK_ATTRIBUTE_URL",
+       event: "click",
+       sub_event: "CLICK_ATTRIBUTE_URL",
        category_name: category["name"],
        attribute_name: attribute["name"])
     end)
@@ -316,7 +321,8 @@ defmodule Apientry.EbayJsonTransformer do
     attribute_value
     |> Map.update("attributeValueURL", nil, fn url ->
       build_url(url, assigns,
-       event: "CLICK_ATTRIBUTEVALUE_URL",
+       event: "click",
+       sub_event: "CLICK_ATTRIBUTEVALUE_URL",
        category_name: category["name"],
        attribute_name: attribute["name"],
        attribute_value_name: attribute_value["name"])

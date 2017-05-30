@@ -71,7 +71,7 @@ defmodule Apientry.RedirectController do
     end
   end
 
-  defp verify_event(%{"event" => event}) do
+  defp verify_event(%{"sub_event" => event}) do
     case Amplitude.valid_event_name?(event) do
       true -> :ok
       _ -> {:error, :invalid_event, %{}}
