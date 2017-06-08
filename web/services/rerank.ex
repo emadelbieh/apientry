@@ -14,7 +14,6 @@ defmodule Apientry.Rerank do
   }
 
   def get_products(conn, ebay_results, search_term, geo, fetched_url) do
-    rerank1 = :os.system_time(:milli_seconds)
     geo = geo || "";
 
     regex_cache = Task.async(fn ->
@@ -31,24 +30,10 @@ defmodule Apientry.Rerank do
     end)
 
     categories = ebay_results
-
-    time1 = :os.system_time(:milli_seconds)
     categories = format_ebay_results_for_rerank(categories)
-    time2 = :os.system_time(:milli_seconds)
-    format_ebay_results_for_rerank = time2 - time1
-
-    time1 = :os.system_time(:milli_seconds)
     categories = remove_duplicate(categories)
-    time2 = :os.system_time(:milli_seconds)
-    remove_duplicate = time2 - time1
-
-    time1 = :os.system_time(:milli_seconds)
     categories = remove_small_categories(categories)
-    time2 = :os.system_time(:milli_seconds)
-    remove_small_categories = time2 - time1
 
-    time1 = :os.system_time(:milli_seconds)
-    
     regex_cache = Task.await(regex_cache)
     categories = Enum.map(categories, fn category ->
       regex_string = CsvCache.get(regex_cache, category.cat_id) || ""
@@ -62,74 +47,17 @@ defmodule Apientry.Rerank do
 
       Map.put(category, :offers, offers)
     end)
-    time2 = :os.system_time(:milli_seconds)
-    add_token_val_price_val = time2 - time1
 
-    time1 = :os.system_time(:milli_seconds)
     max_offer_token_val = get_max_offer_token_val(categories)
-    time2 = :os.system_time(:milli_seconds)
-    get_max_offer_token_val = time2 - time1
-
-    time1 = :os.system_time(:milli_seconds)
     categories = normalize_token_vals(categories, max_offer_token_val)
-    time2 = :os.system_time(:milli_seconds)
-    normalize_token_vals = time2 - time1
-
-    time1 = :os.system_time(:milli_seconds)
     categories = add_prod_val(categories)
-    time2 = :os.system_time(:milli_seconds)
-    add_prod_val = time2 - time1
-
-    time1 = :os.system_time(:milli_seconds)
     categories = add_category_token_vals(categories)
-    time2 = :os.system_time(:milli_seconds)
-    add_category_token_vals = time2 - time1
-
-    time1 = :os.system_time(:milli_seconds)
     categories = add_cat_val(conn, categories)
-    time2 = :os.system_time(:milli_seconds)
-    add_cat_val = time2 - time1
-
-    time1 = :os.system_time(:milli_seconds)
     categories = sort_categories(categories)
-    time2 = :os.system_time(:milli_seconds)
-    sort_categories = time2 - time1
-
-    time1 = :os.system_time(:milli_seconds)
     categories = sort_products_within_categories(categories)
-    time2 = :os.system_time(:milli_seconds)
-    sort_products_within_categories = time2 - time1
 
-    time1 = :os.system_time(:milli_seconds)
-    result = get_top_ten_offers(categories, conn)
+    get_top_ten_offers(categories, conn)
     |> Enum.map(fn offer -> offer.original_item end)
-    time2 = :os.system_time(:milli_seconds)
-    get_top_ten_offers = time2 - time1
-
-    rerank2 = :os.system_time(:milli_seconds)
-    rerank = rerank2 - rerank1
-
-    time_data = %{
-      format_ebay_results_for_rerank: format_ebay_results_for_rerank,
-      remove_duplicate: remove_duplicate,
-      remove_small_categories: remove_small_categories,
-      add_token_val_price_val: add_token_val_price_val,
-      get_max_offer_token_val: get_max_offer_token_val,
-      normalize_token_vals: normalize_token_vals,
-      add_prod_val: add_prod_val,
-      add_category_token_vals: add_category_token_vals,
-      add_cat_val: add_cat_val,
-      sort_categories: sort_categories,
-      sort_products_within_categories: sort_products_within_categories,
-      get_top_ten_offers: get_top_ten_offers,
-      rerank: rerank
-    }
-
-    Task.start(fn ->
-      Apientry.Amplitude.track_latency(conn, time_data)
-    end)
-
-    result
   end
 
   # refactored from format_ebay_results_for_rerank

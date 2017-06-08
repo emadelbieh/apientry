@@ -14,7 +14,8 @@ defmodule Apientry.Intern.PublisherView do
       name: publisher.name,
       revenue_share: publisher.revenue_share,
       report_receivers: publisher.report_receivers,
-      subplacements: subplacements_for(publisher)}
+      subplacements: subplacements_for(publisher),
+      subids: subids_for(publisher)}
   end
 
   defp subplacements_for(publisher) do
@@ -27,6 +28,16 @@ defmodule Apientry.Intern.PublisherView do
           tracking_id: tracking_id.code,
         }
       end)
+    end)
+  end
+
+  def subids_for(publisher) do
+    publisher.publisher_sub_ids
+    |> Enum.map(fn struct ->
+      %{
+        sub_id: struct.sub_id,
+        reference_data: struct.reference_data
+      }
     end)
   end
 end
