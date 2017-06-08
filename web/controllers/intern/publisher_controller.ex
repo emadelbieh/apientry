@@ -5,7 +5,7 @@ defmodule Apientry.Intern.PublisherController do
 
   def index(conn, _params) do
     publishers = Repo.all(Publisher)
-                 |> Repo.preload(api_keys: [:tracking_ids])
+                 |> Repo.preload(api_keys: [tracking_ids: [ebay_api_key: :account]])
                  |> Repo.preload(:publisher_sub_ids)
     render(conn, "index.json", publishers: publishers)
   end

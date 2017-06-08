@@ -26,6 +26,7 @@ defmodule Apientry.Intern.PublisherView do
         %{
           subplacement: tracking_id.subplacement,
           tracking_id: tracking_id.code,
+          account_number: tracking_id.ebay_api_key.account.account_number
         }
       end)
     end)
