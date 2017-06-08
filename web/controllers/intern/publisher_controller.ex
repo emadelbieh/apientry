@@ -11,7 +11,9 @@ defmodule Apientry.Intern.PublisherController do
   end
 
   def show(conn, %{"id" => id}) do
-    publisher = Repo.get!(Publisher, id) |> Repo.preload(api_keys: [:tracking_ids])
+    publisher = Repo.get!(Publisher, id)
+                |> Repo.preload(api_keys: [:tracking_ids])
+                |> Repo.preload(:publisher_sub_ids)
     render(conn, "show.json", publisher: publisher)
   end
 end

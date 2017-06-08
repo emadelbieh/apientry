@@ -15,13 +15,14 @@ defmodule Apientry.Intern.PublisherControllerTest do
   end
 
   test "shows chosen resource", %{conn: conn} do
-    publisher = Repo.insert! %Publisher{}
+    publisher = Repo.insert!(%Publisher{}) |> Repo.preload(:publisher_sub_ids)
     conn = get conn, intern_publisher_path(conn, :show, publisher)
     assert json_response(conn, 200)["data"] == %{"id" => publisher.id,
       "name" => publisher.name,
       "revenue_share" => publisher.revenue_share,
       "report_receivers" => publisher.report_receivers,
-      "subplacements" => []}
+      "subplacements" => [],
+      "subids" => []}
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do
