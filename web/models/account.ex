@@ -3,6 +3,8 @@ defmodule Apientry.Account do
 
   schema "accounts" do
     field :name, :string
+    field :account_number, :string
+
     belongs_to :geo, Apientry.Geo
     has_many :ebay_api_keys, Apientry.EbayApiKey
 
