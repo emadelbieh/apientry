@@ -17,6 +17,8 @@
                 = @geo.name
             td.name
               = link account.name, to: ebay_api_key_path(@conn, :index, account_id: account.id)
+              span.info
+                = account.account_number
             td.actions.crud-actions
               = link "View eBay API keys", to: ebay_api_key_path(@conn, :index, account_id: account.id), class: "btn btn-sm btn-default"
               = link "Edit", to: account_path(@conn, :edit, account), class: "btn btn-sm btn-defaut"
