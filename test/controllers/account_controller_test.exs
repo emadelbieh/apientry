@@ -5,7 +5,7 @@ defmodule Apientry.AccountControllerTest do
   alias Apientry.Geo
   alias Apientry.Account
 
-  @valid_attrs %{name: "BlackSwan Ebay 001"}
+  @valid_attrs %{account_number: "123456", name: "BlackSwan Ebay 001"}
   @invalid_attrs %{}
 
   setup do
@@ -24,7 +24,7 @@ defmodule Apientry.AccountControllerTest do
   end
 
   test "creates resource and redirects when data is valid", %{conn: conn, geo: geo} do
-    conn = post conn, account_path(conn, :create), account: %{geo_id: geo.id, name: "Blackswan"}
+    conn = post conn, account_path(conn, :create), account: %{account_number: "123455", geo_id: geo.id, name: "Blackswan"}
     assert redirected_to(conn) == account_path(conn, :index, geo_id: geo.id)
     assert Repo.get_by(Account, %{geo_id: geo.id, name: "Blackswan"})
   end
@@ -65,8 +65,8 @@ defmodule Apientry.AccountControllerTest do
 
   test "updates chosen resource and redirects when data is valid", %{conn: conn, geo: geo} do
     account = Repo.insert! %Account{}
-    conn = put conn, account_path(conn, :update, account), account: %{geo_id: geo.id, name: "Blackswan"}
-    assert redirected_to(conn) == account_path(conn, :show, account)
+    conn = put conn, account_path(conn, :update, account), account: %{account_number: "21456", geo_id: geo.id, name: "Blackswan"}
+    assert redirected_to(conn) == account_path(conn, :index, geo_id: geo.id)
     assert Repo.get_by(Account, %{geo_id: geo.id, name: "Blackswan"})
   end
 
