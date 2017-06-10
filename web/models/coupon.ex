@@ -159,7 +159,8 @@ defmodule Apientry.Coupon do
         country: conn.assigns[:country],
         redirect_base: conn.assigns[:redirect_base]
       },
-      event: "CLICK_COUPON_URL",
+      event: "click",
+      sub_event: "CLICK_COUPON_URL",
       offer_name: coupon.offer,
       dealtype: coupon.dealtype,
       merchant: coupon.merchant,

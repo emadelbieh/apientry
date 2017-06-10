@@ -2,7 +2,7 @@ defmodule Apientry.RedirectControllerTest do
   use Apientry.ConnCase
 
   test "redirects", %{conn: conn} do
-    conn = get conn, redirect_path(conn, :show, Base.url_encode64("?link=http://google.com&event=CLICK_OFFER_URL"))
+    conn = get conn, redirect_path(conn, :show, Base.url_encode64("?link=http://google.com&event=click&sub_event=CLICK_OFFER_URL"))
     assert redirected_to(conn) == "http://google.com"
   end
 
