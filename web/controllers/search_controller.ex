@@ -18,7 +18,6 @@ defmodule Apientry.SearchController do
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
   plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons]
-  plug :assign_filter_duplicate_flag when action in [:search]
   plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons]
   plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons]
 
@@ -45,6 +44,7 @@ defmodule Apientry.SearchController do
 
         request_format = conn.params["format"] || "json"
         body = transform_by_format(conn, body, request_format)
+        |> Apientry.TitleFilter.remove_sizes()
         |> Apientry.TitleFilter.filter_duplicate_title()
         |> Poison.encode!()
 
@@ -152,6 +152,8 @@ defmodule Apientry.SearchController do
 
               request_format = conn.params["format"] || "json"
               body = transform_by_format(conn, body, request_format)
+              |> Apientry.TitleFilter.remove_sizes()
+              |> Poison.encode!()
 
               track_publisher(conn)
 
@@ -195,6 +197,8 @@ defmodule Apientry.SearchController do
 
           request_format = conn.params["format"] || "json"
           body = transform_by_format(conn, body, request_format)
+                 |> Apientry.TitleFilter.remove_sizes()
+                 |> Poison.encode!()
 
           track_publisher(conn)
 
@@ -289,14 +293,8 @@ defmodule Apientry.SearchController do
   defp transform_by_format(conn, body, format) do
     case format do
       "json" ->
-        if conn.assigns[:filter_duplicate?] do
-          body
-          |> EbayTransformer.transform(conn.assigns, format)
-        else
-          body
-          |> EbayTransformer.transform(conn.assigns, format)
-          |> Poison.encode!()
-        end
+        body
+        |> EbayTransformer.transform(conn.assigns, format)
       "xml" ->
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
@@ -333,10 +331,5 @@ defmodule Apientry.SearchController do
         Apientry.Analytics.track_publisher(conn, conn.assigns)
       end
     end
-  end
-
-  defp assign_filter_duplicate_flag(conn, _opts) do
-    conn
-    |> assign(:filter_duplicate?, true)
   end
 end
