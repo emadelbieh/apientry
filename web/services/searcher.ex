@@ -83,6 +83,11 @@ defmodule Apientry.Searcher do
       |> StringKeyword.put("apiKey", ebay_api_key.value)
       |> StringKeyword.delete("domain")
       |> StringKeyword.delete("format")
+      |> StringKeyword.delete("siteUrl")
+      |> StringKeyword.delete("_country")
+      |> StringKeyword.delete("widget")
+      |> StringKeyword.delete("breadCrumbs")
+      |> StringKeyword.delete("subid")
 
       url = EbaySearch.search(format, endpoint, new_params)
       %{

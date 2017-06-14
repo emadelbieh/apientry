@@ -151,10 +151,6 @@ defmodule Apientry.ExtensionSearchController do
     endpoint = conn.params["endpoint"] || @default_endpoint
     result = Searcher.search(format, endpoint, params, conn)
 
-    IO.puts "******************"
-    IO.inspect(result)
-    IO.puts "******************"
-
     result
     |> Enum.reduce(conn, fn {key, val}, conn -> assign(conn, key, val) end)
   end
