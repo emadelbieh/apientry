@@ -49,7 +49,7 @@ defmodule Apientry.Router do
 
   scope "/", Apientry do
     pipe_through :api
-    get "/search", SearchController, :extension_search
+    get "/search", ExtensionSearchController, :search
     get "/publisher", SearchController, :search
     get "/alpha/publisher", SearchController, :search_rerank
     get "/coupons", CouponSearchController, :search
