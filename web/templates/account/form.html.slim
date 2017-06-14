@@ -17,6 +17,12 @@
           = text_input f, :name, class: "form-control", autofocus: true
           = error_tag f, :name
 
+      .form
+        .form-group
+          = label f, :account_number
+          = text_input f, :account_number, class: "form-control"
+          = error_tag f, :account_number
+
     .form-fieldset
       .form
         = submit "Submit", class: "btn btn-primary"

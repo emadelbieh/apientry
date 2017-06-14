@@ -47,7 +47,7 @@ defmodule Apientry.AccountController do
       {:ok, account} ->
         conn
         |> put_flash(:info, "Account updated successfully.")
-        |> redirect(to: account_path(conn, :show, account))
+        |> redirect(to: account_path(conn, :index, geo_id: account.geo_id))
       {:error, changeset} ->
         render(conn, "edit.html", account: account, changeset: changeset)
     end

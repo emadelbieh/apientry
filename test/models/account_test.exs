@@ -3,7 +3,7 @@ defmodule Apientry.AccountTest do
 
   alias Apientry.Account
 
-  @valid_attrs %{name: "some content", geo_id: "12"}
+  @valid_attrs %{account_number: "100123123", name: "some content", geo_id: "12"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

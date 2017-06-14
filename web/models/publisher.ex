@@ -8,6 +8,7 @@ defmodule Apientry.Publisher do
 
     has_many :api_keys, Apientry.PublisherApiKey
     has_many :tracking_ids, Apientry.TrackingId
+    has_many :publisher_sub_ids, Apientry.PublisherSubId
 
     timestamps
   end
