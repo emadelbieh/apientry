@@ -1,7 +1,7 @@
 defmodule Apientry.TitleFilter do
   alias Apientry.TitleAgent
 
-  def filter_duplicate(body) do
+  def filter_duplicate_title(body) do
     {ok, titles} = TitleAgent.start_link
 
     categories = Enum.map(get_categories(body), fn category ->

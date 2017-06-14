@@ -45,7 +45,7 @@ defmodule Apientry.SearchController do
 
         request_format = conn.params["format"] || "json"
         body = transform_by_format(conn, body, request_format)
-        |> Apientry.TitleFilter.filter_duplicate()
+        |> Apientry.TitleFilter.filter_duplicate_title()
         |> Poison.encode!()
 
         track_publisher(conn)
