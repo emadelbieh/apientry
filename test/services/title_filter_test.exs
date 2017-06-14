@@ -25,7 +25,7 @@ defmodule Apientry.TitleFilterTest do
   }}
 
   test "filter_duplicate removes duplicate title from items" do
-    result = TitleFilter.filter_duplicate(@body_with_duplicate_titles)
+    result = TitleFilter.filter_duplicate_title(@body_with_duplicate_titles)
     assert result == @body_with_duplicates_removed
   end
 end
