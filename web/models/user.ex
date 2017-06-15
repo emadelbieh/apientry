@@ -3,6 +3,7 @@ defmodule Apientry.User do
 
   schema "users" do
     field :email, :string
+    field :password, :string, virtual: true
     field :password_hash, :string
 
     timestamps()
@@ -13,8 +14,8 @@ defmodule Apientry.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:email, :password_hash])
-    |> validate_required([:email, :password_hash])
+    |> cast(params, [:email])
+    |> validate_required([:email])
   end
 
   def registration_changeset(struct, params) do
