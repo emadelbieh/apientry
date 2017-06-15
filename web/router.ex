@@ -27,7 +27,8 @@ defmodule Apientry.Router do
     get "/", PageController, :index
     get "/cloudflare", PageController, :cloudflare_values
 
-    get "/users", UserController, :index
+    resources "/users", UserController
+    resources "/sessions", SessionController, only: [:new, :create, :delete]
 
     resources "/geos", GeoController
     resources "/accounts", AccountController
