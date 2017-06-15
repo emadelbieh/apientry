@@ -27,6 +27,8 @@ defmodule Apientry.Router do
     get "/", PageController, :index
     get "/cloudflare", PageController, :cloudflare_values
 
+    get "/users", UserController, :index
+
     resources "/geos", GeoController
     resources "/accounts", AccountController
     resources "/ebay_api_keys", EbayApiKeyController
