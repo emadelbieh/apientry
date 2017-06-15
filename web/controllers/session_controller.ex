@@ -6,7 +6,7 @@ defmodule Apientry.SessionController do
   end
 
   def create(conn, %{"session" => %{"email" => email, "password" => pass}}) do
-    case Apientry.Auth.login_by_email_and_pass(conn, user, pass, repo: Repo) do
+    case Apientry.Auth.login_by_email_and_pass(conn, email, pass, repo: Repo) do
       {:ok, conn} ->
         conn
         |> put_flash(:info, "Welcome back!")
