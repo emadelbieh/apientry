@@ -9,6 +9,7 @@ defmodule Apientry.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug Apientry.Auth, repo: Apientry.Repo
   end
 
   pipeline :secure do
