@@ -44,7 +44,7 @@ defmodule Apientry.SearchController do
 
         request_format = conn.params["format"] || "json"
         body = transform_by_format(conn, body, request_format)
-        |> Apientry.TitleFilter.remove_sizes()
+        |> Apientry.TitleFilter.remove_sizes_and_colors()
         |> Apientry.TitleFilter.filter_duplicate_title()
         |> Poison.encode!()
 
@@ -152,7 +152,7 @@ defmodule Apientry.SearchController do
 
               request_format = conn.params["format"] || "json"
               body = transform_by_format(conn, body, request_format)
-              |> Apientry.TitleFilter.remove_sizes()
+              |> Apientry.TitleFilter.remove_sizes_and_colors()
               |> Poison.encode!()
 
               track_publisher(conn)
@@ -197,7 +197,7 @@ defmodule Apientry.SearchController do
 
           request_format = conn.params["format"] || "json"
           body = transform_by_format(conn, body, request_format)
-                 |> Apientry.TitleFilter.remove_sizes()
+                 |> Apientry.TitleFilter.remove_sizes_and_colors()
                  |> Poison.encode!()
 
           track_publisher(conn)
