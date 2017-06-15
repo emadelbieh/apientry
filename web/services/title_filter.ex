@@ -4,7 +4,7 @@ defmodule Apientry.TitleFilter do
   @colors_regex ~r/(white|black|red|orange|yellow|green|violet|indigo|blue|purple|gray|grey)\,*/i
   @size_regex ~r/size:\s*\d+\.*\d*,\s*/i
 
-  def remove_sizes(body) do
+  def remove_sizes_and_colors(body) do
     categories = Enum.map(get_categories(body), fn category ->
       items = Enum.map(get_items(category), fn item ->
         name = get_name(item)
