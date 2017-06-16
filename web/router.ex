@@ -12,9 +12,6 @@ defmodule Apientry.Router do
     plug Apientry.Auth, repo: Apientry.Repo
   end
 
-  pipeline :secure do
-  end
-
   pipeline :api do
     plug :accepts, ["json", "xml"]
     plug CORSPlug
@@ -22,9 +19,11 @@ defmodule Apientry.Router do
 
   scope "/", Apientry do
     pipe_through :browser
-    pipe_through :secure
 
     get "/", PageController, :index
+
+    pipe_through :authenticate_user
+
     get "/cloudflare", PageController, :cloudflare_values
 
     resources "/users", UserController
@@ -82,7 +81,7 @@ defmodule Apientry.Router do
 
   scope "/", Apientry do
     pipe_through :api
-    pipe_through :secure
+    pipe_through :authenticate_user
     get "/dryrun/publisher", SearchController, :dry_search
     get "/dryrun/publisher/:endpoint", SearchController, :dry_search
   end

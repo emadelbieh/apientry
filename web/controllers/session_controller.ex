@@ -17,4 +17,10 @@ defmodule Apientry.SessionController do
         |> render("new.html")
     end
   end
+
+  def delete(conn, _) do
+    conn
+    |> Apientry.Auth.logout()
+    |> redirect(to: page_path(conn, :index))
+  end
 end
