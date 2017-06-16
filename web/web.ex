@@ -36,6 +36,7 @@ defmodule Apientry.Web do
 
       import Apientry.Router.Helpers
       import Apientry.Gettext
+      import Apientry.Auth, only: [authenticate_user: 2]
     end
   end
 
@@ -58,6 +59,7 @@ defmodule Apientry.Web do
   def router do
     quote do
       use Phoenix.Router
+      import Apientry.Auth, only: [authenticate_user: 2]
     end
   end
 
