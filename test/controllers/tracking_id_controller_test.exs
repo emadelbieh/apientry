@@ -12,8 +12,10 @@ defmodule Apientry.TrackingIdControllerTest do
     account = Repo.insert! %Account{name: "Blackswan 001"}
     ebay_api_key = Repo.insert! %EbayApiKey{value: "12345", account_id: account.id}
     publisher = Repo.insert! %Publisher{}
+    user = insert_user()
+    conn = assign(build_conn(), :current_user, user)
 
-    {:ok, publisher: publisher, ebay_api_key: ebay_api_key, account: account}
+    {:ok, conn: conn, publisher: publisher, ebay_api_key: ebay_api_key, account: account}
   end
 
   test "renders form for new resources", %{conn: conn, account: account} do
