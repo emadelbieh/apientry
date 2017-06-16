@@ -13,7 +13,6 @@ defmodule Apientry.Router do
   end
 
   pipeline :secure do
-    plug BasicAuth, Application.get_env(:apientry, :basic_auth)
   end
 
   pipeline :api do
@@ -24,6 +23,7 @@ defmodule Apientry.Router do
   scope "/", Apientry do
     pipe_through :browser
     pipe_through :secure
+
     get "/", PageController, :index
     get "/cloudflare", PageController, :cloudflare_values
 
