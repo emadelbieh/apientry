@@ -7,14 +7,6 @@
     = if assigns[:subtitle] do
       small= @subtitle
 
-= if assigns[:feed] do
-  h1.primary-title
-    small Feeds
-    a[href="#{feed_path(@conn, :edit, @feed)}"]
-      = @feed.feed_type
-    = if assigns[:subtitle] do
-      small= @subtitle
-
 = if assigns[:geo] do
   h1.primary-title
     small Geos
