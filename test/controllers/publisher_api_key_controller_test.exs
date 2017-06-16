@@ -1,6 +1,5 @@
 defmodule Apientry.PublisherApiKeyControllerTest do
   use Apientry.ConnCase
-  use Apientry.MockBasicAuth
 
   alias Apientry.Publisher
   alias Apientry.PublisherApiKey

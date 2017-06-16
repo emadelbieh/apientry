@@ -2,7 +2,6 @@ defmodule Apientry.GeoControllerTest do
   use Apientry.ConnCase
 
   alias Apientry.Geo
-  use Apientry.MockBasicAuth
 
   @valid_attrs %{name: "US"}
   @invalid_attrs %{}

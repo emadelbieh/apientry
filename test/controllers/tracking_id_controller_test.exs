@@ -1,6 +1,5 @@
 defmodule Apientry.TrackingIdControllerTest do
   use Apientry.ConnCase
-  use Apientry.MockBasicAuth
 
   alias Apientry.Account
   alias Apientry.EbayApiKey

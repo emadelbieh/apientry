@@ -16,8 +16,6 @@ defmodule Apientry.SearchControllerTest do
     {:ok, conn: conn}
   end
 
-  use Apientry.MockBasicAuth
-
   @valid_attrs [
     keyword: "nikon",
     apiKey: "panda-abc",

@@ -1,6 +1,5 @@
 defmodule Apientry.BlacklistControllerTest do
   use Apientry.ConnCase
-  use Apientry.MockBasicAuth
 
   alias Apientry.Blacklist
   @valid_attrs %{blacklist_type: "some content", value: "some content"}

@@ -1,11 +1,9 @@
 defmodule Apientry.AccountControllerTest do
   use Apientry.ConnCase
-  use Apientry.MockBasicAuth
 
   alias Apientry.Geo
   alias Apientry.Account
 
-  @valid_attrs %{account_number: "123456", name: "BlackSwan Ebay 001"}
   @invalid_attrs %{}
 
   setup do
