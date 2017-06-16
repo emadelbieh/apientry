@@ -8,9 +8,11 @@ defmodule Apientry.EbayApiKeyControllerTest do
   @invalid_attrs %{}
 
   setup do
+    user = insert_user()
+    conn = assign(build_conn(), :current_user, user)
     geo = Repo.insert! %Geo{name: "US"}
     account = Repo.insert! %Account{geo_id: geo.id, name: "Blackswan 001"}
-    {:ok, account: account}
+    {:ok, account: account, conn: conn, user: user}
   end
 
   test "lists all entries on index", %{conn: conn, account: account} do
