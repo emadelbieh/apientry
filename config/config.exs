@@ -49,7 +49,7 @@ config :apientry, :events,
   url: "https://bsevents.ngrok.io"
 
 config :apientry, :ebay_search_domain,
-  "http://api.ebaycommercenetwork.com"
+  "http://sandbox.api.ebaycommercenetwork.com"
 
 # access_token always needs to be set, even if we're not using Rollbar.
 config :rollbax,
