@@ -7,8 +7,10 @@ defmodule Apientry.AccountControllerTest do
   @invalid_attrs %{}
 
   setup do
+    user = insert_user()
+    conn = assign(build_conn(), :current_user, user)
     geo = Repo.insert! %Geo{name: "US"}
-    {:ok, geo: geo}
+    {:ok, geo: geo, conn: conn, user: user}
   end
 
   test "lists all entries on index", %{conn: conn, geo: geo} do
