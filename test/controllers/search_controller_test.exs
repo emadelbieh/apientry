@@ -6,7 +6,6 @@ defmodule Apientry.SearchControllerTest do
   alias Apientry.DbCacheSupervisor
 
   setup %{conn: conn} do
-    Fixtures.mock_feeds
     Fixtures.mock_publishers
     DbCacheSupervisor.update
 

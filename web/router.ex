@@ -33,7 +33,6 @@ defmodule Apientry.Router do
     resources "/accounts", AccountController
     resources "/ebay_api_keys", EbayApiKeyController
     resources "/publisher_api_keys", PublisherApiKeyController
-    resources "/feeds", FeedController
     resources "/tracking_ids", TrackingIdController
     resources "/publisher_sub_ids", PublisherSubIdController
     resources "/blacklist", BlacklistController
