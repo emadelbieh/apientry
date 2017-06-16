@@ -1,7 +1,6 @@
 defmodule Apientry.CouponSearchControllerTest do
   use Apientry.ConnCase, async: true
 
-  alias Apientry.Coupon
   alias Apientry.Publisher
   alias Apientry.PublisherSubId
 
@@ -20,22 +19,22 @@ defmodule Apientry.CouponSearchControllerTest do
     DbCache.update(:publisher_sub_id)
 
     changeset = base_model().changeset(base_struct(), @apientry)
-    {:ok, coupon} = Repo.insert(changeset)
+    {:ok, _} = Repo.insert(changeset)
 
     changeset = base_model().changeset(base_struct(), @apientry_with_category)
-    {:ok, coupon} = Repo.insert(changeset)
+    {:ok, _} = Repo.insert(changeset)
 
     changeset = base_model().changeset(base_struct(), @apientry_with_holiday)
-    {:ok, coupon} = Repo.insert(changeset)
+    {:ok, _} = Repo.insert(changeset)
 
     changeset = base_model().changeset(base_struct(), @apientry_with_network)
-    {:ok, coupon} = Repo.insert(changeset)
+    {:ok, _} = Repo.insert(changeset)
 
     changeset = base_model().changeset(base_struct(), @apientry_with_dealtype)
-    {:ok, coupon} = Repo.insert(changeset)
+    {:ok, _} = Repo.insert(changeset)
 
     changeset = base_model().changeset(base_struct(), @another)
-    {:ok, coupon} = Repo.insert(changeset)
+    {:ok, _} = Repo.insert(changeset)
 
     %{}
   end

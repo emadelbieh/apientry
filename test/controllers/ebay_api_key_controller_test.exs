@@ -1,12 +1,10 @@
 defmodule Apientry.EbayApiKeyControllerTest do
   use Apientry.ConnCase
-  use Apientry.MockBasicAuth
 
   alias Apientry.Geo
   alias Apientry.Account
   alias Apientry.EbayApiKey
 
-  @valid_attrs %{value: "some content"}
   @invalid_attrs %{}
 
   setup do
