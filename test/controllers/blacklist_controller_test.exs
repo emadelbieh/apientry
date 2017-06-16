@@ -12,7 +12,10 @@ defmodule Apientry.BlacklistControllerTest do
     publisher_sub_id = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "001", publisher_id: publisher.id}))
     publisher_sub_id2 = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "002", publisher_id: publisher.id}))
     publisher_sub_id3 = Repo.insert!(PublisherSubId.changeset(%PublisherSubId{}, %{sub_id: "003", publisher_id: publisher.id}))
-    {:ok, publisher_sub_id: publisher_sub_id, psubid2: publisher_sub_id2, psubid3: publisher_sub_id3}
+
+    user = insert_user()
+    conn = assign(build_conn(), :current_user, user)
+    {:ok, publisher_sub_id: publisher_sub_id, psubid2: publisher_sub_id2, psubid3: publisher_sub_id3, conn: conn, user: user}
   end
 
   test "lists all entries on index", %{conn: conn} do
