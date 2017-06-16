@@ -16,3 +16,6 @@ config :apientry, Apientry.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: database_url,
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :comeonin, :bcrypt_log_rounds, 4
+config :comeonin, :pbkdf2_rounds, 1
