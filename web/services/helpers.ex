@@ -17,7 +17,7 @@ defmodule Apientry.Helpers do
     end
   end
 
-  def load_regexes_from_file(cache, geo) do
+  def load_regexes_from_file(cache, geo) when geo in ~w(fr us au de gb) do
     try do
       Path.expand(".")
       |> Path.join("/web/services/#{geo}_cat_id_attr_regex.csv")
@@ -42,5 +42,9 @@ defmodule Apientry.Helpers do
         #  Map.put(acc, cat_id, regex)
         #end)
     end
+  end
+
+  def load_regexes_from_file(_, _) do
+    # do nothing
   end
 end

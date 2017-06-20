@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.Rerank do
   @min_cat_size 0.1
 
@@ -111,10 +109,13 @@ defmodule Apientry.Rerank do
   end
 
   def stem(string, stemer) do
-    if Enum.any?(@keywords_dont_stemm, fn dont_stem -> string == dont_stem end) do
-      string
-    else
-      stemer.(string)
+    cond do
+      Enum.any?(@keywords_dont_stemm, fn dont_stem -> string == dont_stem end) ->
+        string
+      stemer ->
+        stemer.(string)
+      true ->
+        string
     end
   end
 
