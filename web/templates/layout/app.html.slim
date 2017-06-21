@@ -8,7 +8,8 @@ html
   body
     .root-layout
       .top
-        = render Apientry.SharedView, "top.html", conn: @conn, active: active_top_link(assigns)
+        = if @current_user do
+          = render Apientry.SharedView, "top.html", conn: @conn, active: active_top_link(assigns)
         = render Apientry.SharedView, "flash.html", conn: @conn
       = render @view_module, @view_template, assigns
     script[src="#{static_path(@conn, "/js/app.js")}"]
