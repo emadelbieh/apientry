@@ -20,11 +20,11 @@ defmodule Apientry.Router do
   scope "/", Apientry do
     pipe_through :browser
 
-    get "/", PageController, :index
     resources "/sessions", SessionController, only: [:new, :create, :delete]
 
     pipe_through :authenticate_user
 
+    get "/", PageController, :index
     get "/cloudflare", PageController, :cloudflare_values
 
     resources "/users", UserController
