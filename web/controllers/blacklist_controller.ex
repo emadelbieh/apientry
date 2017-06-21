@@ -7,6 +7,23 @@ defmodule Apientry.BlacklistController do
   plug :validate_platforms when action in [:query]
   plug :validate_input when action in [:create]
 
+  def index(conn, %{"subid" => subid, "type" => blacklist_type}) do
+    publisher_sub_id = Repo.get_by(PublisherSubId, %{sub_id: subid})
+    blacklists = Repo.all(from b in Blacklist, where: b.blacklist_type == ^blacklist_type and b.publisher_sub_id_id == ^publisher_sub_id.id) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists)
+  end
+
+  def index(conn, %{"subid" => subid}) do
+    publisher_sub_id = Repo.get_by(PublisherSubId, %{sub_id: subid})
+    blacklists = Repo.all(from b in Blacklist, where: b.publisher_sub_id_id == ^publisher_sub_id.id) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists)
+  end
+
+  def index(conn, %{"type" => blacklist_type}) do
+    blacklists = Repo.all(from b in Blacklist, where: b.blacklist_type == ^blacklist_type) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists)
+  end
+
   def index(conn, _params) do
     blacklists = Repo.all(Blacklist) |> Repo.preload(publisher_sub_id: [:publisher])
     render(conn, "index.html", blacklists: blacklists)
