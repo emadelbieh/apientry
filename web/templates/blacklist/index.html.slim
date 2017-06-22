@@ -8,6 +8,12 @@ table.table
       th Value
       th Actions
   tbody
+    = form_for @conn, blacklist_path(@conn, :search), [as: :filter, method: :get], fn f ->
+      ' Subid:
+      = select f, :subid, ["SPT", "DEV"], prompt: "-- Select Sub ID --"
+      = select f, :type, ~w(domain network country visual_search topbar), prompt: "-- Select Type --"
+      = submit "Filter", class: "btn btn-primary"
+
     = for blacklist <- @blacklists do
       tr
         td= "#{blacklist.publisher_sub_id.publisher.name} - #{blacklist.publisher_sub_id.sub_id}"
