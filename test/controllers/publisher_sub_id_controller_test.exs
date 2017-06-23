@@ -1,10 +1,15 @@
 defmodule Apientry.PublisherSubIdControllerTest do
   use Apientry.ConnCase
-  use Apientry.MockBasicAuth
 
   alias Apientry.PublisherSubId
   @valid_attrs %{sub_id: "some content"}
   @invalid_attrs %{}
+
+  setup do
+    user = insert_user()
+    conn = assign(build_conn(), :current_user, user)
+    {:ok, conn: conn, user: user}
+  end
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, publisher_sub_id_path(conn, :index)

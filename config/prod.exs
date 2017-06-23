@@ -28,9 +28,8 @@ config :apientry, :db_cache, interval: 30_000
 config :apientry, :events,
   url: "https://events.apientry.com"
 
-# "http://sandbox.api.ebaycommercenetwork.com"
 config :apientry, :ebay_search_domain,
-  "http://api.ebaycommercenetwork.com"
+  "http://sandbox.api.ebaycommercenetwork.com"
 
 config :rollbax,
   access_token: "fcbe67e9abd04a69b3581fd26062c928",

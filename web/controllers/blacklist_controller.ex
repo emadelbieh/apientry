@@ -4,8 +4,31 @@ defmodule Apientry.BlacklistController do
   alias Apientry.Blacklist
   alias Apientry.PublisherSubId
 
+  plug :scrub_params, "filter" when action in [:search]
+
   plug :validate_platforms when action in [:query]
   plug :validate_input when action in [:create]
+
+  def search(conn, %{"filter" => %{"subid" => nil, "type" => nil}} = params) do
+    index(conn, params)
+  end
+
+  def search(conn, %{"filter" => %{"subid" => subid, "type" => nil}}) do
+    publisher_sub_id = Repo.get_by(PublisherSubId, %{sub_id: subid})
+    blacklists = Repo.all(from b in Blacklist, where: b.publisher_sub_id_id == ^publisher_sub_id.id) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists)
+  end
+
+  def search(conn, %{"filter" => %{"subid" => nil, "type" => blacklist_type}}) do
+    blacklists = Repo.all(from b in Blacklist, where: b.blacklist_type == ^blacklist_type) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists)
+  end
+
+  def search(conn, %{"filter" => %{"subid" => subid, "type" => blacklist_type}}) do
+    publisher_sub_id = Repo.get_by(PublisherSubId, %{sub_id: subid})
+    blacklists = Repo.all(from b in Blacklist, where: b.blacklist_type == ^blacklist_type and b.publisher_sub_id_id == ^publisher_sub_id.id) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists)
+  end
 
   def index(conn, _params) do
     blacklists = Repo.all(Blacklist) |> Repo.preload(publisher_sub_id: [:publisher])

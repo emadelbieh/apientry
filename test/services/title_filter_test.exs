@@ -10,8 +10,8 @@ defmodule Apientry.TitleFilterTest do
   @body_with_duplicate_titles %{
     "categories" => %{ "category" => [%{
       "items" => %{ "item" => [
-         %{ "product" => @item },
-         %{ "offer"   => @item } 
+         %{ "product" => @product },
+         %{ "offer"   => @product } 
       ]}
     }]
   }}
@@ -19,7 +19,7 @@ defmodule Apientry.TitleFilterTest do
   @body_with_duplicates_removed %{
     "categories" => %{ "category" => [%{
       "items" => %{ "item" => [
-         %{ "product" => @item }
+         %{ "product" => @product }
       ]}
     }]
   }}

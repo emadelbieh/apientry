@@ -1,6 +1,0 @@
-.top
-  = render Apientry.SharedView, "nav.html", conn: @conn, crumbs: [feed: @feed], title: [feed: @feed]
-
-.body
-  .container
-    = render "form.html", changeset: @changeset, action: feed_path(@conn, :update, @feed)

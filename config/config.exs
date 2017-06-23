@@ -27,12 +27,6 @@ config :phoenix, :generators,
   migration: true,
   binary_id: false
 
-config :apientry, :basic_auth, [
-  realm: "Admin area",
-  username: System.get_env("AUTH_USERNAME") || "admin",
-  password: System.get_env("AUTH_PASSWORD") || "]U4ssdzbvCemDa4vmevxrqUHj"
-]
-
 config :phoenix, :template_engines,
   slim: PhoenixSlime.Engine,
   slime: PhoenixSlime.Engine

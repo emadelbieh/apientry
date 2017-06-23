@@ -9,10 +9,7 @@ defmodule Apientry.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-  end
-
-  pipeline :secure do
-    plug BasicAuth, Application.get_env(:apientry, :basic_auth)
+    plug Apientry.Auth, repo: Apientry.Repo
   end
 
   pipeline :api do
@@ -22,17 +19,23 @@ defmodule Apientry.Router do
 
   scope "/", Apientry do
     pipe_through :browser
-    pipe_through :secure
+
+    resources "/sessions", SessionController, only: [:new, :create, :delete]
+
+    pipe_through :authenticate_user
+
     get "/", PageController, :index
     get "/cloudflare", PageController, :cloudflare_values
+
+    resources "/users", UserController
 
     resources "/geos", GeoController
     resources "/accounts", AccountController
     resources "/ebay_api_keys", EbayApiKeyController
     resources "/publisher_api_keys", PublisherApiKeyController
-    resources "/feeds", FeedController
     resources "/tracking_ids", TrackingIdController
     resources "/publisher_sub_ids", PublisherSubIdController
+    get "/blacklist/search", BlacklistController, :search
     resources "/blacklist", BlacklistController
     
     get  "/assign/step1", AssignmentController, :step1
@@ -78,7 +81,7 @@ defmodule Apientry.Router do
 
   scope "/", Apientry do
     pipe_through :api
-    pipe_through :secure
+    pipe_through :authenticate_user
     get "/dryrun/publisher", SearchController, :dry_search
     get "/dryrun/publisher/:endpoint", SearchController, :dry_search
   end

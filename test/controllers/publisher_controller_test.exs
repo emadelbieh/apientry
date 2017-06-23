@@ -1,10 +1,15 @@
 defmodule Apientry.PublisherControllerTest do
   use Apientry.ConnCase
-  use Apientry.MockBasicAuth
 
   alias Apientry.Publisher
   @valid_attrs %{name: "Test Publisher", revenue_share: 0.8}
   @invalid_attrs %{}
+
+  setup do
+    user = insert_user()
+    conn = assign(build_conn(), :current_user, user)
+    {:ok, conn: conn, user: user}
+  end
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, publisher_path(conn, :index)
