@@ -54,7 +54,6 @@ defmodule Apientry.Mixfile do
      {:credo, "~> 0.4", only: [:dev, :test]},
      {:mock, "~> 0.1.1", only: :test},
      {:exrm, "~> 1.0.6"},
-     {:basic_auth, "~> 1.0.0"},
      {:edeliver, "~> 1.2.9"},
      {:plug, "~> 1.2-rc", override: true}, # https://twitter.com/elixirlang/status/753171413821976577
      {:rollbax, "~> 0.6"},
