@@ -1,26 +1,33 @@
-h2 Listing blacklists
 
-table.table
-  thead
-    tr
-      th Publisher Sub Id
-      th Blacklist Type
-      th Value
-      th Actions
-  tbody
-    = form_for @conn, blacklist_path(@conn, :search), [as: :filter, method: :get], fn f ->
-      ' Subid:
-      = select f, :subid, ["SPT", "DEV"], prompt: "-- Select Sub ID --"
-      = select f, :type, ~w(domain network country visual_search topbar), prompt: "-- Select Type --"
-      = submit "Filter", class: "btn btn-primary"
+.body
+  .container
+    h2 Listing blacklists
 
-    = for blacklist <- @blacklists do
-      tr
-        td= "#{blacklist.publisher_sub_id.publisher.name} - #{blacklist.publisher_sub_id.sub_id}"
-        td= blacklist.blacklist_type
-        td= blacklist.value
-        td.text-right
-          = link "Edit", to: blacklist_path(@conn, :edit, blacklist), class: "btn btn-default btn-xs"
-          = link "Delete", to: blacklist_path(@conn, :delete, blacklist), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs"
+    .basic-panel
+      = form_for @conn, blacklist_path(@conn, :search), [as: :filter, method: :get], fn f ->
+        ' Subid:
+        = select f, :subid, @subids, prompt: "-- Select Sub ID --"
+        br
+        ' Type:
+        = select f, :type, ~w(domain network country visual_search topbar), prompt: "-- Select Type --"
+        br
+        = submit "Filter", class: "btn btn-primary"
 
-= link "New blacklist", to: blacklist_path(@conn, :new)
+    table.table
+      thead
+        tr
+          th Publisher Sub Id
+          th Blacklist Type
+          th Value
+          th Actions
+      tbody
+        = for blacklist <- @blacklists do
+          tr
+            td= "#{blacklist.publisher_sub_id.publisher.name} - #{blacklist.publisher_sub_id.sub_id}"
+            td= blacklist.blacklist_type
+            td= blacklist.value
+            td.text-right
+              = link "Edit", to: blacklist_path(@conn, :edit, blacklist), class: "btn btn-default btn-xs"
+              = link "Delete", to: blacklist_path(@conn, :delete, blacklist), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs"
+
+    = link "New blacklist", to: blacklist_path(@conn, :new)
