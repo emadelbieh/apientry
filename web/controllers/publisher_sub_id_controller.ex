@@ -1,24 +1,30 @@
 defmodule Apientry.PublisherSubIdController do
   use Apientry.Web, :controller
 
-  alias Apientry.PublisherSubId
+  alias Apientry.{PublisherSubId, TrackingId, Publisher}
 
   def index(conn, _params) do
-    publisher_sub_ids = Repo.all(PublisherSubId) |> Repo.preload(:publisher)
+    publisher_sub_ids = Repo.all(PublisherSubId)
+      |> Repo.preload(:publisher)
     render(conn, "index.html", publisher_sub_ids: publisher_sub_ids)
   end
 
   def new(conn, _params) do
-    changeset = PublisherSubId.changeset(%PublisherSubId{})
-    render(conn, "new.html", changeset: changeset)
+    changeset = PublisherSubId.changeset(%PublisherSubId{tracking_ids: []})
+    tracking_ids = Repo.all(TrackingId)
+    publishers = Repo.all(Publisher)
+    render(conn, "new.html", changeset: changeset, tracking_ids: tracking_ids, publishers: publishers)
   end
 
   def create(conn, %{"publisher_sub_id" => publisher_sub_id_params}) do
     changeset = PublisherSubId.changeset(%PublisherSubId{}, publisher_sub_id_params)
 
     case Repo.insert(changeset) do
-      {:ok, _publisher_sub_id} ->
+      {:ok, sub_id} ->
         DbCache.update(:publisher_sub_id)
+        TrackingId.with_ids(publisher_sub_id_params["tracking_ids"])
+        |> Repo.update_all(set: [publisher_sub_id_id: sub_id.id])
+
         conn
         |> put_flash(:info, "Publisher sub created successfully.")
         |> redirect(to: publisher_sub_id_path(conn, :index))

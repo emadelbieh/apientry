@@ -1,6 +1,8 @@
 <h2>New publisher sub id</h2>
 
 <%= render "form.html", changeset: @changeset,
-                        action: publisher_sub_id_path(@conn, :create) %>
+                        action: publisher_sub_id_path(@conn, :create),
+                        tracking_ids: Enum.map(@tracking_ids, &(&1.code)),
+                        publishers: @publishers %>
 
 <%= link "Back", to: publisher_sub_id_path(@conn, :index) %>

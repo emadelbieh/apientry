@@ -7,7 +7,7 @@
 
   <div class="form-group">
     <%= label f, :publisher_id, class: "control-label" %>
-    <%= text_input f, :publisher_id, class: "form-control" %>
+    <%= select f, :publisher_id, @publishers |> Enum.map(&{&1.name, &1.id}), class: "form-control" %>
     <%= error_tag f, :publisher_id %>
   </div>
 
@@ -27,6 +27,11 @@
     <%= label f, :reference_data, class: "control-label" %>
     <%= text_input f, :reference_data, class: "form-control" %>
     <%= error_tag f, :reference_data %>
+  </div>
+
+  <div class="form-group" >
+    <%= label f, :tracking_ids, class: "control-label" %>
+    <%= multiple_select f, :tracking_ids, @tracking_ids, class: "form-control" %>
   </div>
 
   <div class="form-group">
