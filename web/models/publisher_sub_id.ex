@@ -7,6 +7,8 @@ defmodule Apientry.PublisherSubId do
     field :reference_data, :string
     belongs_to :publisher, Apientry.Publisher
 
+    has_many :tracking_ids, Apientry.TrackingId
+
     timestamps()
   end
 

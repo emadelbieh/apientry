@@ -7,6 +7,9 @@ defmodule Apientry.TrackingId do
 
     belongs_to :ebay_api_key, Apientry.EbayApiKey
     belongs_to :publisher_api_key, Apientry.PublisherApiKey
+    belongs_to :publisher_sub_id, Apientry.PublisherSubId
+
+    has_one :geo, through: [:ebay_api_key, :account, :geo]
 
     timestamps
   end
@@ -16,6 +19,10 @@ defmodule Apientry.TrackingId do
     |> cast(trim_code(params), [:subplacement, :code, :ebay_api_key_id, :publisher_api_key_id])
     |> validate_required([:subplacement, :code, :ebay_api_key_id])
     |> unique_constraint(:code, name: :tracking_ids_code_index)
+  end
+
+  def with_ids(ids) do
+    from(t in __MODULE__, where: t.id in ^ids)
   end
 
   defp trim_code(params) do
