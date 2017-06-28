@@ -1,0 +1,21 @@
+<h2>Tracking Ids of <%= @sub_id.sub_id %></h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Geo</th>
+      <th>Publisher Api Key</th>
+      <th>Tracking Id</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <%= for tracking_id <- @tracking_ids do %>
+      <tr>
+        <td><%= tracking_id.geo.name %></td>
+        <td><%= tracking_id.publisher_api_key && tracking_id.publisher_api_key.value %></td>
+        <td><%= tracking_id.code %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
