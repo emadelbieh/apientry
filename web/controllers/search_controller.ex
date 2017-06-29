@@ -17,14 +17,9 @@ defmodule Apientry.SearchController do
 
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
-  plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
-  plug :clean_keyword when action in [:extension_search]
-  plug :assign_filter_duplicate_flag when action in [:search]
-  plug :assign_override_price_flag when action in [:extension_search]
-  plug :assign_num_items_flag when action in [:extension_search]
-  plug :check_price when action in [:extension_search]
-  plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons, :extension_search]
-  plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons, :extension_search]
+  plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons]
+  plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons]
+  plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons]
 
   @doc """
   Dry run of a search.
@@ -49,7 +44,8 @@ defmodule Apientry.SearchController do
 
         request_format = conn.params["format"] || "json"
         body = transform_by_format(conn, body, request_format)
-        |> Apientry.TitleFilter.filter_duplicate()
+        |> Apientry.TitleFilter.remove_sizes_and_colors()
+        |> Apientry.TitleFilter.filter_duplicate_title()
         |> Poison.encode!()
 
         track_publisher(conn)
@@ -114,12 +110,9 @@ defmodule Apientry.SearchController do
   end
 
   def search_rerank(%{assigns: %{url: url, format: format}} = conn, params) do
-    overall_1 = :os.system_time
-
     conn = Map.put(conn, :params, add_min_max_price(conn.params))
 
     # run category chooser
-    time1 = :os.system_time
     category_data = conn
                     |> build_category_chooser_data()
                     |> Apientry.CategoryChooser.init()
@@ -127,29 +120,19 @@ defmodule Apientry.SearchController do
 
     url = append_category_data(url, category_data)
 
-    time2 = :os.system_time
-    local_catchooser = time2 - time1
-
-
     # run first fetch
-    first_fetch_1 = :os.system_time
     first_fetch = nil
     second_fetch = nil
     remote_catchooser = nil
     rerank = nil
 
-    result = case HTTPoison.get(url) do
+    case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
-        first_fetch_2 = :os.system_time
-        first_fetch = first_fetch_2 - first_fetch_1
-
         body = Poison.decode!(body)
 
         if length(category_data[:attribute_values]) == 0 &&
           body["categories"] && body["categories"]["category"]  &&
           length(body["categories"]["category"]) == 1 do
-
-          time1 = :os.system_time
 
           category = hd(body["categories"]["category"])
           category_id = if (category["id"] in ["0", "", nil]), do: "", else: category["id"]
@@ -161,24 +144,16 @@ defmodule Apientry.SearchController do
 
           url = url <> "&" <> URI.encode_query(cat_data)
 
-          IO.puts "**********************"
-          IO.puts URI.encode_query(cat_data)
-          IO.puts "**********************"
-          time2 = :os.system_time
-          remote_catchooser = time2 - time1
-
-          time1 = :os.system_time
           second_fetch_1 = :os.system_time
           result = case HTTPoison.get(url) do
             {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
-              second_fetch_2 = :os.system_time
-              second_fetch = second_fetch_2 - second_fetch_1
-
               body = Poison.decode!(body)
               ErrorReporter.track_ebay_response(conn, status, body, headers)
 
               request_format = conn.params["format"] || "json"
               body = transform_by_format(conn, body, request_format)
+              |> Apientry.TitleFilter.remove_sizes_and_colors()
+              |> Poison.encode!()
 
               track_publisher(conn)
 
@@ -187,10 +162,7 @@ defmodule Apientry.SearchController do
               kw = conn.query_params["keyword"]
               req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
 
-              time1 = :os.system_time
               new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
-              time2 = :os.system_time
-              rerank = time2 - time1
 
               items = hd(decoded["categories"]["category"])
               items = put_in(items, ["items","item"], new_data)
@@ -225,6 +197,8 @@ defmodule Apientry.SearchController do
 
           request_format = conn.params["format"] || "json"
           body = transform_by_format(conn, body, request_format)
+                 |> Apientry.TitleFilter.remove_sizes_and_colors()
+                 |> Poison.encode!()
 
           track_publisher(conn)
 
@@ -233,10 +207,7 @@ defmodule Apientry.SearchController do
           kw = conn.query_params["keyword"]
           req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
 
-          time1 = :os.system_time
           new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
-          time2 = :os.system_time
-          rerank = time2 - time1
 
           if length(decoded["categories"]["category"]) > 0 do
             items = hd(decoded["categories"]["category"])
@@ -267,31 +238,6 @@ defmodule Apientry.SearchController do
         |> put_status(400)
         |> render(:error, data: %{error: reason})
     end
-    overall_2 = :os.system_time
-    overall = overall_2 - overall_1
-
-    IO.puts "**************** time results ****************"
-    IO.puts "local catchooser: #{local_catchooser}"
-    IO.puts "remote_catchooser: #{remote_catchooser}"
-    IO.puts "ebay first fetch: #{first_fetch}"
-    IO.puts "ebay second_fetch: #{second_fetch}"
-    IO.puts "rerank: #{rerank}"
-    IO.puts "overall: #{overall}"
-    IO.puts "**************** time results ****************"
-
-
-    Task.start(fn ->
-      Apientry.Amplitude.track_latency(conn, %{
-        "local_catchooser" => local_catchooser,
-        "remote_catchooser" => remote_catchooser,
-        "ebay_first_fetch" => first_fetch,
-        "ebay_second_fetch" => second_fetch,
-        "rerank" => rerank,
-        "overall" => overall
-      }, "overall")
-    end)
-
-    result
   end
 
   defp format_data_for_extension(body, original_price) do
@@ -347,79 +293,14 @@ defmodule Apientry.SearchController do
   defp transform_by_format(conn, body, format) do
     case format do
       "json" ->
-        if conn.assigns[:filter_duplicate?] do
-          body
-          |> EbayTransformer.transform(conn.assigns, format)
-        else
-          body
-          |> EbayTransformer.transform(conn.assigns, format)
-          |> Poison.encode!()
-        end
+        body
+        |> EbayTransformer.transform(conn.assigns, format)
       "xml" ->
         body = body
         |> EbayTransformer.transform(conn.assigns, format)
         |> XmlBuilder.generate
         "<?xml version='1.0' encoding='UTF-8' ?>\n" <> body
     end
-  end
-
-  def extension_search(conn, params) do
-    # find tracking_id
-    # find publisher_api_key
-    # find publisher
-    # assign publisher api key to search
-    assigns = conn.assigns
-    assigns = Map.put(assigns, :format_for_extension, true)
-    conn = Map.put(conn, :assigns, assigns)
-    search_rerank(conn, params)
-  end
-
-  def check_price(%{params: %{"minPrice" => min, "maxPrice" => max}} = conn, _) do
-    conn
-    |> assign(:minPrice, min)
-    |> assign(:maxPrice, max)
-  end
-
-  def check_price(%{params:  %{"price" => price}} = conn, _) do
-    [min, max] = price
-                  |> Apientry.PriceCleaner.clean()
-                  |> Apientry.PriceGenerator.get_min_max()
-
-    conn
-    |> assign(:minPrice, min)
-    |> assign(:maxPrice, max)
-  end
-
-  def check_price(conn, _opts) do
-    conn
-    |> assign(:valid, false)
-    |> render(:error, data: %{error: "invalid price"})
-    |> halt()
-  end
-
-  defp add_price_details(string_keyword, conn) do
-    if conn.assigns[:should_override_price] do
-      string_keyword
-      |> StringKeyword.delete("price")
-      |> StringKeyword.put("minPrice", conn.assigns.minPrice)
-      |> StringKeyword.put("maxPrice", conn.assigns.maxPrice)
-    else
-      string_keyword
-    end
-  end
-
-  defp add_num_items(string_keyword, conn) do
-    if conn.assigns[:set_num_items?] do
-      string_keyword
-      |> StringKeyword.put("numItems", 25)
-    else
-      string_keyword
-    end
-  end
-
-  defp assign_override_price_flag(conn, _) do
-    conn
-    |> assign(:should_override_price, true)
   end
 
   @doc """
@@ -429,53 +310,7 @@ defmodule Apientry.SearchController do
   def set_search_options(%{query_string: query_string} = conn, _) do
     params = query_string
     |> StringKeyword.from_query_string()
-    |> add_price_details(conn)
-    |> add_num_items(conn)
-    |> replace_keyword_with_cleaned(conn)
 
-    params = Enum.into(params, %{})
-    params = if params["visitorUserAgent"] do
-      params
-    else
-      req_headers = conn.req_headers |> Enum.into(%{})
-      Map.put(params, "visitorUserAgent", req_headers["user-agent"])
-    end
-
-    params = if params["visitorIPAddress"] do
-      params
-    else
-      req_headers = conn.req_headers |> Enum.into(%{})
-
-      direct_ip = case conn.remote_ip do
-        {a,b,c,d} -> "#{a}.#{b}.#{c}.#{d}"
-        _ -> nil
-      end
-
-      ip = req_headers["cf-connecting-ip"] || direct_ip
-      Map.put(params, "visitorIPAddress", ip)
-    end
-
-    geo = req_headers["cf-ipcountry"] || "US"
-    params = Map.put(params, "_country", geo)
-
-    params = if params["subid"] && !params["apiKey"] do
-      publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
-      geo = params["_country"]
-
-      [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
-                                              |> String.split(";")
-                                              |> Enum.filter(fn ref -> ref =~ geo end)
-                                              |> hd
-                                              |> String.split(",")
-
-      params
-      |> Map.put("apiKey", publisher_api_key)
-      |> Map.put("trackingId", tracking_id)
-    else
-      params
-    end
-
-    conn = Map.put(conn, :params, params)
     format = get_format(conn)
     endpoint = conn.params["endpoint"] || @default_endpoint
     result = Searcher.search(format, endpoint, params, conn)
@@ -495,33 +330,6 @@ defmodule Apientry.SearchController do
         Apientry.Amplitude.track_publisher(conn.assigns)
         Apientry.Analytics.track_publisher(conn, conn.assigns)
       end
-    end
-  end
-
-  defp assign_filter_duplicate_flag(conn, _opts) do
-    conn
-    |> assign(:filter_duplicate?, true)
-  end
-
-  def assign_num_items_flag(conn, _opts) do
-    conn
-    |> assign(:set_num_items?, true)
-  end
-
-  def clean_keyword(conn, _opts) do
-    keyword = conn.params["keyword"]
-    cleaned = Apientry.TitleCleaner.clean(keyword)
-
-    conn
-    |> assign(:cleaned_keyword, cleaned)
-  end
-
-  def replace_keyword_with_cleaned(string_keyword, conn) do
-    if conn.assigns[:cleaned_keyword] do
-      string_keyword
-      |> StringKeyword.put("keyword", conn.assigns.cleaned_keyword)
-    else
-      string_keyword
     end
   end
 end

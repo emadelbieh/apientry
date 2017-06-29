@@ -2,10 +2,15 @@ defmodule Apientry.GeoControllerTest do
   use Apientry.ConnCase
 
   alias Apientry.Geo
-  use Apientry.MockBasicAuth
 
   @valid_attrs %{name: "US"}
   @invalid_attrs %{}
+
+  setup do
+    user = insert_user()
+    conn = assign(build_conn(), :current_user, user)
+    {:ok, conn: conn, user: user}
+  end
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, geo_path(conn, :index)

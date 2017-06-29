@@ -26,6 +26,7 @@ defmodule Apientry.ConnCase do
       import Ecto.Query, only: [from: 1, from: 2]
 
       import Apientry.Router.Helpers
+      import Apientry.TestHelpers
 
       # The default endpoint for testing
       @endpoint Apientry.Endpoint

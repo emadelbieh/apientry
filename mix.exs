@@ -25,8 +25,8 @@ defmodule Apientry.Mixfile do
        :phoenix, :phoenix_html, :cowboy, :logger, :gettext,
        :phoenix_ecto, :postgrex, :httpoison, :geolix,
        :phoenix_slime, :cors_plug, :phoenix_pubsub, :edeliver,
-       :basic_auth, :inets, :rollbax, :xml_builder, :csv, :stemex,
-       :crontab, :quantum, :random_bytes, :uuid
+       :inets, :rollbax, :xml_builder, :csv, :stemex,
+       :crontab, :quantum, :random_bytes, :uuid, :comeonin
      ]]
   end
 
@@ -54,7 +54,6 @@ defmodule Apientry.Mixfile do
      {:credo, "~> 0.4", only: [:dev, :test]},
      {:mock, "~> 0.1.1", only: :test},
      {:exrm, "~> 1.0.6"},
-     {:basic_auth, "~> 1.0.0"},
      {:edeliver, "~> 1.2.9"},
      {:plug, "~> 1.2-rc", override: true}, # https://twitter.com/elixirlang/status/753171413821976577
      {:rollbax, "~> 0.6"},
@@ -69,6 +68,7 @@ defmodule Apientry.Mixfile do
      {:random_bytes, "~> 1.0"},
      {:uuid, "~> 1.1"},
      {:timex, "~> 3.0"},
+     {:comeonin, "~> 2.0"},
     ]
   end
 

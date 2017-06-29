@@ -4,22 +4,56 @@ defmodule Apientry.BlacklistController do
   alias Apientry.Blacklist
   alias Apientry.PublisherSubId
 
+  plug :scrub_params, "filter" when action in [:search]
+
   plug :validate_platforms when action in [:query]
   plug :validate_input when action in [:create]
 
+  def search(conn, %{"filter" => %{"subid" => nil, "type" => nil}} = params) do
+    subids = load_publisher_sub_ids
+    index(conn, params)
+  end
+
+  def search(conn, %{"filter" => %{"subid" => subid, "type" => nil}}) do
+    subids = load_publisher_sub_ids
+    publisher_sub_id = Repo.get_by(PublisherSubId, %{sub_id: subid})
+    blacklists = Repo.all(from b in Blacklist, where: b.publisher_sub_id_id == ^publisher_sub_id.id) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists, subids: subids)
+  end
+
+  def search(conn, %{"filter" => %{"subid" => nil, "type" => blacklist_type}}) do
+    subids = load_publisher_sub_ids
+    blacklists = Repo.all(from b in Blacklist, where: b.blacklist_type == ^blacklist_type) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists, subids: subids)
+  end
+
+  def search(conn, %{"filter" => %{"subid" => subid, "type" => blacklist_type}}) do
+    subids = load_publisher_sub_ids
+    publisher_sub_id = Repo.get_by(PublisherSubId, %{sub_id: subid})
+    blacklists = Repo.all(from b in Blacklist, where: b.blacklist_type == ^blacklist_type and b.publisher_sub_id_id == ^publisher_sub_id.id) |> Repo.preload(publisher_sub_id: [:publisher])
+    render(conn, "index.html", blacklists: blacklists, subids: subids)
+  end
+
   def index(conn, _params) do
+    subids = load_publisher_sub_ids
     blacklists = Repo.all(Blacklist) |> Repo.preload(publisher_sub_id: [:publisher])
-    render(conn, "index.html", blacklists: blacklists)
+    render(conn, "index.html", blacklists: blacklists, subids: subids)
   end
 
   defp load_publisher_sub_ids do
+    subids = Repo.all(PublisherSubId)
+             |> Repo.preload(:publisher)
+             |> Enum.map(fn publisher_sub_id -> publisher_sub_id.sub_id end)
+  end
+
+  defp load_publisher_sub_ids_with_ids do
     subids = Repo.all(PublisherSubId)
              |> Repo.preload(:publisher)
              |> Enum.map(fn publisher_sub_id -> {"#{publisher_sub_id.publisher.name} - #{publisher_sub_id.sub_id}", publisher_sub_id.id} end)
   end
 
   def new(conn, _params) do
-    subids = load_publisher_sub_ids
+    subids = load_publisher_sub_ids_with_ids
     changeset = Blacklist.changeset(%Blacklist{})
     render(conn, "new.html", changeset: changeset, subids: subids)
   end

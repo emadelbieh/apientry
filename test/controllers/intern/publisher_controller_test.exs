@@ -2,8 +2,6 @@ defmodule Apientry.Intern.PublisherControllerTest do
   use Apientry.ConnCase
 
   alias Apientry.Publisher
-  @valid_attrs %{name: "some content", revenue_share: "0.20"}
-  @invalid_attrs %{}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}

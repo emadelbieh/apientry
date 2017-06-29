@@ -1,6 +1,5 @@
 defmodule Apientry.PublisherApiKeyControllerTest do
   use Apientry.ConnCase
-  use Apientry.MockBasicAuth
 
   alias Apientry.Publisher
   alias Apientry.PublisherApiKey
@@ -8,8 +7,10 @@ defmodule Apientry.PublisherApiKeyControllerTest do
   @invalid_attrs %{}
 
   setup do
+    user = insert_user()
+    conn = assign(build_conn(), :current_user, user)
     publisher = Repo.insert! %Publisher{}
-    {:ok, publisher: publisher}
+    {:ok, conn: conn, publisher: publisher}
   end
 
   test "lists all entries on index", %{conn: conn, publisher: publisher} do
