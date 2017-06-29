@@ -1,0 +1,15 @@
+version: 0.0
+os: linux
+files:
+  - source: apientry.tar.gz
+    destination: /home/ubuntu/builds
+hooks:
+  BeforeInstall:
+    - location: deploy/before-install.sh
+      timeout: 300
+  AfterInstall:
+    - location: deploy/after-install.sh
+      timeout: 300
+  ApplicationStart:
+    - location: deploy/application-start.sh
+      timeout: 300
