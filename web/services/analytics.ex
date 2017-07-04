@@ -53,6 +53,7 @@ defmodule Apientry.Analytics do
       "endpoint" => body[:params]["endpoint"] || "/",
       "ip_address" => body[:params]["visitorIPAddress"],
       "user_agent" => body[:params]["visitorUserAgent"],
+      "tracking_id" => body[:params]["trackingId"],
       "country_code" => body[:country],
       "is_mobile" => body[:is_mobile],
       "search_type" => search_type,
