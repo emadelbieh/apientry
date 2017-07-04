@@ -21,7 +21,7 @@ defmodule Apientry.ExtensionSearchController do
     assigns = conn.assigns
     assigns = Map.put(assigns, :format_for_extension, true)
     conn = Map.put(conn, :assigns, assigns)
-    Apientry.SearchController.search_rerank(conn, params)
+    Apientry.SearchController.search_rerank(conn, params, "extension")
   end
 
   defp add_num_items(string_keyword, conn) do
