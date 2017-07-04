@@ -48,7 +48,7 @@ defmodule Apientry.SearchController do
         |> Apientry.TitleFilter.filter_duplicate_title()
         |> Poison.encode!()
 
-        track_publisher(conn)
+        track_publisher(conn, "api_regular")
 
         conn
         |> put_status(status)
@@ -109,7 +109,7 @@ defmodule Apientry.SearchController do
     search_rerank(conn, params)
   end
 
-  def search_rerank(%{assigns: %{url: url, format: format}} = conn, params) do
+  def search_rerank(%{assigns: %{url: url, format: format}} = conn, params, search_type) do
     conn = Map.put(conn, :params, add_min_max_price(conn.params))
 
     # run category chooser
@@ -155,12 +155,12 @@ defmodule Apientry.SearchController do
               |> Apientry.TitleFilter.remove_sizes_and_colors()
               |> Poison.encode!()
 
-              track_publisher(conn)
+              track_publisher(conn, search_type)
 
               decoded = Poison.decode!(body)
               geo = conn.assigns.country |> String.downcase
               kw = conn.query_params["keyword"]
-              req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+              req_url = "http://api.apientry.com/publisher?#{conn.query_string}"
 
               new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
 
@@ -200,12 +200,12 @@ defmodule Apientry.SearchController do
                  |> Apientry.TitleFilter.remove_sizes_and_colors()
                  |> Poison.encode!()
 
-          track_publisher(conn)
+          track_publisher(conn, search_type)
 
           decoded = Poison.decode!(body)
           geo = conn.assigns.country |> String.downcase
           kw = conn.query_params["keyword"]
-          req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+          req_url = "http://api.apientry.com/publisher?#{conn.query_string}"
 
           new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
 
@@ -214,7 +214,7 @@ defmodule Apientry.SearchController do
             items = put_in(items, ["items","item"], new_data)
             decoded = put_in(decoded, ["categories", "category"], [items])
           end
-          
+
           resp = if conn.assigns[:include_coupons] do
             Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_params(conn))})
           else
@@ -238,6 +238,10 @@ defmodule Apientry.SearchController do
         |> put_status(400)
         |> render(:error, data: %{error: reason})
     end
+  end
+
+  def search_rerank(conn, params) do
+    search_rerank(conn, params, "api_rerank")
   end
 
   defp format_data_for_extension(body, original_price) do
@@ -324,11 +328,11 @@ defmodule Apientry.SearchController do
     |> assign(:valid, false)
   end
 
-  defp track_publisher(conn) do
+  defp track_publisher(conn, search_type) do
     if get_req_header(conn, "x-apientry-dnt") == [] do
       Task.start fn ->
         Apientry.Amplitude.track_publisher(conn.assigns)
-        Apientry.Analytics.track_publisher(conn, conn.assigns)
+        Apientry.Analytics.track_publisher(conn, conn.assigns, search_type)
       end
     end
   end

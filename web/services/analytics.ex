@@ -47,7 +47,7 @@ defmodule Apientry.Analytics do
   @doc """
   track publisher
   """
-  def track_publisher(conn, body) do
+  def track_publisher(conn, body, search_type) do
     new_properties = %{
       "request_domain" => body[:params]["domain"],
       "endpoint" => body[:params]["endpoint"] || "/",
@@ -55,9 +55,10 @@ defmodule Apientry.Analytics do
       "user_agent" => body[:params]["visitorUserAgent"],
       "country_code" => body[:country],
       "is_mobile" => body[:is_mobile],
+      "search_type" => search_type,
       "link" => body[:url],
     }
-    
+
     new_properties = Map.merge(body[:params], new_properties)
 
     body = %{
