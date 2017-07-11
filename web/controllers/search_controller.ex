@@ -36,7 +36,7 @@ defmodule Apientry.SearchController do
 
       GET /publisher?keyword=nikon
   """
-  def search(%{assigns: %{url: url, format: format}} = conn, _) do
+  def search(%{assigns: %{url: url}} = conn, _) do
     case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
@@ -109,7 +109,7 @@ defmodule Apientry.SearchController do
     search_rerank(conn, params)
   end
 
-  def search_rerank(%{assigns: %{url: url, format: format}} = conn, params) do
+  def search_rerank(%{assigns: %{url: url}} = conn, _params) do
     conn = Map.put(conn, :params, add_min_max_price(conn.params))
 
     # run category chooser
@@ -119,12 +119,6 @@ defmodule Apientry.SearchController do
                     |> Apientry.CategoryChooser.get_category_data()
 
     url = append_category_data(url, category_data)
-
-    # run first fetch
-    first_fetch = nil
-    second_fetch = nil
-    remote_catchooser = nil
-    rerank = nil
 
     case HTTPoison.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
@@ -168,16 +162,13 @@ defmodule Apientry.SearchController do
               items = put_in(items, ["items","item"], new_data)
               decoded = put_in(decoded, ["categories", "category"], [items])
 
-              resp = if conn.assigns[:include_coupons] do
-                Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_params(conn))})
-              else
-                decoded
-              end
-
-              resp = if conn.assigns[:format_for_extension] do
-                format_data_for_extension(decoded, params["price"])
-              else
-                decoded
+              resp = cond do
+                conn.assigns[:include_coupons] ->
+                  Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_params(conn))})
+                conn.assigns[:format_for_extension] ->
+                  format_data_for_extension(decoded)
+                true ->
+                  decoded
               end
 
               conn
@@ -209,22 +200,21 @@ defmodule Apientry.SearchController do
 
           new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
 
-          if length(decoded["categories"]["category"]) > 0 do
+          decoded = if length(decoded["categories"]["category"]) > 0 do
             items = hd(decoded["categories"]["category"])
             items = put_in(items, ["items","item"], new_data)
-            decoded = put_in(decoded, ["categories", "category"], [items])
+            put_in(decoded, ["categories", "category"], [items])
+          else
+            decoded
           end
           
-          resp = if conn.assigns[:include_coupons] do
-            Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_params(conn))})
-          else
-            decoded
-          end
-
-          resp = if conn.assigns[:format_for_extension] do
-            format_data_for_extension(decoded, params["price"])
-          else
-            decoded
+          resp = cond do
+            conn.assigns[:include_coupons] ->
+              Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_params(conn))})
+            conn.assigns[:format_for_extension] ->
+              format_data_for_extension(decoded)
+            true ->
+              decoded
           end
 
           conn
@@ -240,7 +230,7 @@ defmodule Apientry.SearchController do
     end
   end
 
-  defp format_data_for_extension(body, original_price) do
+  defp format_data_for_extension(body) do
     result = Enum.flat_map(body["categories"]["category"], fn category ->
       Enum.map(category["items"]["item"], fn item ->
         offer = item["offer"]
@@ -270,24 +260,8 @@ defmodule Apientry.SearchController do
     }
   end
 
-  defp get_product_image(product) do
-    hd(product["imageList"]["image"])["sourceURL"]
-  end
-
   defp is_free_shipping(product) do
     product["shipping_cost"]["value"] == "0.00"
-  end
-
-  defp calculate_savings(price, original_price) do
-    {price, _} = Float.parse(price)
-    {original_price, _} = Float.parse(original_price)
-
-    if price < original_price do
-      percentage = 100 - (price / original_price * 100)
-      "#{percentage}%"
-    else
-      ""
-    end
   end
 
   defp transform_by_format(conn, body, format) do
