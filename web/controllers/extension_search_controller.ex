@@ -124,10 +124,10 @@ defmodule Apientry.ExtensionSearchController do
 
       ip = req_headers["cf-connecting-ip"] || direct_ip
       Map.put(params, "visitorIPAddress", ip)
-    end
 
-    geo = req_headers["cf-ipcountry"] || "US"
-    params = Map.put(params, "_country", geo)
+      geo = req_headers["cf-ipcountry"] || "US"
+      params = Map.put(params, "_country", geo)
+    end
 
     params = if params["subid"] && !params["apiKey"] do
       publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])

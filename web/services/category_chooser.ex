@@ -43,7 +43,7 @@ defmodule Apientry.CategoryChooser do
     Apientry.ClothingUS.genders
   end
 
-  defp get_strong_attributes(data) do
+  defp get_strong_attributes(_data) do
     Apientry.ClothingUS.strong_attributes
   end
 
@@ -71,7 +71,7 @@ defmodule Apientry.CategoryChooser do
     rules = get_rules(data)
             |> Enum.map(fn rule ->
               rule = String.downcase(rule)
-              rule = "\\b#{rule}\\b"
+              "\\b#{rule}\\b"
             end)
     |> Enum.join("|")
     rules = "(#{rules})"
@@ -83,7 +83,7 @@ defmodule Apientry.CategoryChooser do
   end
 
   defp add_gender_attribute(data) do
-    data = if data.gender do
+    if data.gender do
       genders = get_genders(data)
 
       if genders[data.gender] do

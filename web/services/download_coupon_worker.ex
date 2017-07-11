@@ -51,7 +51,8 @@ defmodule Apientry.DownloadCouponWorker do
   # longer delay in between them. If we fail to get 10k coupons after 10 tries,
   # we return what we have for caching.
   #
-  def query({:miss, cache_path}, endpoint, delay_factor \\ @initial_delay_factor) do
+  def query(a, b, delay_factor \\ @initial_delay_factor)
+  def query({:miss, cache_path}, endpoint, delay_factor) do
     case HTTPoison.get(endpoint) do
       {:ok,  %Response{status_code: _status, body: body, headers: _headers}} ->
         count = body
