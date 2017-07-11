@@ -10,7 +10,7 @@ defmodule Apientry.BlacklistController do
   plug :validate_input when action in [:create]
 
   def search(conn, %{"filter" => %{"subid" => nil, "type" => nil}} = params) do
-    subids = load_publisher_sub_ids
+    load_publisher_sub_ids
     index(conn, params)
   end
 
@@ -41,15 +41,15 @@ defmodule Apientry.BlacklistController do
   end
 
   defp load_publisher_sub_ids do
-    subids = Repo.all(PublisherSubId)
-             |> Repo.preload(:publisher)
-             |> Enum.map(fn publisher_sub_id -> publisher_sub_id.sub_id end)
+    Repo.all(PublisherSubId)
+    |> Repo.preload(:publisher)
+    |> Enum.map(fn publisher_sub_id -> publisher_sub_id.sub_id end)
   end
 
   defp load_publisher_sub_ids_with_ids do
-    subids = Repo.all(PublisherSubId)
-             |> Repo.preload(:publisher)
-             |> Enum.map(fn publisher_sub_id -> {"#{publisher_sub_id.publisher.name} - #{publisher_sub_id.sub_id}", publisher_sub_id.id} end)
+    Repo.all(PublisherSubId)
+    |> Repo.preload(:publisher)
+    |> Enum.map(fn publisher_sub_id -> {"#{publisher_sub_id.publisher.name} - #{publisher_sub_id.sub_id}", publisher_sub_id.id} end)
   end
 
   def new(conn, _params) do
@@ -113,7 +113,7 @@ defmodule Apientry.BlacklistController do
     changeset = Blacklist.changeset(blacklist, blacklist_params)
 
     case Repo.update(changeset) do
-      {:ok, blacklist} ->
+      {:ok, _blacklist} ->
         DbCache.update(:blacklist)
         conn
         |> put_flash(:info, "Blacklist updated successfully.")
@@ -193,7 +193,7 @@ defmodule Apientry.BlacklistController do
     |> Stream.reject(&(&1 == ""))
     |> Enum.map(fn domain ->
       blacklist_params = Map.merge(blacklist_params, %{"value" => domain, "publisher_sub_id_id" => subid.id})
-      changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+      Blacklist.changeset(%Blacklist{}, blacklist_params)
     end)
   end
 
@@ -203,7 +203,7 @@ defmodule Apientry.BlacklistController do
     |> Stream.reject(&(&1 == ""))
     |> Enum.map(fn domain ->
       blacklist_params = Map.merge(blacklist_params, %{"value" => domain})
-      changeset = Blacklist.changeset(%Blacklist{}, blacklist_params)
+      Blacklist.changeset(%Blacklist{}, blacklist_params)
     end)
   end
 

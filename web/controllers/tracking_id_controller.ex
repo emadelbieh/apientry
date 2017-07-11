@@ -4,7 +4,6 @@ defmodule Apientry.TrackingIdController do
   alias Apientry.{
     Account,
     EbayApiKey,
-    PublisherApiKey,
     TrackingId,
     Publisher
   }

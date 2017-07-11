@@ -66,7 +66,7 @@ defmodule Apientry.PublisherSubIdController do
     |> redirect(to: publisher_sub_id_path(conn, :index))
   end
 
-  def query(conn, params) do
+  def query(conn, _params) do
     subids = Repo.all(from p in PublisherSubId, where: p.visual_search == ^true)
     json(conn, %{subids: format_subids(subids)})
   end

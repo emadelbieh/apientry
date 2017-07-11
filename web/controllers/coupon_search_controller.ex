@@ -2,7 +2,6 @@ defmodule Apientry.CouponSearchController do
   use Apientry.Web, :controller
 
   alias Apientry.Coupon
-  import Ecto.Query
   import Apientry.ParameterValidators, only: [reject_search_engines: 2]
 
   plug :assign_request_uri
