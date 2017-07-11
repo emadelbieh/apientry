@@ -53,7 +53,7 @@ defmodule Apientry.DownloadCouponCopyWorker do
   #
   def query({:miss, cache_path}, endpoint, delay_factor \\ @initial_delay_factor) do
     case HTTPoison.get(endpoint) do
-      {:ok,  %Response{status_code: status, body: body, headers: headers} = response} ->
+      {:ok,  %Response{status_code: _status, body: body, headers: _headers}} ->
         count = body
                 |> parse_contents()
                 |> Enum.count()
@@ -67,7 +67,7 @@ defmodule Apientry.DownloadCouponCopyWorker do
             :timer.sleep(@one_second * delay_factor)
             query({:miss, cache_path}, endpoint, delay_factor * 2)
         end
-      {:error, %HTTPoison.Error{reason: reason} = error} ->
+      {:error, %HTTPoison.Error{reason: _reason} = error} ->
         Slack.send_message("An error occured while downloading file from coupons provider!")
         {:error, error}
     end

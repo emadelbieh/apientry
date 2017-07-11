@@ -31,9 +31,6 @@ defmodule Apientry.Analytics do
     send_request(conn, data)
   end
 
-  @doc """
-  track redirect - common data between `offers` and `coupons`
-  """
   defp get_common_data(body) do
     %{
       "type" => body["event"],
@@ -91,7 +88,7 @@ defmodule Apientry.Analytics do
     send_request(conn, data)
   end
 
-  defp send_request(conn, body) do
+  defp send_request(_conn, body) do
     headers = %{"Content-Type": "application/json"}
     data = {:form, [
         type: body["type"],
@@ -108,7 +105,7 @@ defmodule Apientry.Analytics do
     Task.start fn ->
       url = "#{@events.url}/track"
       case HTTPoison.post(url, data, headers) do
-        {:ok, response} ->
+        {:ok, _response} ->
           IO.puts "Sent to analytics - #{url}"
         {:error, reason} ->
           IO.puts "An error occured while sending to analytics"

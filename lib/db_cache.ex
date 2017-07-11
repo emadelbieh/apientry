@@ -88,6 +88,10 @@ defmodule DbCache do
     GenServer.call(pid, {:lookup_all, index, value})
   end
 
+  def interval do
+    @interval
+  end
+
   @doc false
   def init(%{indices: indices} = state) do
     tables = Enum.reduce(indices, %{}, fn {index, _fun}, map ->
@@ -99,8 +103,8 @@ defmodule DbCache do
       state
       |> Map.put(:tables, tables)
 
-    if @interval != nil do
-      Process.send_after self(), :tick, @interval
+    if interval() != nil do
+      Process.send_after self(), :tick, interval()
     end
 
     {:ok, do_update(state)}

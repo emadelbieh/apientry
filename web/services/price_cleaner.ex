@@ -19,8 +19,8 @@ defmodule Apientry.PriceCleaner do
 
   defp get_lower_bound(price) do
     case String.split(price, "-") do
-      [lower | _higher] -> lower
       [price] -> price
+      [lower | _higher] -> lower
     end
   end
   

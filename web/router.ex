@@ -76,7 +76,7 @@ defmodule Apientry.Router do
 
   scope "/intern", Apientry, as: :intern do
     pipe_through :api
-    resources "publishers", Intern.PublisherController, except: [:new, :edit]
+    resources "/publishers", Intern.PublisherController, except: [:new, :edit]
   end
 
   scope "/", Apientry do

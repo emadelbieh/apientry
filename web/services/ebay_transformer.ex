@@ -15,7 +15,7 @@ defmodule Apientry.EbayTransformer do
   end
 
   def transform(data, assigns, "xml") do
-    result = data
+    data
     |> EbayJsonTransformer.transform(assigns)
     |> EbayXmlTransformer.transform
   end

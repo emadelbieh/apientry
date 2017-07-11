@@ -128,7 +128,7 @@ defmodule Apientry.StrongAttributeIDSelector do
   end
 
   defp add_gender_attribute(data) do
-    data = if data.gender do
+    if data.gender do
       selectors = @strong_attribute_selector[data.geo][data.category_id]
       gender_attribute = selectors[data.gender]
       Map.put(data, :gender_attribute, gender_attribute)

@@ -31,15 +31,15 @@ defmodule Apientry.CategoryChooser do
     end
   end
   
-  defp get_category_id(data) do
+  defp get_category_id(_data) do
     Apientry.ClothingUS.category_id
   end
 
-  defp get_rules(data) do
+  defp get_rules(_data) do
     Apientry.ClothingUS.rules
   end
 
-  defp get_genders(data) do
+  defp get_genders(_data) do
     Apientry.ClothingUS.genders
   end
 
@@ -100,13 +100,13 @@ defmodule Apientry.CategoryChooser do
     if data.rules_match do
       attrs_ids = data
       |> get_strong_attributes()
-      |> Stream.filter(fn {attrId, attributes} ->
+      |> Stream.filter(fn {_attrId, attributes} ->
         attributes_reg = Enum.join(attributes, "\\b|\\b")
         attributes_reg = "(\\b#{attributes_reg}\\b)"
         {:ok, regex} = Regex.compile(attributes_reg)
         data.keywords =~ regex
       end)
-      |> Enum.map(fn {attrId, attributes} ->
+      |> Enum.map(fn {attrId, _attributes} ->
         attrId
       end)
 

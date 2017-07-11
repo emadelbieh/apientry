@@ -20,10 +20,12 @@ defmodule Apientry.ErrorReporter do
 
   - https://rollbar.com/docs/api/items_post/
   """
-  def report(conn, kind, custom_data \\ %{})
-  def report(_, _, _) when @enabled == false, do: true
+  def report(conn, kind, custom_data \\ %{}) do
+    report(conn, kind, custom_data, @enabled)
+  end
+  def report(_, _, _, false), do: true
 
-  def report(conn, %{kind: kind, reason: reason, stack: stacktrace}, custom_data) do
+  def report(conn, %{kind: kind, reason: reason, stack: stacktrace}, custom_data, _) do
     conn = conn
     |> Plug.Conn.fetch_cookies()
     |> Plug.Conn.fetch_query_params()

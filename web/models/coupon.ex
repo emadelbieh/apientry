@@ -39,7 +39,7 @@ defmodule Apientry.Coupon do
     |> validate_required([:id, :merchant, :merchantid, :url, :code, :startdate, :enddate, :category, :dealtype, :holiday, :network, :rating, :country, :logo, :website, :domain, :lastmodified])
   end
 
-  def with_blacklists(conn, params) do
+  def with_blacklists(params) do
     publisher_sub_id = DbCache.lookup(:publisher_sub_id, :sub_id, params["subid"])
 
     bldomains = DbCache.lookup_all(:blacklist, :subid_and_type, {publisher_sub_id.id, "domain"})
@@ -56,7 +56,7 @@ defmodule Apientry.Coupon do
   def by_params(conn) do
     params = conn.params
 
-    coupons = with_blacklists(conn, params)
+    coupons = with_blacklists(params)
     |> by_key(params)
     |> by_domain(params)
     |> by_network(params)
@@ -141,7 +141,7 @@ defmodule Apientry.Coupon do
 
   def get_publisher_from_sub_id(sub_id) do
     {:ok, publisher_sub_id} = Repo.get(PublisherSubId, sub_id)
-    {:ok, publisher} = Repo.get(Publisher, publisher_sub_id.publisher_id)
+    Repo.get(Publisher, publisher_sub_id.publisher_id)
   end
 
   def build_url(conn, coupon) do

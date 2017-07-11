@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.Rerank do
   @min_cat_size 0.1
 
@@ -42,7 +40,7 @@ defmodule Apientry.Rerank do
       max_cat_price = get_max_cat_price(category)
 
       offers = category.offers
-      offers = add_token_val(conn, offers, search_term, geo, regex, fetched_url)
+      offers = add_token_val(offers, search_term, geo, regex, fetched_url)
       offers = add_price_val(offers, max_cat_price)
 
       Map.put(category, :offers, offers)
@@ -121,7 +119,7 @@ defmodule Apientry.Rerank do
   def tokenize(nil), do: []
   def tokenize(""), do: []
   def tokenize(string) do
-    tokens = string
+    string
     |> normalize_string()
     |> String.split(~r/\s+/)
     |> Stream.filter(fn str -> String.length(str) > 1 end)
@@ -162,7 +160,7 @@ defmodule Apientry.Rerank do
     regex
   end
 
-  def get_num_of_attrs_name_contained_in_product([], geo, offer) do
+  def get_num_of_attrs_name_contained_in_product([], _geo, _offer) do
     0
   end
   def get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer) do
@@ -180,14 +178,14 @@ defmodule Apientry.Rerank do
     n = get_num_of_attrs_name_contained_in_product(attributes_from_ebay, geo, offer)
     m = get_num_of_same_tokens(offer, search_term)
 
-    value = if token_count_in_search_term > 6 && m >= 5 do
+    if token_count_in_search_term > 6 && m >= 5 do
       Map.put(offer, :token_val, 1 * :math.pow(2, m))
     else
       Map.put(offer, :token_val, calculate_token_val(n, m, token_count_in_search_term))
     end
   end
 
-  def add_token_val(conn, offers, search_term, geo, regex, fetchedUrl) do
+  def add_token_val(offers, search_term, geo, regex, fetchedUrl) do
     token_count_in_search_term = length(tokenize(search_term))
     attributes_from_ebay = get_attr_from_title_by_cat_id(geo, regex, search_term)
 
@@ -222,7 +220,7 @@ defmodule Apientry.Rerank do
   def remove_small_categories(categories) do
     threshold = Float.ceil(@min_cat_size * count_total_offers(categories))
 
-    result = Enum.reject(categories, fn category ->
+    Enum.reject(categories, fn category ->
       length(category.offers) < threshold
     end)
   end
@@ -283,7 +281,7 @@ defmodule Apientry.Rerank do
   end
 
   def count_total_offers(categories) do
-    offers_total = categories
+    categories
     |> ParallelStream.map(fn category -> length(category.offers) end)
     |> Enum.sum
   end
@@ -292,10 +290,10 @@ defmodule Apientry.Rerank do
     num_offers = count_total_offers(categories)
 
     function = fn category ->
-      if num_offers == 0 do
+      cat_val = if num_offers == 0 do
         0
       else
-        cat_val = 0.5 * category.token_val + 0.5 * length(category.offers) / num_offers
+        0.5 * category.token_val + 0.5 * length(category.offers) / num_offers
       end
 
       Map.put(category, :val, cat_val)

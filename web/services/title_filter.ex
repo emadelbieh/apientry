@@ -25,7 +25,7 @@ defmodule Apientry.TitleFilter do
   end
 
   def filter_duplicate_title(body) do
-    {ok, titles} = TitleAgent.start_link
+    {:ok, titles} = TitleAgent.start_link
 
     categories = Enum.map(get_categories(body), fn category ->
       items = Enum.filter(get_items(category), &(TitleAgent.unique?(titles, get_name(&1))))

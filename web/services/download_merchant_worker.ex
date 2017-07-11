@@ -7,7 +7,7 @@ defmodule Apientry.DownloadMerchantWorker do
   alias Apientry.Repo
 
   def perform do
-    result = @cache_path
+    @cache_path
     |> analyze_attributes()
     |> query(@endpoint)
     |> save_to_file(@cache_path)
@@ -30,11 +30,11 @@ defmodule Apientry.DownloadMerchantWorker do
     end
   end
 
-  def query({:miss, cache_path}, endpoint) do
-    case HTTPoison.get(@endpoint) do
-      {:ok,  %Response{status_code: status, body: body, headers: headers} = response} ->
+  def query({:miss, _cache_path}, endpoint) do
+    case HTTPoison.get(endpoint) do
+      {:ok,  %Response{status_code: _status, body: body, headers: _headers}} ->
         {:miss, body}
-      {:error, %HTTPoison.Error{reason: reason} = error} ->
+      {:error, %HTTPoison.Error{reason: _reason} = error} ->
         IO.inspect(error)
         {:miss, Poison.encode(%{})}
     end
