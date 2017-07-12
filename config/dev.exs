@@ -53,3 +53,6 @@ config :apientry, :amplitude,
   api_key: "c8353e008b3d15a7e584db46a9e44e51"
 
 config :apientry, :rollbar_enabled, false
+
+config :apientry, :ebay_search_domain,
+  "http://sandbox.api.ebaycommercenetwork.com"
