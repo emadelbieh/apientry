@@ -15,7 +15,7 @@ defmodule Apientry.Analytics do
       "subid" => body["subid"],
     })
 
-    send_request(conn, data)
+    send_request(data)
   end
 
   @doc """
@@ -28,7 +28,7 @@ defmodule Apientry.Analytics do
       "subid" => body["subid"],
     })
 
-    send_request(conn, data)
+    send_request(data)
   end
 
   defp get_common_data(body) do
@@ -67,7 +67,7 @@ defmodule Apientry.Analytics do
       "publisher_id" => body[:publisher_id]
     }
 
-    send_request(conn, body)
+    send_request(body)
   end
 
   @doc """
@@ -85,10 +85,10 @@ defmodule Apientry.Analytics do
       "publisher_id" => ""
     }
 
-    send_request(conn, data)
+    send_request(data)
   end
 
-  defp send_request(_conn, body) do
+  defp send_request(body) do
     headers = %{"Content-Type": "application/json"}
     data = {:form, [
         type: body["type"],
