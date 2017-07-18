@@ -57,7 +57,7 @@ defmodule Apientry.Analytics do
       "is_mobile" => body[:is_mobile],
       "link" => body[:url],
     }
-    
+
     new_properties = Map.merge(body[:params], new_properties)
 
     body = %{
@@ -99,7 +99,6 @@ defmodule Apientry.Analytics do
         data_details: body["data_details"],
         platform: body["platform"],
         subid: body["subid"] || "",
-        date: now(),
         url: body["url"],
         uuid: Apientry.UUIDGenerator.generate(body["ip_address"], body["publisher_id"]),
         publisherid: "#{body["publisher_id"]}"
@@ -115,10 +114,5 @@ defmodule Apientry.Analytics do
           IO.inspect(reason)
       end
     end
-  end
-
-  defp now() do
-    DateTime.utc_now
-    |> DateTime.to_string
   end
 end
