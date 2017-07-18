@@ -1,4 +1,6 @@
 defmodule Apientry.Analytics do
+  require Logger
+
   @moduledoc """
   Sends request to Blackswan Analytics (events.apientry.com)
   """
@@ -108,10 +110,9 @@ defmodule Apientry.Analytics do
       url = "#{@events.url}/track"
       case HTTPoison.post(url, data, headers) do
         {:ok, response} ->
-          IO.puts "Sent to analytics - #{url}"
+          Logger.info "Sent to analytics - #{url}"
         {:error, reason} ->
-          IO.puts "An error occured while sending to analytics"
-          IO.inspect(reason)
+          Logger.warn "An error occured while sending to analytics #{inspect reason}"
       end
     end
   end
