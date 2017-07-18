@@ -14,6 +14,7 @@ defmodule Apientry.SearchController do
   alias Apientry.EbayTransformer
   alias Apientry.ErrorReporter
   alias Apientry.StringKeyword
+  alias Apientry.HTTP
 
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
@@ -37,7 +38,7 @@ defmodule Apientry.SearchController do
       GET /publisher?keyword=nikon
   """
   def search(%{assigns: %{url: url, format: format}} = conn, _) do
-    case HTTPoison.get(url) do
+    case HTTP.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
         ErrorReporter.track_ebay_response(conn, status, body, headers)
@@ -126,7 +127,7 @@ defmodule Apientry.SearchController do
     remote_catchooser = nil
     rerank = nil
 
-    case HTTPoison.get(url) do
+    case HTTP.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
 
@@ -145,7 +146,7 @@ defmodule Apientry.SearchController do
           url = url <> "&" <> URI.encode_query(cat_data)
 
           second_fetch_1 = :os.system_time
-          result = case HTTPoison.get(url) do
+          result = case HTTP.get(url) do
             {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
               body = Poison.decode!(body)
               ErrorReporter.track_ebay_response(conn, status, body, headers)
@@ -160,7 +161,7 @@ defmodule Apientry.SearchController do
               decoded = Poison.decode!(body)
               geo = conn.assigns.country |> String.downcase
               kw = conn.query_params["keyword"]
-              req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+              req_url = "http://api.apientry.com/publisher?#{conn.query_string}"
 
               new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
 
@@ -205,7 +206,7 @@ defmodule Apientry.SearchController do
           decoded = Poison.decode!(body)
           geo = conn.assigns.country |> String.downcase
           kw = conn.query_params["keyword"]
-          req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+          req_url = "http://api.apientry.com/publisher?#{conn.query_string}"
 
           new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
 
@@ -214,7 +215,7 @@ defmodule Apientry.SearchController do
             items = put_in(items, ["items","item"], new_data)
             decoded = put_in(decoded, ["categories", "category"], [items])
           end
-          
+
           resp = if conn.assigns[:include_coupons] do
             Map.merge(decoded, %{coupons: Apientry.Coupon.to_map(Apientry.Coupon.by_params(conn))})
           else

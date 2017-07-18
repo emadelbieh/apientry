@@ -19,7 +19,7 @@ defmodule Apientry.ImageTracker do
 
   defp track_anomalous_images(image_urls) do
     Stream.map(image_urls, fn image_url ->
-      case HTTPoison.get(image_url) do
+      case HTTP.get(image_url) do
         {:ok, metadata} ->
           track_anomalous_image(metadata, image_url)
         {:error, _httpoison_error} ->

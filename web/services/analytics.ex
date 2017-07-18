@@ -108,7 +108,7 @@ defmodule Apientry.Analytics do
 
     Task.start fn ->
       url = "#{@events.url}/track"
-      case HTTPoison.post(url, data, headers) do
+      case Apientry.HTTP.post(url, data, headers) do
         {:ok, response} ->
           Logger.info "Sent to analytics - #{url}"
         {:error, reason} ->
