@@ -1,4 +1,6 @@
 defmodule Apientry.Analytics do
+  require Logger
+
   @moduledoc """
   Sends request to Blackswan Analytics (events.apientry.com)
   """
@@ -57,7 +59,7 @@ defmodule Apientry.Analytics do
       "is_mobile" => body[:is_mobile],
       "link" => body[:url],
     }
-    
+
     new_properties = Map.merge(body[:params], new_properties)
 
     body = %{
@@ -99,7 +101,6 @@ defmodule Apientry.Analytics do
         data_details: body["data_details"],
         platform: body["platform"],
         subid: body["subid"] || "",
-        date: now(),
         url: body["url"],
         uuid: Apientry.UUIDGenerator.generate(body["ip_address"], body["publisher_id"]),
         publisherid: "#{body["publisher_id"]}"
@@ -107,18 +108,12 @@ defmodule Apientry.Analytics do
 
     Task.start fn ->
       url = "#{@events.url}/track"
-      case HTTPoison.post(url, data, headers) do
+      case Apientry.HTTP.post(url, data, headers) do
         {:ok, response} ->
-          IO.puts "Sent to analytics - #{url}"
+          Logger.info "Sent to analytics - #{url}"
         {:error, reason} ->
-          IO.puts "An error occured while sending to analytics"
-          IO.inspect(reason)
+          Logger.warn "An error occured while sending to analytics #{inspect reason}"
       end
     end
-  end
-
-  defp now() do
-    DateTime.utc_now
-    |> DateTime.to_string
   end
 end
