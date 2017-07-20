@@ -50,12 +50,7 @@ defmodule Apientry.RedirectController do
       {:ok, url} <- extract_link(map),
       :ok <- verify_event(map)
     do
-      if get_req_header(conn, "x-apientry-dnt") == [] do
-        #Task.start fn ->
-          Apientry.Amplitude.track_redirect(map)
-          Apientry.Analytics.track_redirect(conn, map)
-          #end
-      end
+      Apientry.Analytics.track_redirect(conn, map)
 
       conn
       |> redirect(external: url)
