@@ -21,7 +21,7 @@ defmodule Apientry.CategoryChooser do
 
     if data.rules_match do
       %{
-        category_id: get_category_id(data),
+        category_id: get_category_id(),
         attribute_values: data.attribute_values
       }
     else
@@ -31,19 +31,19 @@ defmodule Apientry.CategoryChooser do
     end
   end
   
-  defp get_category_id(_data) do
+  defp get_category_id() do
     Apientry.ClothingUS.category_id
   end
 
-  defp get_rules(_data) do
+  defp get_rules() do
     Apientry.ClothingUS.rules
   end
 
-  defp get_genders(_data) do
+  defp get_genders() do
     Apientry.ClothingUS.genders
   end
 
-  defp get_strong_attributes(_data) do
+  defp get_strong_attributes() do
     Apientry.ClothingUS.strong_attributes
   end
 
@@ -68,7 +68,7 @@ defmodule Apientry.CategoryChooser do
   end
 
   defp match_with_rules(data) do
-    rules = get_rules(data)
+    rules = get_rules()
             |> Enum.map(fn rule ->
               rule = String.downcase(rule)
               "\\b#{rule}\\b"
@@ -84,7 +84,7 @@ defmodule Apientry.CategoryChooser do
 
   defp add_gender_attribute(data) do
     if data.gender do
-      genders = get_genders(data)
+      genders = get_genders()
 
       if genders[data.gender] do
         Map.put(data, :attribute_values, [genders[data.gender] | data.attribute_values])

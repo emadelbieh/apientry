@@ -32,10 +32,10 @@ defmodule Apientry.DownloadMerchantWorker do
 
   def query({:miss, _cache_path}, endpoint) do
     case HTTPoison.get(endpoint) do
-      {:ok,  %Response{status_code: _status, body: body, headers: _headers}} ->
+      {:ok,  %Response{body: body}} ->
         {:miss, body}
-      {:error, %HTTPoison.Error{reason: _reason} = error} ->
-        IO.inspect(error)
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        IO.inspect(reason)
         {:miss, Poison.encode(%{})}
     end
   end
