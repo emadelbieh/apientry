@@ -69,8 +69,8 @@ defmodule Apientry.DownloadCouponWorker do
             :timer.sleep(@one_second * delay_factor)
             query({:miss, cache_path}, endpoint, delay_factor * 2)
         end
-      {:error, %HTTPoison.Error{reason: _reason} = error} ->
-        Slack.send_message("An error occured while downloading file from coupons provider!")
+      {:error, %HTTPoison.Error{reason: reason} = error} ->
+        Slack.send_message("An error occured because of #{reason}!")
         {:error, error}
     end
   end
