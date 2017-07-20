@@ -14,6 +14,7 @@ defmodule Apientry.SearchController do
   alias Apientry.EbayTransformer
   alias Apientry.ErrorReporter
   alias Apientry.StringKeyword
+  alias Apientry.HTTP
 
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
@@ -37,7 +38,7 @@ defmodule Apientry.SearchController do
       GET /publisher?keyword=nikon
   """
   def search(%{assigns: %{url: url}} = conn, _) do
-    case HTTPoison.get(url) do
+    case HTTP.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
         ErrorReporter.track_ebay_response(conn, status, body, headers)
@@ -120,7 +121,7 @@ defmodule Apientry.SearchController do
 
     url = append_category_data(url, category_data)
 
-    case HTTPoison.get(url) do
+    case HTTP.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
 
@@ -138,8 +139,7 @@ defmodule Apientry.SearchController do
 
           url = url <> "&" <> URI.encode_query(cat_data)
 
-          second_fetch_1 = :os.system_time
-          result = case HTTPoison.get(url) do
+          case HTTP.get(url) do
             {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
               body = Poison.decode!(body)
               ErrorReporter.track_ebay_response(conn, status, body, headers)
@@ -154,7 +154,7 @@ defmodule Apientry.SearchController do
               decoded = Poison.decode!(body)
               geo = conn.assigns.country |> String.downcase
               kw = conn.query_params["keyword"]
-              req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+              req_url = "http://api.apientry.com/publisher?#{conn.query_string}"
 
               new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
 
@@ -182,7 +182,6 @@ defmodule Apientry.SearchController do
               |> put_status(400)
               |> render(:error, data: %{error: reason})
           end
-          result
         else
           ErrorReporter.track_ebay_response(conn, status, body, headers)
 
@@ -196,7 +195,7 @@ defmodule Apientry.SearchController do
           decoded = Poison.decode!(body)
           geo = conn.assigns.country |> String.downcase
           kw = conn.query_params["keyword"]
-          req_url = "http://api.apientry.com/publisher?#{conn.query_string}" 
+          req_url = "http://api.apientry.com/publisher?#{conn.query_string}"
 
           new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
 
@@ -301,8 +300,7 @@ defmodule Apientry.SearchController do
   defp track_publisher(conn) do
     if get_req_header(conn, "x-apientry-dnt") == [] do
       Task.start fn ->
-        Apientry.Amplitude.track_publisher(conn.assigns)
-        Apientry.Analytics.track_publisher(conn, conn.assigns)
+        Apientry.Analytics.track_publisher(conn.assigns)
       end
     end
   end

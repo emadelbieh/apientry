@@ -12,6 +12,7 @@ defmodule Apientry.DownloadCouponCopyWorker do
   alias Apientry.CouponCopy
   alias Apientry.Repo
   alias Apientry.Slack
+  alias Apientry.HTTP
 
   def perform do
     if System.get_env("CRON_ROLE") == "CRON_RUNNER" do
@@ -53,8 +54,8 @@ defmodule Apientry.DownloadCouponCopyWorker do
   #
   def query(a, b, delay_factor \\ @initial_delay_factor)
   def query({:miss, cache_path}, endpoint, delay_factor) do
-    case HTTPoison.get(endpoint) do
-      {:ok,  %Response{status_code: _status, body: body, headers: _headers}} ->
+    case HTTP.get(endpoint) do
+      {:ok,  %Response{body: body}} ->
         count = body
                 |> parse_contents()
                 |> Enum.count()

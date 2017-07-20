@@ -1,8 +1,8 @@
 defmodule Apientry.DbCacheTest do
   use Apientry.ModelCase
 
-  alias Apientry.Repo
-  alias Apientry.Feed
+  #alias Apientry.Repo
+  #alias Apientry.Feed
 
   #@name :db_cache_feed
 

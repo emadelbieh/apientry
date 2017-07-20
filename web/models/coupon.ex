@@ -148,7 +148,9 @@ defmodule Apientry.Coupon do
     publisher_sub_id = Repo.one(from p in PublisherSubId, where: p.sub_id == ^conn.params["subid"])
     publisher = Repo.get(Publisher, publisher_sub_id.publisher_id)
 
-    EbayJsonTransformer.build_url(coupon.url, %{
+    new_url = "#{coupon.url}&subid=#{publisher_sub_id.sub_id}"
+
+    EbayJsonTransformer.build_url(new_url, %{
         is_mobile: conn.assigns[:is_mobile],
         params: %{
           "keyword" => conn.params["keyword"],

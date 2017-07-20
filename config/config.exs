@@ -56,6 +56,8 @@ config :rollbax,
   access_token: "fcbe67e9abd04a69b3581fd26062c928",
   environment: "development"
 
+config :apientry, :http_timeout, 20000
+
 config :apientry, :rollbar_enabled, false
 
 # Import environment specific config. This must remain at the bottom

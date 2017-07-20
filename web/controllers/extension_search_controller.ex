@@ -126,7 +126,7 @@ defmodule Apientry.ExtensionSearchController do
       Map.put(params, "visitorIPAddress", ip)
 
       geo = req_headers["cf-ipcountry"] || "US"
-      params = Map.put(params, "_country", geo)
+      Map.put(params, "_country", geo)
     end
 
     params = if params["subid"] && !params["apiKey"] do

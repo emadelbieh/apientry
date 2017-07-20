@@ -1,9 +1,9 @@
 defmodule Apientry.Fixtures do
-  alias Apientry.{Publisher, TrackingId, Repo}
+  alias Apientry.{Publisher, Repo}
 
   def mock_publishers do
-    p = Repo.insert!(%Publisher{name: "Panda"})
-    p = Repo.insert!(%Publisher{name: "Avast"})
-    p = Repo.insert!(%Publisher{name: "Symantec"})
+    Repo.insert!(%Publisher{name: "Panda"})
+    Repo.insert!(%Publisher{name: "Avast"})
+    Repo.insert!(%Publisher{name: "Symantec"})
   end
 end
