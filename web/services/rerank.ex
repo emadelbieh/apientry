@@ -1,16 +1,6 @@
 defmodule Apientry.Rerank do
   @min_cat_size 0.1
 
-  @keywords_dont_stemm ~w(homme hommes femme femmes herren)
-
-  @stemmers %{
-    "us" => &Stemex.english/1,
-    "au" =>  &Stemex.english/1,
-    "gb" =>  &Stemex.english/1,
-    "de" =>  &Stemex.german/1,
-    "fr" =>  &Stemex.french/1
-  }
-
   def get_products(conn, ebay_results, search_term, geo, fetched_url) do
     geo = geo || "";
 
@@ -108,14 +98,6 @@ defmodule Apientry.Rerank do
     |> String.trim()
   end
 
-  def stem(string, stemer) do
-    if Enum.any?(@keywords_dont_stemm, fn dont_stem -> string == dont_stem end) do
-      string
-    else
-      stemer.(string)
-    end
-  end
-
   def tokenize(nil), do: []
   def tokenize(""), do: []
   def tokenize(string) do
@@ -128,7 +110,7 @@ defmodule Apientry.Rerank do
   def tokenize(string, geo) do
     string
     |> tokenize()
-    |> Enum.map(fn str -> stem(str, @stemmers[geo]) end)
+    |> Enum.map(fn str -> Apientry.Rerank.Stemmer.stem(str, geo) end)
   end
 
   def get_attr_from_title_by_cat_id(geo, regex, title) do
