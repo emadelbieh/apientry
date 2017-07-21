@@ -23,9 +23,6 @@ defmodule DbCache do
 
   use GenServer
 
-  @config Application.get_env(:apientry, :db_cache)
-  @interval (@config && @config[:interval])
-
   @doc """
   Starts the GenServer. Returns `{:ok, pid}`.
   """
@@ -89,7 +86,7 @@ defmodule DbCache do
   end
 
   def interval do
-    @interval
+    Application.get_env(:apientry, :db_cache)[:interval] || 0
   end
 
   @doc false
@@ -103,7 +100,7 @@ defmodule DbCache do
       state
       |> Map.put(:tables, tables)
 
-    if interval() != nil do
+    if interval() do
       Process.send_after self(), :tick, interval()
     end
 
