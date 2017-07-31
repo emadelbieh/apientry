@@ -24,7 +24,7 @@ defmodule Apientry.Mixfile do
      applications: [
        :phoenix, :phoenix_html, :cowboy, :logger, :gettext,
        :phoenix_ecto, :postgrex, :httpoison, :geolix,
-       :phoenix_slime, :cors_plug, :phoenix_pubsub, :edeliver,
+       :phoenix_slime, :cors_plug, :phoenix_pubsub,
        :inets, :rollbax, :xml_builder, :csv, :stemex,
        :crontab, :quantum, :random_bytes, :uuid, :comeonin
      ]]
