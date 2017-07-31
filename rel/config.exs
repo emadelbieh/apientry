@@ -27,6 +27,12 @@ environment :dev do
   set cookie: :"654v![i&ZVGz]tyW63P(egol@u*|AtbkI_Nhx~q$LH`F]g?YREb]O1prKat1Qb4A"
 end
 
+environment :staging do
+  set include_erts: true
+  set include_src: false
+  set cookie: :"X<`Y;VTE9VMqlNJJk,d.]uYi5hBLr.j5a$JGyy!cDy=cpy8(Jrsf|(dKF>P{Xq2M"
+end
+
 environment :prod do
   set include_erts: true
   set include_src: false

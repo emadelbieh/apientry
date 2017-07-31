@@ -15,7 +15,6 @@ erl_crash.dump
 # this depending on your deployment strategy.
 /priv/static/
 /rel/apientry
-/.deliver/releases
 /config/*.override.exs
 /doc
 
