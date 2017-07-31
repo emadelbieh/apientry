@@ -53,8 +53,7 @@ defmodule Apientry.Mixfile do
      {:phoenix_slime, github: "slime-lang/phoenix_slime"},
      {:credo, "~> 0.4", only: [:dev, :test]},
      {:mock, "~> 0.1.1", only: :test},
-     {:exrm, "~> 1.0.6"},
-     {:edeliver, "~> 1.2.9"},
+     {:distillery, ">= 0.9.0"},
      {:plug, "~> 1.2-rc", override: true}, # https://twitter.com/elixirlang/status/753171413821976577
      {:rollbax, "~> 0.6"},
      {:earmark, "~> 0.1", only: :dev},
