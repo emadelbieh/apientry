@@ -14,8 +14,7 @@ erl_crash.dump
 # we ignore priv/static. You may want to comment
 # this depending on your deployment strategy.
 /priv/static/
-/rel
-/.deliver/releases
+/rel/apientry
 /config/*.override.exs
 /doc
 
