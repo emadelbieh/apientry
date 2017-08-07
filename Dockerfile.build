@@ -23,7 +23,9 @@ RUN apk --no-cache add git build-base \
 COPY mix.exs mix.lock /tmp/
 
 RUN cd /tmp && mix do deps.get, deps.compile
+
 WORKDIR /app
+
 RUN cp -a /tmp/deps /app
 
 ADD . /app
