@@ -1,7 +1,7 @@
 use Mix.Config
 
 config :apientry, Apientry.Endpoint,
-  http: [port: {:system, "PORT"}],
+  http: [port: 3000],
   url: [
     host: System.get_env("SITE_HOST") || "sandbox.apientry.com",
     port: Integer.parse(System.get_env("SITE_PORT") || "80") |> elem(0)

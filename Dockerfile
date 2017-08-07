@@ -4,8 +4,8 @@ RUN apk --update add ncurses-libs
 
 WORKDIR /app
 
-ADD events.tar.gz ./
+ADD apientry.tar.gz ./
 
 EXPOSE 3000
 
-ENTRYPOINT ["/app/bin/events", "foreground"]
+ENTRYPOINT ["/app/bin/apientry", "foreground"]
