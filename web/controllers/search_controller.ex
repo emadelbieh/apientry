@@ -44,10 +44,15 @@ defmodule Apientry.SearchController do
         ErrorReporter.track_ebay_response(conn, status, body, headers)
 
         request_format = conn.params["format"] || "json"
-        body = transform_by_format(conn, body, request_format)
-        |> Apientry.TitleFilter.remove_sizes_and_colors()
-        |> Apientry.TitleFilter.filter_duplicate_title()
-        |> Poison.encode!()
+        body = if conn.params["endpoint"] =~ ~r/categorytree/i do
+          transform_by_format(conn, body, request_format)
+          |> Poison.encode!()
+        else
+          transform_by_format(conn, body, request_format)
+          |> Apientry.TitleFilter.remove_sizes_and_colors()
+          |> Apientry.TitleFilter.filter_duplicate_title()
+          |> Poison.encode!()
+        end
 
         track_publisher(conn)
 
