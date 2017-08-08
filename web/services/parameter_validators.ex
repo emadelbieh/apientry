@@ -12,13 +12,18 @@ defmodule Apientry.ParameterValidators do
   A plug that checks for the presence of a keyword. If none is found, we halt the connection
   """
   def validate_keyword(conn, _opts) do
-    if conn.params["keyword"] in @invalid_keywords do
-      conn
-      |> assign(:valid, false)
-      |> render(:error, data: %{error: "invalid keyword"})
-      |> halt()
-    else
-      conn
+    cond do
+      conn.params["endpoint"] =~ ~r/categorytree/i ->
+        conn
+      conn.params["productId"] ->
+        conn
+      conn.params["keyword"] in @invalid_keywords ->
+        conn
+        |> assign(:valid, false)
+        |> render(:error, data: %{error: "invalid keyword"})
+        |> halt()
+      true ->
+        conn
     end
   end
 
