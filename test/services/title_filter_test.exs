@@ -12,7 +12,7 @@ defmodule Apientry.TitleFilterTest do
       "items" => %{ "item" => [
          %{ "product" => @product },
          %{ "offer"   => @product } 
-      ]}
+      ], "returnedItemCount" => 2 }
     }]
   }}
 
@@ -20,7 +20,7 @@ defmodule Apientry.TitleFilterTest do
     "categories" => %{ "category" => [%{
       "items" => %{ "item" => [
          %{ "product" => @product }
-      ]}
+      ], "returnedItemCount" => 1}
     }]
   }}
 

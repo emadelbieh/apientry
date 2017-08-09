@@ -29,11 +29,11 @@ defmodule Apientry.TitleFilter do
 
     categories = Enum.map(get_categories(body), fn category ->
       items = Enum.filter(get_items(category), &(TitleAgent.unique?(titles, get_name(&1))))
-      update_in(category["items"]["item"], fn _ -> items end)
+      category = update_in(category["items"]["item"], fn _ -> items end)
+      update_in(category["items"]["returnedItemCount"], fn _ -> Enum.count(items) end)
     end)
 
     body = update_in(body["categories"]["category"], fn _ -> categories end)
-
 
     TitleAgent.stop(titles)
 
