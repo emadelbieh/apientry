@@ -13,7 +13,7 @@ defmodule Apientry.ParameterValidators do
   """
   def validate_keyword(conn, _opts) do
     cond do
-      conn.params["endpoint"] =~ ~r/categorytree/i ->
+      conn.params["endpoint"] && conn.params["endpoint"] =~ ~r/categorytree/i ->
         conn
       conn.params["productId"] ->
         conn

@@ -44,7 +44,7 @@ defmodule Apientry.SearchController do
         ErrorReporter.track_ebay_response(conn, status, body, headers)
 
         request_format = conn.params["format"] || "json"
-        body = if conn.params["endpoint"] =~ ~r/categorytree/i do
+        body = if conn.params["endpoint"] && conn.params["endpoint"] =~ ~r/categorytree/i do
           transform_by_format(conn, body, request_format)
           |> Poison.encode!()
         else
