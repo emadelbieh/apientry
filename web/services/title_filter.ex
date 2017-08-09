@@ -2,13 +2,17 @@ defmodule Apientry.TitleFilter do
   alias Apientry.TitleAgent
 
   @colors_regex ~r/(white|black|red|orange|yellow|green|violet|indigo|blue|purple|gray|grey)\,*/i
-  @size_regex ~r/size:\s*\d+\.*\d*,\s*/i
+  @size_regex1 ~r/size:\s*\d+\.*\d*,\s*/i
+  @size_regex2 ~r/size:\s*(xs|small|medium|large|xl)/i
+  @size_regex3 ~r/size:\s*\d*\s*\(.*\)/i
 
   def remove_sizes_and_colors(body) do
     categories = Enum.map(get_categories(body), fn category ->
       items = Enum.map(get_items(category), fn item ->
         name = get_name(item)
-               |> String.replace(@size_regex, "")
+               |> String.replace(@size_regex1, "")
+               |> String.replace(@size_regex2, "")
+               |> String.replace(@size_regex3, "")
                |> String.replace(@colors_regex, "")
 
         if item["offer"] do
