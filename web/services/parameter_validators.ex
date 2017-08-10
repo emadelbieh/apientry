@@ -15,7 +15,7 @@ defmodule Apientry.ParameterValidators do
     cond do
       conn.params["endpoint"] && conn.params["endpoint"] =~ ~r/categorytree/i ->
         conn
-      conn.params["productId"] ->
+      conn.params["productId"] || conn.params["categoryId"] ->
         conn
       conn.params["keyword"] in @invalid_keywords ->
         conn
