@@ -37,9 +37,12 @@ defmodule Apientry.SearchController do
   end
 
   def get_errors(body) do
-    body
-    |> get_exceptions()
-    |> Enum.filter(&(&1["type"] == "error"))
+    case get_exceptions(body) do
+      nil -> []
+      errors ->
+        errors
+        |> Enum.filter(&(&1["type"] == "error"))
+    end
   end
 
   @doc """
@@ -56,7 +59,7 @@ defmodule Apientry.SearchController do
         request_format = conn.params["format"] || "json"
 
         body = cond do
-          [_] = get_errors(body)  ->
+          length(get_errors(body)) > 0  ->
             transform_by_format(conn, body, request_format)
             |> Poison.encode!()
           conn.params["endpoint"] && conn.params["endpoint"] =~ ~r/categorytree/i ->
