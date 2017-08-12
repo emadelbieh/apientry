@@ -32,6 +32,16 @@ defmodule Apientry.SearchController do
     |> json(assigns)
   end
 
+  def get_exceptions(body) do
+    body["exceptions"] && body["exceptions"]["exception"]
+  end
+
+  def get_errors(body) do
+    body
+    |> get_exceptions()
+    |> Enum.filter(&(&1["type"] == "error"))
+  end
+
   @doc """
   Takes in requests from /publisher.
 
@@ -44,14 +54,19 @@ defmodule Apientry.SearchController do
         ErrorReporter.track_ebay_response(conn, status, body, headers)
 
         request_format = conn.params["format"] || "json"
-        body = if conn.params["endpoint"] && conn.params["endpoint"] =~ ~r/categorytree/i do
-          transform_by_format(conn, body, request_format)
-          |> Poison.encode!()
-        else
-          transform_by_format(conn, body, request_format)
-          |> Apientry.TitleFilter.remove_sizes_and_colors()
-          |> Apientry.TitleFilter.filter_duplicate_title()
-          |> Poison.encode!()
+
+        body = cond do
+          [_] = get_errors(body)  ->
+            transform_by_format(conn, body, request_format)
+            |> Poison.encode!()
+          conn.params["endpoint"] && conn.params["endpoint"] =~ ~r/categorytree/i ->
+            transform_by_format(conn, body, request_format)
+            |> Poison.encode!()
+          true ->
+            transform_by_format(conn, body, request_format)
+            |> Apientry.TitleFilter.remove_sizes_and_colors()
+            |> Apientry.TitleFilter.filter_duplicate_title()
+            |> Poison.encode!()
         end
 
         track_publisher(conn)
