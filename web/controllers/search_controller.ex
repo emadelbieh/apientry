@@ -1,3 +1,5 @@
+require IEx
+
 defmodule Apientry.SearchController do
   @moduledoc """
   Takes in requests from /publisher.
@@ -45,11 +47,16 @@ defmodule Apientry.SearchController do
     end
   end
 
+
   @doc """
   Takes in requests from /publisher.
 
       GET /publisher?keyword=nikon
   """
+  def search(%{assigns: %{url: url, format: format}} = conn, _) do
+    IEx.pry
+  end
+
   def search(%{assigns: %{url: url, format: format}} = conn, _) do
     case HTTP.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->

@@ -16,18 +16,7 @@ defmodule Apientry.Rerank do
   def get_products(conn, ebay_results, search_term, geo, fetched_url) do
     geo = geo || "";
 
-    regex_cache = Task.async(fn ->
-      try do
-        Apientry.Helpers.regex_strings(geo)
-      rescue
-        e in RuntimeError ->
-          Apientry.ErrorReporter.report(conn, %{
-            kind: :error,
-            reason: e,
-            stacktrace: System.stacktrace()
-          })
-      end
-    end)
+    regex_cache = Apientry.TitleWeightService.prepare_regex_cache(conn, geo)
 
     categories = ebay_results
     categories = format_ebay_results_for_rerank(categories)
@@ -42,7 +31,7 @@ defmodule Apientry.Rerank do
       max_cat_price = get_max_cat_price(category)
 
       offers = category.offers
-      offers = add_token_val(conn, offers, search_term, geo, regex, fetched_url)
+      offers = Apientry.TitleWeightService.add_token_val(conn, offers, search_term, geo, regex, fetched_url)
       offers = add_price_val(offers, max_cat_price)
 
       Map.put(category, :offers, offers)
@@ -185,25 +174,6 @@ defmodule Apientry.Rerank do
     else
       Map.put(offer, :token_val, calculate_token_val(n, m, token_count_in_search_term))
     end
-  end
-
-  def add_token_val(conn, offers, search_term, geo, regex, fetchedUrl) do
-    token_count_in_search_term = length(tokenize(search_term))
-    attributes_from_ebay = get_attr_from_title_by_cat_id(geo, regex, search_term)
-
-    offers
-    |> ParallelStream.filter(fn offer ->
-      m = get_num_of_same_tokens(offer, search_term)
-
-      (fetchedUrl && String.length(fetchedUrl) > 10 && fetchedUrl =~ ~r/(attributeValue|categoryId)/ && m >= 2) ||
-      (token_count_in_search_term >= 10 && m > 5) ||
-      (token_count_in_search_term > 5 && token_count_in_search_term <= 9 && m > 2) ||
-      (token_count_in_search_term <= 5 && m > 1)
-    end)
-    |> ParallelStream.map(fn offer ->
-      add_token_val_helper(offer, attributes_from_ebay, geo, search_term, token_count_in_search_term) 
-    end)
-    |> Enum.into([])
   end
 
   # counts the number of tokens in search term
