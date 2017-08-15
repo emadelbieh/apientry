@@ -1,3 +1,4 @@
+require IEx
 defmodule Apientry.Searcher do
   @moduledoc """
   Validates from DB feeds, publishers, tracking IDs (et al) and returns info on

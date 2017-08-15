@@ -53,8 +53,45 @@ defmodule Apientry.SearchController do
 
       GET /publisher?keyword=nikon
   """
-  def search(%{assigns: %{url: url, format: format}} = conn, _) do
-    IEx.pry
+  def search(%{assigns: %{url: url, format: format}} = conn, %{"categoryId" => category_id, "keyword" => keyword} = params) do
+    case HTTP.get(url) do
+      {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
+        body = Poison.decode!(body)
+        ErrorReporter.track_ebay_response(conn, status, body, headers)
+
+        request_format = conn.params["format"] || "json"
+
+        categories =
+          body["categories"]["category"]
+          |> Apientry.Rerank.format_ebay_results_for_rerank()
+
+        req_url = "http://api.apientry.com/publisher?#{conn.query_string}"
+        
+        geo = conn.assigns.country |> String.downcase
+        regex_cache = Apientry.TitleWeightService.prepare_regex_cache(conn, geo)
+        categories = Apientry.TitleWeightService.apply_weights(conn, categories, req_url, regex_cache)
+        IEx.pry
+
+
+
+              decoded = Poison.decode!(body)
+              kw = conn.query_params["keyword"]
+
+              new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
+
+        track_publisher(conn)
+
+        conn
+        |> put_status(status)
+        |> put_resp_content_type("application/#{request_format}")
+        |> render("index.xml", data: body)
+
+      {:error, %HTTPoison.Error{reason: reason} = error} ->
+        ErrorReporter.track_httpoison_error(conn, error)
+        conn
+        |> put_status(400)
+        |> render(:error, data: %{error: reason})
+    end
   end
 
   def search(%{assigns: %{url: url, format: format}} = conn, _) do

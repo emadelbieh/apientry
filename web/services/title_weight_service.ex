@@ -27,7 +27,10 @@ defmodule Apientry.TitleWeightService do
     end)
   end
 
-  def apply_weights(conn, ebay_results, search_term, geo, fetched_url, regex_cache, categories) do
+  def apply_weights(conn, categories, fetched_url, regex_cache) do
+    search_term = conn.query_params
+    geo = (conn.assigns.country |> String.downcase) || ""
+
     regex_cache = Task.await(regex_cache)
 
     categories = Enum.map(categories, fn category ->
