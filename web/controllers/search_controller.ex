@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Apientry.SearchController do
   @moduledoc """
   Takes in requests from /publisher.
@@ -64,27 +62,23 @@ defmodule Apientry.SearchController do
         categories =
           body["categories"]["category"]
           |> Apientry.Rerank.format_ebay_results_for_rerank()
+          |> Enum.into([])
 
         req_url = "http://api.apientry.com/publisher?#{conn.query_string}"
-        
+
         geo = conn.assigns.country |> String.downcase
         regex_cache = Apientry.TitleWeightService.prepare_regex_cache(conn, geo)
-        categories = Apientry.TitleWeightService.apply_weights(conn, categories, req_url, regex_cache)
-        IEx.pry
-
-
-
-              decoded = Poison.decode!(body)
-              kw = conn.query_params["keyword"]
-
-              new_data = Apientry.Rerank.get_products(conn, decoded["categories"]["category"], kw, geo, req_url)
+        new_data = Apientry.TitleWeightService.apply_weights(conn, categories, req_url, regex_cache)
+        items = hd(body["categories"]["category"])
+        items = put_in(items, ["items","item"], new_data)
+        body = put_in(body, ["categories", "category"], [items])
 
         track_publisher(conn)
 
         conn
         |> put_status(status)
         |> put_resp_content_type("application/#{request_format}")
-        |> render("index.xml", data: body)
+        |> render("index.xml", data: Poison.encode!(body))
 
       {:error, %HTTPoison.Error{reason: reason} = error} ->
         ErrorReporter.track_httpoison_error(conn, error)

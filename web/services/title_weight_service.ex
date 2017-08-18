@@ -28,9 +28,8 @@ defmodule Apientry.TitleWeightService do
   end
 
   def apply_weights(conn, categories, fetched_url, regex_cache) do
-    search_term = conn.query_params
+    search_term = conn.query_params["keyword"]
     geo = (conn.assigns.country |> String.downcase) || ""
-
     regex_cache = Task.await(regex_cache)
 
     categories = Enum.map(categories, fn category ->
@@ -40,6 +39,22 @@ defmodule Apientry.TitleWeightService do
       offers = category.offers
       offers = add_token_val(conn, offers, search_term, geo, regex, fetched_url)
 
+      Map.put(category, :offers, offers)
+    end)
+
+    if length(hd(categories).offers) > 0 do
+      categories
+      |> sort_items()
+      |> Stream.flat_map(fn category -> category.offers end)
+      |> Enum.map(fn offer -> offer.original_item end)
+    else
+      categories
+    end
+  end
+
+  def sort_items(categories) do
+    Enum.map(categories, fn category ->
+      offers = Enum.sort_by(category.offers, fn offer -> offer.token_val end, &>=/2)
       Map.put(category, :offers, offers)
     end)
   end
