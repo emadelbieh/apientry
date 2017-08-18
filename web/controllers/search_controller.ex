@@ -18,9 +18,9 @@ defmodule Apientry.SearchController do
 
   import Apientry.ParameterValidators, only: [validate_keyword: 2, reject_search_engines: 2]
 
-  plug :validate_keyword when action in [:search, :search_rerank, :search_rerank_coupons]
-  plug :reject_search_engines when action in [:search, :search_rerank, :search_rerank_coupons]
-  plug :set_search_options when action in [:search, :dry_search, :search_rerank, :search_rerank_coupons]
+  plug :validate_keyword when action in [:search, :beta_search, :search_rerank, :search_rerank_coupons]
+  plug :reject_search_engines when action in [:search, :beta_search, :search_rerank, :search_rerank_coupons]
+  plug :set_search_options when action in [:search, :beta_search, :dry_search, :search_rerank, :search_rerank_coupons]
 
   @doc """
   Dry run of a search.
@@ -45,13 +45,7 @@ defmodule Apientry.SearchController do
     end
   end
 
-
-  @doc """
-  Takes in requests from /publisher.
-
-      GET /publisher?keyword=nikon
-  """
-  def search(%{assigns: %{url: url, format: format}} = conn, %{"categoryId" => category_id, "keyword" => keyword} = params) do
+  def beta_search(%{assigns: %{url: url, format: format}} = conn, %{"categoryId" => category_id, "keyword" => keyword} = params) do
     case HTTP.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->
         body = Poison.decode!(body)
@@ -88,6 +82,11 @@ defmodule Apientry.SearchController do
     end
   end
 
+  @doc """
+  Takes in requests from /publisher.
+
+      GET /publisher?keyword=nikon
+  """
   def search(%{assigns: %{url: url, format: format}} = conn, _) do
     case HTTP.get(url) do
       {:ok,  %Response{status_code: status, body: body, headers: headers}} ->

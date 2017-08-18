@@ -55,6 +55,7 @@ defmodule Apientry.Router do
     get "/search", ExtensionSearchController, :search
     get "/publisher", SearchController, :search
     get "/alpha/publisher", SearchController, :search_rerank
+    get "/beta/publisher", SearchController, :beta_search
     get "/coupons", CouponSearchController, :search
     get "/merchants", MerchantController, :index
     get "/dos", SearchController, :search_rerank_coupons
