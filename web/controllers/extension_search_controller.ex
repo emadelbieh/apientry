@@ -69,7 +69,6 @@ defmodule Apientry.ExtensionSearchController do
   end
 
   defp check_price(%{params:  %{"price" => price}} = conn, _) do
-    Apientry.Slack.send_message("price: #{price}")
     [min, max] = price |> Apientry.PriceCleaner.clean()
                   |> Apientry.PriceGenerator.get_min_max()
 

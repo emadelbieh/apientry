@@ -37,7 +37,6 @@ defmodule Apientry.PriceCleaner do
   end
 
   defp substring_from_first_digit(codepoints) do
-    Apientry.Slack.send_message(List.to_string(codepoints))
     index = codepoints |> Enum.find_index(&(&1 =~ ~r/[0-9]/))
     Enum.slice(codepoints, index..-1)
   end
