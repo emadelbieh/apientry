@@ -123,7 +123,7 @@ defmodule Apientry.StrongAttributeIDSelector do
   end
 
   defp normalize_keywords(data) do
-    normalized = Apientry.Rerank.normalize_string(data.keywords)
+    normalized = Apientry.TitleWeightService.normalize_string(data.keywords)
     Map.put(data, :keywords, normalized)
   end
 

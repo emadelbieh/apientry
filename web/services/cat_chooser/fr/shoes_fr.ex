@@ -8,7 +8,7 @@ defmodule Apientry.ShoesFR do
   @regex ~r/\bet\b/
 
   def process(data) do
-    str = Apientry.Rerank.tokenize(data.breadcrumbs, "fr")
+    str = Apientry.TitleWeightService.tokenize(data.breadcrumbs, "fr")
     str = Enum.join(str, " ")
 
     if(str =~ @rules && str =~ @regex) do

@@ -58,7 +58,7 @@ defmodule Apientry.CategoryChooser do
   end
 
   defp tokenize_keywords(data) do
-    tokens = data.keywords |> Apientry.Rerank.tokenize(data.geo)
+    tokens = data.keywords |> Apientry.TitleWeightService.tokenize(data.geo)
     Map.put(data, :tokens, tokens)
   end
 
