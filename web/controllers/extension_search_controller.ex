@@ -1,3 +1,5 @@
+require IEx
+
 defmodule Apientry.ExtensionSearchController do
   use Apientry.Web, :controller
 
@@ -133,18 +135,24 @@ defmodule Apientry.ExtensionSearchController do
       publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
       geo = params["_country"]
 
-      [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
-                                              |> String.split(";")
-                                              |> Enum.filter(fn ref -> ref =~ geo end)
-                                              |> hd
-                                              |> String.split(",")
+      ref_data = publisher_sub_id.reference_data
+                 |> String.split(";")
+                 |> Enum.filter(fn ref -> ref =~ geo end)
 
-      params
-      |> Map.put("apiKey", publisher_api_key)
-      |> Map.put("trackingId", tracking_id)
+      case ref_data do
+        [] ->
+          params
+        [ref] -> 
+          [^geo, publisher_api_key, tracking_id] = ref
+                                                   |> String.split(",")
+          params
+          |> Map.put("apiKey", publisher_api_key)
+          |> Map.put("trackingId", tracking_id)
+      end
     else
       params
     end
+    IEx.pry
 
     conn = Map.put(conn, :params, params)
     format = get_format(conn)

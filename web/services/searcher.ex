@@ -1,3 +1,5 @@
+require IEx
+
 defmodule Apientry.Searcher do
   @moduledoc """
   Validates from DB feeds, publishers, tracking IDs (et al) and returns info on
@@ -52,6 +54,7 @@ defmodule Apientry.Searcher do
   # Keep this sorted, please
   @required_params [
     "apiKey",
+    "trackingId",
     "domain",
     "visitorIPAddress",
     "visitorUserAgent"
@@ -111,6 +114,8 @@ defmodule Apientry.Searcher do
   end
 
   def validate_params(params) do
+    params
+    IEx.pry
     case @required_params -- Map.keys(params) do
       [] -> :ok
       missing -> {:error, :missing_parameters, %{required: missing}}
