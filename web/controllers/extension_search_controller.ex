@@ -107,6 +107,7 @@ defmodule Apientry.ExtensionSearchController do
     |> replace_keyword_with_cleaned(conn)
 
     params = Enum.into(params, %{})
+
     params = if params["visitorUserAgent"] do
       params
     else
@@ -128,9 +129,12 @@ defmodule Apientry.ExtensionSearchController do
       Map.put(params, "visitorIPAddress", ip)
     end
 
+    params = Map.merge(params, conn.params)
+
     conn = Map.put(conn, :params, params)
     format = get_format(conn)
     endpoint = conn.params["endpoint"] || @default_endpoint
+
     result = Searcher.search(format, endpoint, params, conn)
 
     result
