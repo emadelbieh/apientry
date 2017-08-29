@@ -15,7 +15,9 @@ defmodule Apientry.ExtensionSearchController do
   plug :assign_num_items_flag
   plug :check_price
   plug :reject_search_engines
+  plug Apientry.SubidLookupPlug
   plug :set_search_options
+
 
   def search(conn, params) do
     assigns = conn.assigns
@@ -105,6 +107,7 @@ defmodule Apientry.ExtensionSearchController do
     |> replace_keyword_with_cleaned(conn)
 
     params = Enum.into(params, %{})
+
     params = if params["visitorUserAgent"] do
       params
     else
@@ -126,29 +129,12 @@ defmodule Apientry.ExtensionSearchController do
       Map.put(params, "visitorIPAddress", ip)
     end
 
-    geo = req_headers["cf-ipcountry"] || "US"
-    params = Map.put(params, "_country", geo)
-
-    params = if params["subid"] && !params["apiKey"] do
-      publisher_sub_id = Repo.get_by(Apientry.PublisherSubId, sub_id: params["subid"])
-      geo = params["_country"]
-
-      [^geo, publisher_api_key, tracking_id] = publisher_sub_id.reference_data
-                                              |> String.split(";")
-                                              |> Enum.filter(fn ref -> ref =~ geo end)
-                                              |> hd
-                                              |> String.split(",")
-
-      params
-      |> Map.put("apiKey", publisher_api_key)
-      |> Map.put("trackingId", tracking_id)
-    else
-      params
-    end
+    params = Map.merge(params, conn.params)
 
     conn = Map.put(conn, :params, params)
     format = get_format(conn)
     endpoint = conn.params["endpoint"] || @default_endpoint
+
     result = Searcher.search(format, endpoint, params, conn)
 
     result
